@@ -31,9 +31,12 @@ def save_voice_parts(voices_dict, output_dir, original_filename):
         if voice_score.parts:
             voice_score.parts[0].partName = f"{base_name} ({voice_name})"
         
-        # Update the score's title metadata
+        # Update the score's title metadata with proper format: "<original> (<Part>)"
         if voice_score.metadata:
             voice_score.metadata.title = f"{base_name} ({voice_name})"
+            # Clean up movement title to match the work title
+            if hasattr(voice_score.metadata, 'movementName') and voice_score.metadata.movementName:
+                voice_score.metadata.movementName = f"{base_name} ({voice_name})"
         
         # Write to file (voice_score is already a complete Score object)
         voice_score.write('musicxml', fp=str(filepath))

@@ -124,10 +124,13 @@
         </attributes>
       <direction placement="above" system="only-top">
         <direction-type>
-          <words default-x="-37.68" relative-y="20" font-weight="bold" font-size="12">Andante</words>
+          <metronome parentheses="no" default-x="-37.68" relative-x="-1.75" relative-y="41.04">
+            <beat-unit>quarter</beat-unit>
+            <per-minute>80</per-minute>
+            </metronome>
           </direction-type>
         <staff>1</staff>
-        <sound tempo="92"/>
+        <sound tempo="80"/>
         </direction>
       <note default-x="82.97" default-y="-40">
         <pitch>
@@ -137,7 +140,7 @@
         <duration>2</duration>
         <voice>1</voice>
         <type>quarter</type>
-        <stem>none</stem>
+        <stem>up</stem>
         <staff>1</staff>
         <lyric number="1" default-x="6.5" default-y="-82.22" relative-y="-30">
           <syllabic>begin</syllabic>
