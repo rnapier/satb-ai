@@ -21,12 +21,12 @@
     </scaling>
   </defaults>
   <part-list>
-    <score-part id="Pe9f1c439b4be169326d5eb5fde0f52aa">
+    <score-part id="Paf59b7daad1ccf0366d171f5abf635ae">
       <part-name>Crossing The Bar (Alto)</part-name>
     </score-part>
   </part-list>
   <!--=========================== Part 1 ===========================-->
-  <part id="Pe9f1c439b4be169326d5eb5fde0f52aa">
+  <part id="Paf59b7daad1ccf0366d171f5abf635ae">
     <!--========================= Measure 1 ==========================-->
     <measure implicit="no" number="1">
       <attributes>
@@ -1159,15 +1159,6 @@
         <type>quarter</type>
         <stem>down</stem>
       </note>
-      <direction placement="below">
-        <direction-type>
-          <dynamics default-x="2.31" default-y="-40" relative-x="-13.84" relative-y="79.42">
-            <f />
-          </dynamics>
-        </direction-type>
-        <offset sound="yes">-5040</offset>
-        <sound dynamics="88" />
-      </direction>
     </measure>
     <!--========================= Measure 30 =========================-->
     <measure implicit="no" number="30">

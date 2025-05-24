@@ -94,6 +94,22 @@ def split_satb_voices(file_path):
             element_copy = copy.deepcopy(element)
             part.insert(0, element_copy)
     
+    # Copy part-level crescendos and diminuendos to each SATB part
+    # These exist at the part level (offset 0.0) and need special handling
+    print(f"\n=== Copying Part-Level Crescendos ===")
+    for original_part in score.parts:
+        part_crescendos = list(original_part.getElementsByClass([music21.dynamics.Crescendo,
+                                                               music21.dynamics.Diminuendo,
+                                                               music21.dynamics.DynamicWedge]))
+        if part_crescendos:
+            print(f"Found {len(part_crescendos)} part-level crescendo/diminuendo elements")
+            # Copy these to all SATB parts
+            for target_part in [soprano_part, alto_part, tenor_part, bass_part]:
+                for cresc in part_crescendos:
+                    cresc_copy = copy.deepcopy(cresc)
+                    target_part.insert(cresc.offset, cresc_copy)
+                    print(f"  Copied {type(cresc).__name__} to {target_part.partName}")
+    
     # Get all measures from the first part to establish unified measure numbering
     first_part_measures = list(score.parts[0].getElementsByClass(music21.stream.Measure))
     total_measures = len(first_part_measures)
@@ -330,10 +346,15 @@ def split_satb_voices(file_path):
         total_notes = sum(len(list(measure.getElementsByClass(music21.note.Note))) for measure in measures)
         total_dynamics = sum(len(list(measure.getElementsByClass(music21.dynamics.Dynamic))) for measure in measures)
         total_layouts = sum(len(list(measure.getElementsByClass(music21.layout.LayoutBase))) for measure in measures)
-        total_crescendos = sum(len(list(measure.getElementsByClass([music21.dynamics.Crescendo,
-                                                                  music21.dynamics.Diminuendo,
-                                                                  music21.dynamics.DynamicWedge]))) for measure in measures)
-        print(f"{voice_name}: {len(measures)} measures, {total_notes} total notes, {total_dynamics} dynamics, {total_layouts} layout elements, {total_crescendos} crescendos/diminuendos")
+        # Count crescendos/diminuendos at both part level and measure level
+        part_crescendos = len(list(part.getElementsByClass([music21.dynamics.Crescendo,
+                                                          music21.dynamics.Diminuendo,
+                                                          music21.dynamics.DynamicWedge])))
+        measure_crescendos = sum(len(list(measure.getElementsByClass([music21.dynamics.Crescendo,
+                                                                    music21.dynamics.Diminuendo,
+                                                                    music21.dynamics.DynamicWedge]))) for measure in measures)
+        total_crescendos = part_crescendos + measure_crescendos
+        print(f"{voice_name}: {len(measures)} measures, {total_notes} total notes, {total_dynamics} dynamics, {total_layouts} layout elements, {total_crescendos} crescendos/diminuendos ({part_crescendos} part-level + {measure_crescendos} measure-level)")
     
     # Apply unification rules - need to extract parts for the unification function
     print(f"\n=== Applying Unification Rules ===")
