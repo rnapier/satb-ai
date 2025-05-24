@@ -72,6 +72,40 @@ def main():
         
         print("\nPhase 1 complete: Successfully parsed MuseScore file!")
         
+        # Phase 2: Extract SATB voice data
+        try:
+            voices = parser.extract_satb_voices()
+            
+            print("\n=== SATB Voice Data ===")
+            for voice_name, voice_data in voices.items():
+                notes = voice_data['notes']
+                dynamics = voice_data['dynamics'] 
+                lyrics = voice_data['lyrics']
+                
+                print(f"\n{voice_name.upper()}:")
+                print(f"  Notes: {len(notes)}")
+                if notes:
+                    print(f"    First note: measure {notes[0].get('measure', '?')}, "
+                          f"pitch {notes[0].get('pitch', '?')}, "
+                          f"duration {notes[0].get('duration', '?')}")
+                
+                print(f"  Dynamics: {len(dynamics)}")
+                if dynamics:
+                    first_dynamic = dynamics[0]
+                    print(f"    First dynamic: measure {first_dynamic.get('measure', '?')}, "
+                          f"marking '{first_dynamic.get('marking', '?')}'")
+                
+                print(f"  Lyrics: {len(lyrics)}")
+                if lyrics:
+                    first_lyric = lyrics[0]
+                    print(f"    First lyric: measure {first_lyric.get('measure', '?')}, "
+                          f"text '{first_lyric.get('text', '?')}'")
+            
+            print("\nPhase 2 complete: Successfully extracted SATB voice data!")
+            
+        except Exception as e:
+            print(f"Warning: Could not extract voice data: {e}")
+        
         # Cleanup
         parser.cleanup()
         

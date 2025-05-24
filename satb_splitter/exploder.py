@@ -48,10 +48,12 @@ class MSCZParser:
             # Load the score using ms3
             self.score = ms3.Score(self.input_file)
             
-            # Extract basic score information
+            # Extract basic score information using proper ms3 API
+            title, composer = self._extract_metadata()
+            
             score_info = {
-                'title': getattr(self.score, 'title', 'Unknown Title'),
-                'composer': getattr(self.score, 'composer', 'Unknown Composer'),
+                'title': title,
+                'composer': composer,
                 'filename': self.input_file.name,
                 'path': str(self.input_file),
             }
@@ -106,6 +108,124 @@ class MSCZParser:
                     metadata['key_signatures'] = ks.to_dict('records')
         
         return metadata
+    
+    def extract_satb_voices(self) -> Dict[str, Dict[str, Any]]:
+        """Extract notes, dynamics, and lyrics for each SATB voice."""
+        if not self.score:
+            raise RuntimeError("Score not parsed yet. Call parse_score() first.")
+        
+        print("Extracting SATB voice data...")
+        
+        # Initialize voice data structure
+        voices = {
+            'soprano': {'notes': [], 'dynamics': [], 'lyrics': []},
+            'alto': {'notes': [], 'dynamics': [], 'lyrics': []},
+            'tenor': {'notes': [], 'dynamics': [], 'lyrics': []},
+            'bass': {'notes': [], 'dynamics': [], 'lyrics': []}
+        }
+        
+        try:
+            mscx = self.score.mscx
+            
+            # Extract notes data using public API
+            notes_df = mscx.notes()
+            if notes_df is not None and not notes_df.empty:
+                self._extract_notes_by_voice(notes_df, voices)
+            
+            # For now, skip dynamics and lyrics until we find the correct API
+            # TODO: Research correct ms3 API for dynamics and lyrics extraction
+            
+            # Print summary
+            for voice_name, voice_data in voices.items():
+                print(f"{voice_name.title()}: {len(voice_data['notes'])} notes, "
+                      f"{len(voice_data['dynamics'])} dynamics, "
+                      f"{len(voice_data['lyrics'])} lyrics")
+            
+            return voices
+            
+        except Exception as e:
+            raise RuntimeError(f"Failed to extract voice data: {e}")
+    
+    def _extract_notes_by_voice(self, notes_df, voices: Dict[str, Dict[str, Any]]):
+        """Extract notes and assign to SATB voices based on staff and voice."""
+        for _, note in notes_df.iterrows():
+            staff = note.get('staff')
+            voice = note.get('voice')
+            
+            # Map staff/voice to SATB parts
+            voice_name = self._map_staff_voice_to_part(staff, voice)
+            if voice_name:
+                note_data = {
+                    'measure': note.get('mc'),
+                    'beat': note.get('mc_onset'),
+                    'pitch': note.get('midi'),
+                    'duration': note.get('duration_qb'),
+                    'staff': staff,
+                    'voice': voice
+                }
+                voices[voice_name]['notes'].append(note_data)
+    
+    def _extract_dynamics_by_voice(self, dynamics_df, voices: Dict[str, Dict[str, Any]]):
+        """Extract dynamics and assign to SATB voices."""
+        for _, dynamic in dynamics_df.iterrows():
+            staff = dynamic.get('staff')
+            voice = dynamic.get('voice')
+            
+            voice_name = self._map_staff_voice_to_part(staff, voice)
+            if voice_name:
+                dynamic_data = {
+                    'measure': dynamic.get('mc'),
+                    'beat': dynamic.get('mc_onset'),
+                    'marking': dynamic.get('text'),
+                    'staff': staff,
+                    'voice': voice
+                }
+                voices[voice_name]['dynamics'].append(dynamic_data)
+    
+    def _extract_lyrics_by_voice(self, lyrics_df, voices: Dict[str, Dict[str, Any]]):
+        """Extract lyrics and assign to SATB voices."""
+        for _, lyric in lyrics_df.iterrows():
+            staff = lyric.get('staff')
+            voice = lyric.get('voice')
+            
+            voice_name = self._map_staff_voice_to_part(staff, voice)
+            if voice_name:
+                lyric_data = {
+                    'measure': lyric.get('mc'),
+                    'beat': lyric.get('mc_onset'),
+                    'text': lyric.get('text'),
+                    'verse': lyric.get('verse'),
+                    'staff': staff,
+                    'voice': voice
+                }
+                voices[voice_name]['lyrics'].append(lyric_data)
+    
+    def _map_staff_voice_to_part(self, staff: Optional[int], voice: Optional[int]) -> Optional[str]:
+        """Map staff and voice numbers to SATB part names."""
+        if staff is None or voice is None:
+            return None
+        
+        # Standard SATB mapping for closed score:
+        # Staff 1, Voice 1 → Soprano
+        # Staff 1, Voice 2 → Alto  
+        # Staff 2, Voice 1 → Tenor
+        # Staff 2, Voice 2 → Bass
+        mapping = {
+            (1, 1): 'soprano',
+            (1, 2): 'alto',
+            (2, 1): 'tenor',
+            (2, 2): 'bass'
+        }
+        
+        return mapping.get((staff, voice))
+
+    def _extract_metadata(self) -> tuple[str, str]:
+        """Extract title and composer using ms3 public API."""
+        metadata = self.score.mscx.metadata
+        title = metadata.get('workTitle') or metadata.get('title')
+        composer = metadata.get('composer')
+        
+        return title or 'Unknown Title', composer or 'Unknown Composer'
     
     def cleanup(self):
         """Clean up temporary files."""
