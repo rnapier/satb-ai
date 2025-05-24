@@ -58,20 +58,17 @@ class MSCZParser:
                 'path': str(self.input_file),
             }
             
-            # Get basic score statistics
-            if hasattr(self.score, 'mscx'):
-                mscx = self.score.mscx
-                if hasattr(mscx, 'get_measures'):
-                    measures = mscx.get_measures()
-                    score_info['measures'] = len(measures) if measures is not None else 0
-                
-                # Try to get parts information
-                if hasattr(mscx, 'get_parts'):
-                    parts = mscx.get_parts()
-                    if parts is not None:
-                        score_info['parts'] = len(parts)
-                        score_info['part_names'] = [getattr(part, 'name', f'Part {i+1}') 
-                                                   for i, part in enumerate(parts)]
+            # Get basic score statistics using documented ms3 API
+            try:
+                # Try to get measures count from notes data
+                notes_df = self.score.mscx.notes()
+                if notes_df is not None and not notes_df.empty:
+                    max_measure = notes_df['mc'].max() if 'mc' in notes_df.columns else None
+                    if max_measure is not None:
+                        score_info['measures'] = int(max_measure)
+            except Exception:
+                # If we can't get measure count, that's okay
+                pass
             
             return score_info
             
@@ -85,27 +82,15 @@ class MSCZParser:
         
         metadata = {}
         
-        # Basic metadata
-        for attr in ['title', 'composer', 'lyricist', 'copyright', 'creation_date']:
-            if hasattr(self.score, attr):
-                value = getattr(self.score, attr)
+        # Get metadata using the documented API
+        try:
+            score_metadata = self.score.mscx.metadata
+            for key, value in score_metadata.items():
                 if value:
-                    metadata[attr] = value
-        
-        # Score structure information
-        if hasattr(self.score, 'mscx'):
-            mscx = self.score.mscx
-            
-            # Get time signatures, key signatures, etc.
-            if hasattr(mscx, 'get_time_signatures'):
-                ts = mscx.get_time_signatures()
-                if ts is not None and not ts.empty:
-                    metadata['time_signatures'] = ts.to_dict('records')
-            
-            if hasattr(mscx, 'get_key_signatures'):
-                ks = mscx.get_key_signatures()
-                if ks is not None and not ks.empty:
-                    metadata['key_signatures'] = ks.to_dict('records')
+                    metadata[key] = value
+        except Exception:
+            # If metadata access fails, continue without it
+            pass
         
         return metadata
     
@@ -132,8 +117,11 @@ class MSCZParser:
             if notes_df is not None and not notes_df.empty:
                 self._extract_notes_by_voice(notes_df, voices)
             
-            # For now, skip dynamics and lyrics until we find the correct API
-            # TODO: Research correct ms3 API for dynamics and lyrics extraction
+            # Extract dynamics and lyrics from events data
+            events_df = mscx.events()
+            if events_df is not None and not events_df.empty:
+                self._extract_dynamics_from_events(events_df, voices)
+                self._extract_lyrics_from_events(events_df, voices)
             
             # Print summary
             for voice_name, voice_data in voices.items():
@@ -165,36 +153,42 @@ class MSCZParser:
                 }
                 voices[voice_name]['notes'].append(note_data)
     
-    def _extract_dynamics_by_voice(self, dynamics_df, voices: Dict[str, Dict[str, Any]]):
-        """Extract dynamics and assign to SATB voices."""
-        for _, dynamic in dynamics_df.iterrows():
-            staff = dynamic.get('staff')
-            voice = dynamic.get('voice')
+    def _extract_dynamics_from_events(self, events_df, voices: Dict[str, Dict[str, Any]]):
+        """Extract dynamics from events data and assign to SATB voices."""
+        # Filter for dynamics events
+        dynamics_events = events_df[events_df['type'] == 'Dynamic'] if 'type' in events_df.columns else events_df
+        
+        for _, event in dynamics_events.iterrows():
+            staff = event.get('staff')
+            voice = event.get('voice')
             
             voice_name = self._map_staff_voice_to_part(staff, voice)
             if voice_name:
                 dynamic_data = {
-                    'measure': dynamic.get('mc'),
-                    'beat': dynamic.get('mc_onset'),
-                    'marking': dynamic.get('text'),
+                    'measure': event.get('mc'),
+                    'beat': event.get('mc_onset'),
+                    'marking': event.get('text'),
                     'staff': staff,
                     'voice': voice
                 }
                 voices[voice_name]['dynamics'].append(dynamic_data)
     
-    def _extract_lyrics_by_voice(self, lyrics_df, voices: Dict[str, Dict[str, Any]]):
-        """Extract lyrics and assign to SATB voices."""
-        for _, lyric in lyrics_df.iterrows():
-            staff = lyric.get('staff')
-            voice = lyric.get('voice')
+    def _extract_lyrics_from_events(self, events_df, voices: Dict[str, Dict[str, Any]]):
+        """Extract lyrics from events data and assign to SATB voices."""
+        # Filter for lyrics events
+        lyrics_events = events_df[events_df['type'] == 'Lyrics'] if 'type' in events_df.columns else events_df
+        
+        for _, event in lyrics_events.iterrows():
+            staff = event.get('staff')
+            voice = event.get('voice')
             
             voice_name = self._map_staff_voice_to_part(staff, voice)
             if voice_name:
                 lyric_data = {
-                    'measure': lyric.get('mc'),
-                    'beat': lyric.get('mc_onset'),
-                    'text': lyric.get('text'),
-                    'verse': lyric.get('verse'),
+                    'measure': event.get('mc'),
+                    'beat': event.get('mc_onset'),
+                    'text': event.get('text'),
+                    'verse': event.get('verse'),
                     'staff': staff,
                     'voice': voice
                 }

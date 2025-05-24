@@ -1,0 +1,228 @@
+Help on package ms3:
+
+NAME
+    ms3
+
+DESCRIPTION
+    All functionality of the library is available through creating a ``ms3.Score`` object for a single score and a
+    ``ms3.Parse`` object for multiple scores. Parsing a list of annotation labels only can be done by creating a
+    ``ms3.Annotations`` object.
+
+PACKAGE CONTENTS
+    _typing
+    _version
+    annotations
+    bs4_measures
+    bs4_parser
+    cli
+    corpus
+    expand_dcml
+    logger
+    operations
+    parse
+    piece
+    score
+    transformations
+    utils (package)
+    view
+
+SUBMODULES
+    constants
+    frictionless_helpers
+    functions
+
+FUNCTIONS
+    reduce(...)
+        reduce(function, iterable[, initial]) -> value
+        
+        Apply a function of two arguments cumulatively to the items of a sequence
+        or iterable, from left to right, so as to reduce the iterable to a single
+        value.  For example, reduce(lambda x, y: x+y, [1, 2, 3, 4, 5]) calculates
+        ((((1+2)+3)+4)+5).  If initial is present, it is placed before the items
+        of the iterable in the calculation, and serves as a default when the
+        iterable is empty.
+
+DATA
+    AUTOMATIC_COLUMNS = ['TimeSig', 'KeySig', 'last_mc', 'last_mn', 'lengt...
+    AnnotationsFacet = typing.Literal['expanded', 'labels']
+    Any = typing.Any
+        Special type indicating an unconstrained type.
+        
+        - Any is compatible with every type.
+        - Any assumed to have all methods.
+        - All values assumed to be instances of Any.
+        
+        Note that all the above statements are true from the point of view of
+        static type checkers. At runtime, Any should not be used with instance
+        or class checks.
+    
+    BOOLEAN_COLUMNS = ['globalkey_is_minor', 'localkey_is_minor', 'has_dru...
+    COLLECTION_COLUMNS = ['next', 'chord_tones', 'added_tones']
+    COLORS = ['aliceblue', 'antiquewhite', 'aqua', 'aquamarine', 'ms3_aqua...
+    COMPUTED_METADATA_COLUMNS = ['TimeSig', 'KeySig', 'last_mc', 'last_mn'...
+    CSS2MS3 = {'aquamarine': 'ms3_aquamarine', 'blue': 'ms3_blue', 'chartr...
+    CSS_COLORS = ['aliceblue', 'antiquewhite', 'aqua', 'aquamarine', 'azur...
+    Callable = typing.Callable
+        Callable type; Callable[[int], str] is a function of (int) -> str.
+        
+        The subscription syntax must always be used with exactly two
+        values: the argument list and the return type.  The argument list
+        must be a list of types or ellipsis; the return type must be a single type.
+        
+        There is no syntax to indicate optional or keyword arguments,
+        such function types are rarely used as callback types.
+    
+    Collection = typing.Collection
+        A generic version of collections.abc.Collection.
+    
+    DCML_DOUBLE_REGEX = re.compile('\n                                ^(.....
+    DCML_METADATA_COLUMNS = ['harmony_version', 'annotators', 'reviewers',...
+    DCML_REGEX = re.compile('\n^(\\.?\n    ((?P<globalkey>[a-gA-G...VII|VI...
+    DEFAULT_CREATOR_METADATA = {'@context': 'https://schema.org/', '@id': ...
+    Dict = typing.Dict
+        A generic version of dict.
+    
+    Dtype = typing.Union[ForwardRef('ExtensionDtype'), str, ...g.Type[typi...
+    EDTF_LIKE_YEAR_REGEX = r'^\d{3,4}|\.{2}$'
+    FALSY_VALUES = {0, 'Off', 'OFF', '0', 'false', 'NO', ...}
+    FIELDS_WITHOUT_MISSING_VALUES = ('mc', 'mc_playthrough')
+    FORM_DETECTION_REGEX = r'^\d{1,2}.*?:'
+    FORM_LEVEL_CAPTURE_REGEX = r'(?P<levels>\d{1,2}[a-h]?[ivx]*(?:\&\d{0,2...
+    FORM_LEVEL_FORMAT = r'\d{1,2}[a-h]?[ivx]*(?:\&\d{0,2}[a-h]?[ivx]*)*'
+    FORM_LEVEL_REGEX = r'^(?P<level>\d{1,2})?(?P<form_tree>[a-h])?(?P<read...
+    FORM_LEVEL_SPLIT_REGEX = r'\d{1,2}[a-h]?[ivx]*(?:\&\d{0,2}[a-h]?[ivx]*...
+    FORM_TOKEN_ABBREVIATIONS = {'1st': 'first theme', '2nd': 'second theme...
+    FRACTION_REGEX = r'\d+(?:\/\d+)?'
+    FRICTIONLESS_INVERSE = '[^-a-z0-9._/]'
+    FRICTIONLESS_REGEX = '^([-a-z0-9._/])+$'
+    Facet = typing.Literal['scores', 'measures', 'notes', 'r...bels', 'cad...
+    FileDataframeTupleMaybe = typing.Tuple[typing.Optional[ForwardRef('Fil...
+    FileDict = typing.Dict[str, ForwardRef('File')]
+    INSTRUMENT_RELATED_COLUMNS = ['has_drumset', 'ambitus']
+    INT_ARRAY_REGEX = r'^[([]?(?:-?\d+\s*,?\s*)*[])]?$'
+    Iterable = typing.Iterable
+        A generic version of collections.abc.Iterable.
+    
+    Iterator = typing.Iterator
+        A generic version of collections.abc.Iterator.
+    
+    KEYSIG_DICT_ENTRY_REGEX = r'(\d+): (-?\d+)(?:, )?'
+    KEYSIG_DICT_REGEX = r'^{?((\d+): (-?\d+)(?:, )?)+}?$'
+    L = ~L
+    LATEST_MUSESCORE_VERSION = '3.6.2'
+    LEGACY_COLUMNS = ['fname', 'fnames', 'rel_paths', 'md5']
+    List = typing.List
+        A generic version of list.
+    
+    Literal = typing.Literal
+        Special typing form to define literal types (a.k.a. value types).
+        
+        This form can be used to indicate to type checkers that the corresponding
+        variable or function parameter has a value equivalent to the provided
+        literal (or one of several literals):
+        
+          def validate_simple(data: Any) -> Literal[True]:  # always returns True
+              ...
+        
+          MODE = Literal['r', 'rb', 'w', 'wb']
+          def open_helper(file: str, mode: MODE) -> str:
+              ...
+        
+          open_helper('/some/path', 'r')  # Passes type check
+          open_helper('/other/path', 'typo')  # Error in type checker
+        
+        Literal[...] cannot be subclassed. At runtime, an arbitrary value
+        is allowed as type argument to Literal[...], but type checkers may
+        impose restrictions.
+    
+    METADATA_COLUMN_ORDER = ['piece', 'TimeSig', 'KeySig', 'last_mc', 'las...
+    MS3_COLORS = ['ms3_darkgreen', 'ms3_darkred', 'ms3_sienna', 'ms3_green...
+    MS3_HTML = {'#00007f': 'ms3_navy', '#005500': 'ms3_darkgreen', '#00557...
+    MS3_RGB = {(0, 0, 127): 'ms3_navy', (0, 85, 0): 'ms3_darkgreen', (0, 8...
+    MUSESCORE_HEADER_FIELDS = ['title_text', 'subtitle_text', 'lyricist_te...
+    MUSESCORE_METADATA_FIELDS = ['composer', 'workTitle', 'movementNumber'...
+    OTHER_COLUMNS = ['subdirectory', 'rel_path']
+    Optional = typing.Optional
+        Optional type.
+        
+        Optional[X] is equivalent to Union[X, None].
+    
+    SCHEMAS_DIR = '/Users/rnapier/.pyenv/versions/3.10.0/Library/Fr...Vers...
+    SCORE_EXTENSIONS = ('.mscx', '.mscz', '.cap', '.capx', '.midi', '.mid'...
+    SLICE_INTERVAL_REGEX = r'[\[\)]((?:\d+\.?\d*)|(?:\.\d+)), ((?:\d+\.?\d...
+    STANDARD_COLUMN_ORDER = ['mc', 'mc_playthrough', 'mn', 'mn_playthrough...
+    STANDARD_NAMES = ['notes_and_rests', 'rests', 'notes', 'measures', 'ev...
+    STANDARD_NAMES_OR_GIT = ['notes_and_rests', 'rests', 'notes', 'measure...
+    ScoreFacet = typing.Literal['measures', 'notes', 'rests', 'no...', 'fo...
+    Self = typing_extensions.Self
+        Used to spell the type of "self" in classes.
+        
+        Example::
+        
+          from typing import Self
+        
+          class ReturnsSelf:
+              def parse(self, data: bytes) -> Self:
+                  ...
+                  return self
+    
+    TIMESIG_DICT_ENTRY_REGEX = r'(\d+): (\d+\/\d+)(?:, )?'
+    TIMESIG_DICT_REGEX = r'^{?((\d+): (\d+\/\d+)(?:, )?)+}?$'
+    TRUTHY_VALUES = {1, 'true', 'YES', 'TRUE', 'True', 'T', ...}
+    TSV_COLUMN_CONVERTERS = {'KeySig': <function str2keysig_dict>, 'TimeSi...
+    TSV_COLUMN_DESCRIPTIONS = {'KeySig': 'All key signatures in a piece an...
+    TSV_COLUMN_DTYPES = {'absolute_base': 'Int64', 'absolute_root': 'Int64...
+    TSV_COLUMN_TITLES = {'KeySig': 'Key Signatures', 'TimeSig': 'Time Sign...
+    TSVtype = typing.Union[typing.Literal['measures', 'notes',...'chords']...
+    TSVtypes = typing.Union[typing.Literal['measures', 'notes',...hords'],...
+    Tuple = typing.Tuple
+        Tuple type; Tuple[X, Y] is the cross-product type of X and Y.
+        
+        Example: Tuple[T1, T2] is a tuple of two elements corresponding
+        to type variables T1 and T2.  Tuple[int, float, str] is a tuple
+        of an int, a float and a string.
+        
+        To specify a variable-length tuple of homogeneous type, use Tuple[T, ...].
+    
+    UTILS_DIR = '/Users/rnapier/.pyenv/versions/3.10.0/Library/Fr...sions/...
+    Union = typing.Union
+        Union type; Union[X, Y] means either X or Y.
+        
+        To define a union, use e.g. Union[int, str].  Details:
+        - The arguments must be types and there must be at least one.
+        - None as an argument is a special case and is replaced by
+          type(None).
+        - Unions of unions are flattened, e.g.::
+        
+            Union[Union[int, str], float] == Union[int, str, float]
+        
+        - Unions of a single argument vanish, e.g.::
+        
+            Union[int] == int  # The constructor actually returns int
+        
+        - Redundant arguments are skipped, e.g.::
+        
+            Union[int, str, int] == Union[int, str]
+        
+        - When comparing unions, the argument order is ignored, e.g.::
+        
+            Union[int, str] == Union[str, int]
+        
+        - You cannot subclass or instantiate a union.
+        - You can use Optional[X] as a shorthand for Union[X, None].
+    
+    VERSION_COLUMNS = ['musescore', 'ms3_version']
+    ViewDict = typing.Dict[str, ForwardRef('View')]
+    dist_name = 'ms3'
+    f = <_io.TextIOWrapper name='/Users/rnapier/.pyenv/v...kages/ms3/_vers...
+    module_logger = <Logger ms3.utils.functions (WARNING)>
+    schemata = {}
+    version_file_path = '/Users/rnapier/.pyenv/versions/3.10.0/Library/Fr....
+
+VERSION
+    2.6.0
+
+FILE
+    /Users/rnapier/.pyenv/versions/3.10.0/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/ms3/__init__.py
+
+
