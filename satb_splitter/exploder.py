@@ -117,11 +117,18 @@ class MSCZParser:
             if notes_df is not None and not notes_df.empty:
                 self._extract_notes_by_voice(notes_df, voices)
             
-            # Extract dynamics and lyrics from events data
-            events_df = mscx.events()
-            if events_df is not None and not events_df.empty:
-                self._extract_dynamics_from_events(events_df, voices)
-                self._extract_lyrics_from_events(events_df, voices)
+            # Extract dynamics and lyrics from chords data (as suggested in docs)
+            try:
+                chords_df = mscx.chords()
+                if chords_df is not None and not chords_df.empty:
+                    self._extract_dynamics_from_chords(chords_df, voices)
+                    self._extract_lyrics_from_chords(chords_df, voices)
+            except Exception as e:
+                # Fallback to events data
+                events_df = mscx.events()
+                if events_df is not None and not events_df.empty:
+                    self._extract_dynamics_from_events(events_df, voices)
+                    self._extract_lyrics_from_events(events_df, voices)
             
             # Print summary
             for voice_name, voice_data in voices.items():
@@ -133,6 +140,151 @@ class MSCZParser:
             
         except Exception as e:
             raise RuntimeError(f"Failed to extract voice data: {e}")
+    
+    def unify_satb_parts(self, voices: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
+        """Unify dynamics and lyrics across SATB parts according to Phase 3 rules."""
+        print("\nApplying Phase 3 unification rules...")
+        
+        # Create a copy to avoid modifying the original
+        unified_voices = {
+            voice: {
+                'notes': voice_data['notes'].copy(),
+                'dynamics': voice_data['dynamics'].copy(),
+                'lyrics': voice_data['lyrics'].copy()
+            }
+            for voice, voice_data in voices.items()
+        }
+        
+        # Phase 3 Rule 1: Unify dynamics
+        self._unify_dynamics(unified_voices)
+        
+        # Phase 3 Rule 2: Unify lyrics 
+        self._unify_lyrics(unified_voices)
+        
+        return unified_voices
+    
+    def _unify_dynamics(self, voices: Dict[str, Dict[str, Any]]):
+        """Apply dynamics unification rules for closed-score SATB."""
+        soprano_dynamics = voices['soprano']['dynamics']
+        alto_dynamics = voices['alto']['dynamics'] 
+        tenor_dynamics = voices['tenor']['dynamics']
+        bass_dynamics = voices['bass']['dynamics']
+        
+        # Check if Soprano and Tenor have the same dynamics at the same positions
+        if soprano_dynamics and tenor_dynamics:
+            # Create sets of (measure, beat, marking) for comparison
+            soprano_set = {(d['measure'], d['beat'], d['marking']) for d in soprano_dynamics}
+            tenor_set = {(d['measure'], d['beat'], d['marking']) for d in tenor_dynamics}
+            
+            if soprano_set == tenor_set:
+                print(f"  Dynamics unification: Soprano and Tenor have matching dynamics - applying to all parts")
+                # Apply Soprano dynamics to Alto and Bass
+                for dynamic in soprano_dynamics:
+                    # Add to Alto (staff 1, voice 2)
+                    alto_dynamic = dynamic.copy()
+                    alto_dynamic['staff'] = 1
+                    alto_dynamic['voice'] = 2
+                    voices['alto']['dynamics'].append(alto_dynamic)
+                    
+                    # Add to Bass (staff 2, voice 2)  
+                    bass_dynamic = dynamic.copy()
+                    bass_dynamic['staff'] = 2
+                    bass_dynamic['voice'] = 2
+                    voices['bass']['dynamics'].append(bass_dynamic)
+                return
+        
+        # Check if only Soprano has dynamics
+        if soprano_dynamics and not alto_dynamics and not tenor_dynamics and not bass_dynamics:
+            print(f"  Dynamics unification: Only Soprano has dynamics - applying to all parts")
+            # Apply Soprano dynamics to all other parts
+            for dynamic in soprano_dynamics:
+                # Add to Alto (staff 1, voice 2)
+                alto_dynamic = dynamic.copy()
+                alto_dynamic['staff'] = 1
+                alto_dynamic['voice'] = 2
+                voices['alto']['dynamics'].append(alto_dynamic)
+                
+                # Add to Tenor (staff 2, voice 1)
+                tenor_dynamic = dynamic.copy()
+                tenor_dynamic['staff'] = 2  
+                tenor_dynamic['voice'] = 1
+                voices['tenor']['dynamics'].append(tenor_dynamic)
+                
+                # Add to Bass (staff 2, voice 2)
+                bass_dynamic = dynamic.copy()
+                bass_dynamic['staff'] = 2
+                bass_dynamic['voice'] = 2
+                voices['bass']['dynamics'].append(bass_dynamic)
+            return
+        
+        # Check if Soprano and Bass have matching dynamics
+        if soprano_dynamics and bass_dynamics:
+            soprano_set = {(d['measure'], d['beat'], d['marking']) for d in soprano_dynamics}
+            bass_set = {(d['measure'], d['beat'], d['marking']) for d in bass_dynamics}
+            
+            if soprano_set == bass_set:
+                print(f"  Dynamics unification: Soprano and Bass have matching dynamics - applying to all parts")
+                # Apply to Alto and Tenor
+                for dynamic in soprano_dynamics:
+                    # Add to Alto (staff 1, voice 2)
+                    alto_dynamic = dynamic.copy()
+                    alto_dynamic['staff'] = 1
+                    alto_dynamic['voice'] = 2
+                    voices['alto']['dynamics'].append(alto_dynamic)
+                    
+                    # Add to Tenor (staff 2, voice 1)
+                    tenor_dynamic = dynamic.copy()
+                    tenor_dynamic['staff'] = 2
+                    tenor_dynamic['voice'] = 1  
+                    voices['tenor']['dynamics'].append(tenor_dynamic)
+                return
+        
+        print(f"  Dynamics unification: No unification rules apply - keeping original dynamics")
+    
+    def _unify_lyrics(self, voices: Dict[str, Dict[str, Any]]):
+        """Apply lyrics unification rules for closed-score SATB."""
+        soprano_lyrics = voices['soprano']['lyrics']
+        alto_lyrics = voices['alto']['lyrics']
+        tenor_lyrics = voices['tenor']['lyrics'] 
+        bass_lyrics = voices['bass']['lyrics']
+        
+        # Count lyrics per voice
+        soprano_count = len(soprano_lyrics)
+        alto_count = len(alto_lyrics)
+        tenor_count = len(tenor_lyrics)
+        bass_count = len(bass_lyrics)
+        
+        print(f"  Lyrics counts: Soprano={soprano_count}, Alto={alto_count}, Tenor={tenor_count}, Bass={bass_count}")
+        
+        # If Soprano has significantly more lyrics than others, apply Soprano lyrics to all
+        if soprano_count > 0 and soprano_count >= max(alto_count, tenor_count, bass_count) * 3:
+            print(f"  Lyrics unification: Soprano has majority of lyrics - applying to all parts")
+            
+            # Apply Soprano lyrics to all other parts
+            for lyric in soprano_lyrics:
+                # Add to Alto (staff 1, voice 2)
+                if alto_count == 0:  # Only if Alto has no lyrics
+                    alto_lyric = lyric.copy()
+                    alto_lyric['staff'] = 1
+                    alto_lyric['voice'] = 2
+                    voices['alto']['lyrics'].append(alto_lyric)
+                
+                # Add to Tenor (staff 2, voice 1)
+                if tenor_count == 0:  # Only if Tenor has no lyrics
+                    tenor_lyric = lyric.copy()
+                    tenor_lyric['staff'] = 2
+                    tenor_lyric['voice'] = 1
+                    voices['tenor']['lyrics'].append(tenor_lyric)
+                
+                # Add to Bass (staff 2, voice 2)  
+                if bass_count == 0:  # Only if Bass has no lyrics
+                    bass_lyric = lyric.copy()
+                    bass_lyric['staff'] = 2
+                    bass_lyric['voice'] = 2
+                    voices['bass']['lyrics'].append(bass_lyric)
+            return
+        
+        print(f"  Lyrics unification: Multiple parts have lyrics - keeping original distribution")
     
     def _extract_notes_by_voice(self, notes_df, voices: Dict[str, Dict[str, Any]]):
         """Extract notes and assign to SATB voices based on staff and voice."""
@@ -155,8 +307,8 @@ class MSCZParser:
     
     def _extract_dynamics_from_events(self, events_df, voices: Dict[str, Dict[str, Any]]):
         """Extract dynamics from events data and assign to SATB voices."""
-        # Filter for dynamics events
-        dynamics_events = events_df[events_df['type'] == 'Dynamic'] if 'type' in events_df.columns else events_df
+        # Filter for events that have dynamic information
+        dynamics_events = events_df[events_df['Dynamic/subtype'].notna()]
         
         for _, event in dynamics_events.iterrows():
             staff = event.get('staff')
@@ -167,7 +319,7 @@ class MSCZParser:
                 dynamic_data = {
                     'measure': event.get('mc'),
                     'beat': event.get('mc_onset'),
-                    'marking': event.get('text'),
+                    'marking': event.get('Dynamic/subtype'),
                     'staff': staff,
                     'voice': voice
                 }
@@ -175,8 +327,8 @@ class MSCZParser:
     
     def _extract_lyrics_from_events(self, events_df, voices: Dict[str, Dict[str, Any]]):
         """Extract lyrics from events data and assign to SATB voices."""
-        # Filter for lyrics events
-        lyrics_events = events_df[events_df['type'] == 'Lyrics'] if 'type' in events_df.columns else events_df
+        # Filter for events that have lyrics information
+        lyrics_events = events_df[events_df['Chord/Lyrics/text'].notna()]
         
         for _, event in lyrics_events.iterrows():
             staff = event.get('staff')
@@ -187,12 +339,56 @@ class MSCZParser:
                 lyric_data = {
                     'measure': event.get('mc'),
                     'beat': event.get('mc_onset'),
-                    'text': event.get('text'),
-                    'verse': event.get('verse'),
+                    'text': event.get('Chord/Lyrics/text'),
+                    'syllabic': event.get('Chord/Lyrics/syllabic'),
                     'staff': staff,
                     'voice': voice
                 }
                 voices[voice_name]['lyrics'].append(lyric_data)
+    
+    def _extract_dynamics_from_chords(self, chords_df, voices: Dict[str, Dict[str, Any]]):
+        """Extract dynamics from chords data and assign to SATB voices."""
+        # Filter for chords that have non-null dynamics
+        dynamics_events = chords_df[chords_df['dynamics'].notna()]
+        
+        for _, chord in dynamics_events.iterrows():
+            staff = chord.get('staff')
+            voice = chord.get('voice')
+            
+            voice_name = self._map_staff_voice_to_part(staff, voice)
+            if voice_name:
+                dynamic_marking = chord.get('dynamics')
+                if dynamic_marking and str(dynamic_marking).strip() and str(dynamic_marking).lower() != 'nan':
+                    dynamic_data = {
+                        'measure': chord.get('mc'),
+                        'beat': chord.get('mc_onset'),
+                        'marking': dynamic_marking,
+                        'staff': staff,
+                        'voice': voice
+                    }
+                    voices[voice_name]['dynamics'].append(dynamic_data)
+    
+    def _extract_lyrics_from_chords(self, chords_df, voices: Dict[str, Dict[str, Any]]):
+        """Extract lyrics from chords data and assign to SATB voices."""
+        # Filter for chords that have non-null lyrics
+        lyrics_events = chords_df[chords_df['lyrics_1'].notna()]
+        
+        for _, chord in lyrics_events.iterrows():
+            staff = chord.get('staff')
+            voice = chord.get('voice')
+            
+            voice_name = self._map_staff_voice_to_part(staff, voice)
+            if voice_name:
+                lyric_text = chord.get('lyrics_1')
+                if lyric_text and str(lyric_text).strip() and str(lyric_text).lower() != 'nan':
+                    lyric_data = {
+                        'measure': chord.get('mc'),
+                        'beat': chord.get('mc_onset'),
+                        'text': lyric_text,
+                        'staff': staff,
+                        'voice': voice
+                    }
+                    voices[voice_name]['lyrics'].append(lyric_data)
     
     def _map_staff_voice_to_part(self, staff: Optional[int], voice: Optional[int]) -> Optional[str]:
         """Map staff and voice numbers to SATB part names."""

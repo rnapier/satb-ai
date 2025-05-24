@@ -76,7 +76,7 @@ def main():
         try:
             voices = parser.extract_satb_voices()
             
-            print("\n=== SATB Voice Data ===")
+            print("\n=== SATB Voice Data (Before Unification) ===")
             for voice_name, voice_data in voices.items():
                 notes = voice_data['notes']
                 dynamics = voice_data['dynamics'] 
@@ -102,6 +102,32 @@ def main():
                           f"text '{first_lyric.get('text', '?')}'")
             
             print("\nPhase 2 complete: Successfully extracted SATB voice data!")
+            
+            # Phase 3: Unify parts as needed
+            try:
+                unified_voices = parser.unify_satb_parts(voices)
+                
+                print("\n=== SATB Voice Data (After Unification) ===")
+                for voice_name, voice_data in unified_voices.items():
+                    notes = voice_data['notes']
+                    dynamics = voice_data['dynamics'] 
+                    lyrics = voice_data['lyrics']
+                    
+                    print(f"\n{voice_name.upper()}:")
+                    print(f"  Notes: {len(notes)}")
+                    print(f"  Dynamics: {len(dynamics)}")
+                    if dynamics:
+                        print(f"    Sample dynamics: {[d['marking'] for d in dynamics[:3]]}")
+                    
+                    print(f"  Lyrics: {len(lyrics)}")
+                    if lyrics:
+                        print(f"    Sample lyrics: {[l['text'] for l in lyrics[:3]]}")
+                
+                print("\nPhase 3 complete: Successfully unified SATB parts!")
+                
+            except Exception as e:
+                print(f"Warning: Could not unify voice data: {e}")
+                unified_voices = voices  # Use original if unification fails
             
         except Exception as e:
             print(f"Warning: Could not extract voice data: {e}")
