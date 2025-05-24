@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "satb-split"
+version = "0.1.0"
+description = "Split closed-score SATB MuseScore files into separate parts"
+requires-python = ">=3.9"
+dependencies = [
+    "ms3",
+]
+
+[project.scripts]
+satb-split = "satb_splitter.main:main"
+
+[tool.uv]
+dev-dependencies = [
+    "pytest",
+]
