@@ -175,7 +175,10 @@ def split_satb_voices(file_path):
                                                     music21.layout.StaffLayout]):
                 measure_layouts.append((layout.offset, layout))
             
-            # Get all crescendo/diminuendo elements with positions (NEW: Crescendo support)
+            # Get all crescendo/diminuendo elements with positions
+            # NOTE: music21's MusicXML parser currently doesn't preserve wedge crescendos properly.
+            # See: https://github.com/cuthbertLab/music21/pull/1768 for a fix that should address this.
+            # Text crescendo markings (like "cresc.") are preserved as TextExpression objects.
             for cresc in measure.getElementsByClass([music21.dynamics.Crescendo,
                                                    music21.dynamics.Diminuendo,
                                                    music21.dynamics.DynamicWedge]):
@@ -218,7 +221,7 @@ def split_satb_voices(file_path):
                     target_for_measure_elements.insert(offset, layout_copy)
                     processed_measure_elements.add(id(layout))
                     print(f"    Added {type(layout).__name__} to measure {measure_idx + 1}")
-                # NEW: Add crescendo/diminuendo elements to preserve dynamic markings
+                # Add crescendo/diminuendo elements to preserve dynamic markings
                 for offset, cresc in measure_crescendos:
                     cresc_copy = copy.deepcopy(cresc)
                     target_for_measure_elements.insert(offset, cresc_copy)
@@ -261,7 +264,7 @@ def split_satb_voices(file_path):
                         voice_expressions.append((expr.offset, expr))
                     for tempo in voice.getElementsByClass(music21.tempo.TempoIndication):
                         voice_tempos.append((tempo.offset, tempo))
-                    # NEW: Extract crescendo/diminuendo elements from voice level
+                    # Extract crescendo/diminuendo elements from voice level
                     for cresc in voice.getElementsByClass([music21.dynamics.Crescendo,
                                                           music21.dynamics.Diminuendo,
                                                           music21.dynamics.DynamicWedge]):
@@ -288,7 +291,7 @@ def split_satb_voices(file_path):
                     for offset, tempo in voice_tempos:
                         tempo_copy = copy.deepcopy(tempo)
                         target_measure.insert(offset, tempo_copy)
-                    # NEW: Add voice-level crescendo/diminuendo elements
+                    # Add voice-level crescendo/diminuendo elements
                     for offset, cresc in voice_crescendos:
                         cresc_copy = copy.deepcopy(cresc)
                         target_measure.insert(offset, cresc_copy)
