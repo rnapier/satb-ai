@@ -138,7 +138,6 @@
         <voice>1</voice>
         <type>quarter</type>
         <stem>none</stem>
-        <notehead>none</notehead>
         <staff>1</staff>
         <lyric number="1" default-x="6.5" default-y="-82.22" relative-y="-30">
           <syllabic>begin</syllabic>

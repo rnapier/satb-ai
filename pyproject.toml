@@ -6,11 +6,9 @@ build-backend = "setuptools.build_meta"
 name = "satb-split"
 version = "0.1.0"
 description = "Split closed-score SATB MuseScore files into separate parts"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
-    "ms3",
-    "music21>=8.3.0",
-    "pandas>=2.1.0,<2.2.0",
+    "music21>=9.1.0",
 ]
 
 [project.scripts]

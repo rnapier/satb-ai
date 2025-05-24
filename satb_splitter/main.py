@@ -1,102 +1,76 @@
-#!/usr/bin/env python3
 """
-satb-split: A tool to split closed-score SATB MuseScore files into separate parts using music21.
+SATB Voice Splitter - Main entry point for splitting closed-score SATB files into individual voice parts.
 """
 
-import argparse
 import sys
 from pathlib import Path
 
-try:
-    import music21
-except ImportError:
-    print("Error: music21 library not found. Please install with: uv add music21", file=sys.stderr)
-    sys.exit(1)
+from .voice_splitter import split_satb_voices
+
+
+def save_voice_parts(voices_dict, output_dir, original_filename):
+    """Save split voice parts as separate MusicXML files."""
+    try:
+        import music21
+    except ImportError:
+        print("Error: music21 library not found. Please install with: uv add music21", file=sys.stderr)
+        sys.exit(1)
+    
+    output_path = Path(output_dir)
+    output_path.mkdir(exist_ok=True)
+    
+    print(f"\n=== Saving Voice Parts to {output_dir} ===")
+    base_name = Path(original_filename).stem
+    
+    for voice_name, part in voices_dict.items():
+        # Create output filename and title
+        filename = f"{base_name}-{voice_name}.musicxml"
+        filepath = output_path / filename
+        
+        # Set part title
+        part.partName = f"{base_name} ({voice_name})"
+        
+        # Create a score with just this part
+        voice_score = music21.stream.Score()
+        voice_score.append(part)
+        voice_score.metadata = music21.metadata.Metadata()
+        voice_score.metadata.title = f"{base_name} ({voice_name})"
+        
+        # Write to file
+        voice_score.write('musicxml', fp=str(filepath))
+        print(f"  {voice_name}: {filepath}")
+    
+    print("Voice separation complete!")
 
 
 def main():
     """Main entry point for the satb-split command."""
-    parser = argparse.ArgumentParser(
-        prog='satb-split',
-        description='Split a closed-score SATB MuseScore file into separate parts with audio exports'
-    )
+    if len(sys.argv) != 2:
+        print("Usage: satb-split <input_file>")
+        print("  Supported formats: .mscz, .musicxml")
+        sys.exit(1)
     
-    parser.add_argument(
-        'input_file',
-        help='Input MuseScore (.mscz) file with closed-score SATB layout'
-    )
+    input_file = sys.argv[1]
+    input_path = Path(input_file)
     
-    # Basic version info
-    parser.add_argument(
-        '--version',
-        action='version',
-        version='satb-split 0.2.0 (music21-based)'
-    )
-    
-    args = parser.parse_args()
-    
-    # Basic validation
-    input_path = Path(args.input_file)
     if not input_path.exists():
-        print(f"Error: Input file '{args.input_file}' not found.", file=sys.stderr)
+        print(f"Error: File '{input_file}' not found")
         sys.exit(1)
     
-    if input_path.suffix.lower() not in ['.mscz', '.musicxml']:
-        print(f"Error: Input file must be a .mscz or .musicxml file, got '{input_path.suffix}'", file=sys.stderr)
-        sys.exit(1)
-    
-    print(f"Processing: {args.input_file}")
-    print(f"Using music21 version: {music21.VERSION_STR}")
-    
+    # Split the voices
     try:
-        # Phase 0: Basic music21 parsing
-        print("\n=== Phase 0: Loading score with music21 ===")
-        score = music21.converter.parse(str(input_path))
+        voices = split_satb_voices(input_file)
         
-        print(f"Score loaded successfully!")
-        print(f"Score type: {type(score)}")
+        # Create output directory
+        output_dir = f"{input_path.stem}_voices"
         
-        # Get basic metadata
-        metadata = score.metadata
-        if metadata:
-            print(f"\n=== Score Metadata ===")
-            if metadata.title:
-                print(f"Title: {metadata.title}")
-            if metadata.composer:
-                print(f"Composer: {metadata.composer}")
-            if metadata.lyricist:
-                print(f"Lyricist: {metadata.lyricist}")
-        
-        # Get basic score information
-        print(f"\n=== Score Structure ===")
-        print(f"Parts: {len(score.parts)}")
-        
-        for i, part in enumerate(score.parts):
-            print(f"  Part {i+1}: {part.partName if part.partName else 'Unnamed'}")
-            
-            # Count voices in this part
-            voices = {}
-            for element in part.recurse().notes:
-                voice_id = getattr(element, 'voice', 'default')
-                if voice_id not in voices:
-                    voices[voice_id] = 0
-                voices[voice_id] += 1
-            
-            print(f"    Voices: {list(voices.keys())}")
-            print(f"    Notes by voice: {voices}")
-        
-        # Count measures
-        measures = list(score.parts[0].getElementsByClass('Measure'))
-        print(f"Measures: {len(measures)}")
-        
-        print("\nPhase 0 complete: Successfully loaded and analyzed MuseScore file with music21!")
+        # Save the voice parts
+        save_voice_parts(voices, output_dir, input_path.name)
         
     except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
-        import traceback
-        traceback.print_exc()
+        print(f"Error processing file: {e}")
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
