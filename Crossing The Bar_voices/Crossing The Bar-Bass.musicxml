@@ -4,12 +4,14 @@
   <work>
     <work-title>Crossing The Bar (Bass)</work-title>
   </work>
-  <movement-title>Crossing The Bar (Bass)</movement-title>
+  <movement-title>Crossing The Bar.musicxml</movement-title>
   <identification>
-    <creator type="composer">Music21</creator>
+    <creator type="composer">Joseph Barnby</creator>
+    <creator type="lyricist">Alfred Tennyson</creator>
     <encoding>
       <encoding-date>2025-05-24</encoding-date>
       <software>music21 v.9.7.0</software>
+      <software>MuseScore 4.5.2</software>
     </encoding>
   </identification>
   <defaults>
@@ -19,12 +21,12 @@
     </scaling>
   </defaults>
   <part-list>
-    <score-part id="P2ce5168b0cb4138601a5f76291e2243e">
+    <score-part id="P2ca5fb261e4db3500924cb37c6790051">
       <part-name>Crossing The Bar (Bass)</part-name>
     </score-part>
   </part-list>
   <!--=========================== Part 1 ===========================-->
-  <part id="P2ce5168b0cb4138601a5f76291e2243e">
+  <part id="P2ca5fb261e4db3500924cb37c6790051">
     <!--========================= Measure 1 ==========================-->
     <measure implicit="no" number="1">
       <attributes>

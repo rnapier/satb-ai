@@ -22,7 +22,7 @@ def split_satb_voices(file_path):
         file_path: Path to the input MuseScore file (.mscz or .musicxml)
         
     Returns:
-        Dict mapping voice names to music21.stream.Part objects
+        Dict mapping voice names to music21.stream.Score objects
     """
     print(f"=== Splitting SATB Voices from {file_path} ===")
     
@@ -48,7 +48,12 @@ def split_satb_voices(file_path):
             temp_musicxml.unlink()
             print(f"Cleaned up temporary file: {temp_musicxml}")
     
-    # Create empty parts for each voice
+    # Create empty scores and parts for each voice
+    soprano_score = music21.stream.Score()
+    alto_score = music21.stream.Score()
+    tenor_score = music21.stream.Score()
+    bass_score = music21.stream.Score()
+    
     soprano_part = music21.stream.Part()
     alto_part = music21.stream.Part()
     tenor_part = music21.stream.Part()
@@ -66,7 +71,13 @@ def split_satb_voices(file_path):
     tenor_part.insert(0, music21.clef.BassClef())
     bass_part.insert(0, music21.clef.BassClef())
     
-    # Copy metadata and global elements to each part
+    # Copy metadata and global elements to each score
+    for voice_score in [soprano_score, alto_score, tenor_score, bass_score]:
+        # Copy all metadata to this score
+        if score.metadata:
+            voice_score.metadata = copy.deepcopy(score.metadata)
+    
+    # Copy global elements to each part
     for part in [soprano_part, alto_part, tenor_part, bass_part]:
         # Copy time signatures, key signatures, etc.
         for element in score.getElementsByClass([music21.meter.TimeSignature, 
@@ -252,23 +263,31 @@ def split_satb_voices(file_path):
     for measure in bass_measures:
         bass_part.append(measure)
     
-    # Return the split voices
+    # Add parts to their respective scores
+    soprano_score.append(soprano_part)
+    alto_score.append(alto_part)
+    tenor_score.append(tenor_part)
+    bass_score.append(bass_part)
+    
+    # Create result dictionary with scores
     result = {
-        'Soprano': soprano_part,
-        'Alto': alto_part,
-        'Tenor': tenor_part,
-        'Bass': bass_part
+        'Soprano': soprano_score,
+        'Alto': alto_score,
+        'Tenor': tenor_score,
+        'Bass': bass_score
     }
     
     print(f"\n=== Voice Splitting Complete ===")
-    for voice_name, part in result.items():
+    for voice_name, voice_score in result.items():
+        part = voice_score.parts[0]
         measures = list(part.getElementsByClass(music21.stream.Measure))
         total_notes = sum(len(list(measure.getElementsByClass(music21.note.Note))) for measure in measures)
         total_dynamics = sum(len(list(measure.getElementsByClass(music21.dynamics.Dynamic))) for measure in measures)
         print(f"{voice_name}: {len(measures)} measures, {total_notes} total notes, {total_dynamics} dynamics")
     
-    # Apply unification rules
+    # Apply unification rules - need to extract parts for the unification function
     print(f"\n=== Applying Unification Rules ===")
-    apply_unification(result)
+    parts_dict = {name: voice_score.parts[0] for name, voice_score in result.items()}
+    apply_unification(parts_dict)
     
     return result

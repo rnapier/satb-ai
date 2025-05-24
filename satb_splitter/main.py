@@ -22,21 +22,20 @@ def save_voice_parts(voices_dict, output_dir, original_filename):
     print(f"\n=== Saving Voice Parts to {output_dir} ===")
     base_name = Path(original_filename).stem
     
-    for voice_name, part in voices_dict.items():
-        # Create output filename and title
+    for voice_name, voice_score in voices_dict.items():
+        # Create output filename
         filename = f"{base_name}-{voice_name}.musicxml"
         filepath = output_path / filename
         
-        # Set part title
-        part.partName = f"{base_name} ({voice_name})"
+        # Set part title within the score
+        if voice_score.parts:
+            voice_score.parts[0].partName = f"{base_name} ({voice_name})"
         
-        # Create a score with just this part
-        voice_score = music21.stream.Score()
-        voice_score.append(part)
-        voice_score.metadata = music21.metadata.Metadata()
-        voice_score.metadata.title = f"{base_name} ({voice_name})"
+        # Update the score's title metadata
+        if voice_score.metadata:
+            voice_score.metadata.title = f"{base_name} ({voice_name})"
         
-        # Write to file
+        # Write to file (voice_score is already a complete Score object)
         voice_score.write('musicxml', fp=str(filepath))
         print(f"  {voice_name}: {filepath}")
     
