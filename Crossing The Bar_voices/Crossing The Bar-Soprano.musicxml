@@ -19,12 +19,12 @@
     </scaling>
   </defaults>
   <part-list>
-    <score-part id="Pa8c956b8d80f0b830a6adae1878dc3e3">
+    <score-part id="Pccd743a744b75fc95c9553590aa17d20">
       <part-name>Crossing The Bar (Soprano)</part-name>
     </score-part>
   </part-list>
   <!--=========================== Part 1 ===========================-->
-  <part id="Pa8c956b8d80f0b830a6adae1878dc3e3">
+  <part id="Pccd743a744b75fc95c9553590aa17d20">
     <!--========================= Measure 1 ==========================-->
     <measure implicit="no" number="1">
       <attributes>
@@ -52,7 +52,7 @@
         </pitch>
         <duration>10080</duration>
         <type>quarter</type>
-        <stem>up</stem>
+        <stem>none</stem>
         <lyric default-x="6.5" default-y="-82.22" name="1" number="1" relative-y="-30">
           <syllabic>begin</syllabic>
           <text>Sun</text>

@@ -12,7 +12,7 @@ except ImportError:
     sys.exit(1)
 
 from .converter import convert_mscz_to_musicxml
-from .phase3_unification import apply_phase3_unification
+from .unification import apply_unification
 
 
 def split_satb_voices(file_path):
@@ -267,8 +267,8 @@ def split_satb_voices(file_path):
         total_dynamics = sum(len(list(measure.getElementsByClass(music21.dynamics.Dynamic))) for measure in measures)
         print(f"{voice_name}: {len(measures)} measures, {total_notes} total notes, {total_dynamics} dynamics")
     
-    # Apply Phase 3 unification rules
-    print(f"\n=== Applying Phase 3 Unification Rules ===")
-    apply_phase3_unification(result)
+    # Apply unification rules
+    print(f"\n=== Applying Unification Rules ===")
+    apply_unification(result)
     
     return result
