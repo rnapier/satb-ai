@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 """
-satb-split: A tool to split closed-score SATB MuseScore files into separate parts.
+satb-split: A tool to split closed-score SATB MuseScore files into separate parts using music21.
 """
 
 import argparse
 import sys
 from pathlib import Path
 
-from .exploder import MSCZParser
+try:
+    import music21
+except ImportError:
+    print("Error: music21 library not found. Please install with: uv add music21", file=sys.stderr)
+    sys.exit(1)
 
 
 def main():
@@ -26,7 +30,7 @@ def main():
     parser.add_argument(
         '--version',
         action='version',
-        version='satb-split 0.1.0'
+        version='satb-split 0.2.0 (music21-based)'
     )
     
     args = parser.parse_args()
@@ -37,106 +41,60 @@ def main():
         print(f"Error: Input file '{args.input_file}' not found.", file=sys.stderr)
         sys.exit(1)
     
-    if not input_path.suffix.lower() == '.mscz':
-        print(f"Error: Input file must be a .mscz file, got '{input_path.suffix}'", file=sys.stderr)
+    if input_path.suffix.lower() not in ['.mscz', '.musicxml']:
+        print(f"Error: Input file must be a .mscz or .musicxml file, got '{input_path.suffix}'", file=sys.stderr)
         sys.exit(1)
     
     print(f"Processing: {args.input_file}")
+    print(f"Using music21 version: {music21.VERSION_STR}")
     
     try:
-        # Phase 1: Parse the MSCZ file
-        parser = MSCZParser(input_path)
-        score_info = parser.parse_score()
+        # Phase 0: Basic music21 parsing
+        print("\n=== Phase 0: Loading score with music21 ===")
+        score = music21.converter.parse(str(input_path))
         
-        print("\n=== Score Information ===")
-        print(f"Title: {score_info.get('title', 'Unknown')}")
-        print(f"Composer: {score_info.get('composer', 'Unknown')}")
-        print(f"Filename: {score_info['filename']}")
-        if 'measures' in score_info:
-            print(f"Measures: {score_info['measures']}")
-        if 'parts' in score_info:
-            print(f"Parts: {score_info['parts']}")
-            if 'part_names' in score_info:
-                print(f"Part names: {', '.join(score_info['part_names'])}")
+        print(f"Score loaded successfully!")
+        print(f"Score type: {type(score)}")
         
-        # Get additional metadata
-        try:
-            metadata = parser.get_score_metadata()
-            if metadata:
-                print("\n=== Additional Metadata ===")
-                for key, value in metadata.items():
-                    if key not in ['time_signatures', 'key_signatures']:
-                        print(f"{key.replace('_', ' ').title()}: {value}")
-        except Exception as e:
-            print(f"Note: Could not retrieve extended metadata: {e}")
+        # Get basic metadata
+        metadata = score.metadata
+        if metadata:
+            print(f"\n=== Score Metadata ===")
+            if metadata.title:
+                print(f"Title: {metadata.title}")
+            if metadata.composer:
+                print(f"Composer: {metadata.composer}")
+            if metadata.lyricist:
+                print(f"Lyricist: {metadata.lyricist}")
         
-        print("\nPhase 1 complete: Successfully parsed MuseScore file!")
+        # Get basic score information
+        print(f"\n=== Score Structure ===")
+        print(f"Parts: {len(score.parts)}")
         
-        # Phase 2: Extract SATB voice data
-        try:
-            voices = parser.extract_satb_voices()
+        for i, part in enumerate(score.parts):
+            print(f"  Part {i+1}: {part.partName if part.partName else 'Unnamed'}")
             
-            print("\n=== SATB Voice Data (Before Unification) ===")
-            for voice_name, voice_data in voices.items():
-                notes = voice_data['notes']
-                dynamics = voice_data['dynamics'] 
-                lyrics = voice_data['lyrics']
-                
-                print(f"\n{voice_name.upper()}:")
-                print(f"  Notes: {len(notes)}")
-                if notes:
-                    print(f"    First note: measure {notes[0].get('measure', '?')}, "
-                          f"pitch {notes[0].get('pitch', '?')}, "
-                          f"duration {notes[0].get('duration', '?')}")
-                
-                print(f"  Dynamics: {len(dynamics)}")
-                if dynamics:
-                    first_dynamic = dynamics[0]
-                    print(f"    First dynamic: measure {first_dynamic.get('measure', '?')}, "
-                          f"marking '{first_dynamic.get('marking', '?')}'")
-                
-                print(f"  Lyrics: {len(lyrics)}")
-                if lyrics:
-                    first_lyric = lyrics[0]
-                    print(f"    First lyric: measure {first_lyric.get('measure', '?')}, "
-                          f"text '{first_lyric.get('text', '?')}'")
+            # Count voices in this part
+            voices = {}
+            for element in part.recurse().notes:
+                voice_id = getattr(element, 'voice', 'default')
+                if voice_id not in voices:
+                    voices[voice_id] = 0
+                voices[voice_id] += 1
             
-            print("\nPhase 2 complete: Successfully extracted SATB voice data!")
-            
-            # Phase 3: Unify parts as needed
-            try:
-                unified_voices = parser.unify_satb_parts(voices)
-                
-                print("\n=== SATB Voice Data (After Unification) ===")
-                for voice_name, voice_data in unified_voices.items():
-                    notes = voice_data['notes']
-                    dynamics = voice_data['dynamics'] 
-                    lyrics = voice_data['lyrics']
-                    
-                    print(f"\n{voice_name.upper()}:")
-                    print(f"  Notes: {len(notes)}")
-                    print(f"  Dynamics: {len(dynamics)}")
-                    if dynamics:
-                        print(f"    Sample dynamics: {[d['marking'] for d in dynamics[:3]]}")
-                    
-                    print(f"  Lyrics: {len(lyrics)}")
-                    if lyrics:
-                        print(f"    Sample lyrics: {[l['text'] for l in lyrics[:3]]}")
-                
-                print("\nPhase 3 complete: Successfully unified SATB parts!")
-                
-            except Exception as e:
-                print(f"Warning: Could not unify voice data: {e}")
-                unified_voices = voices  # Use original if unification fails
-            
-        except Exception as e:
-            print(f"Warning: Could not extract voice data: {e}")
+            print(f"    Voices: {list(voices.keys())}")
+            print(f"    Notes by voice: {voices}")
         
-        # Cleanup
-        parser.cleanup()
+        # Count measures
+        measures = list(score.parts[0].getElementsByClass('Measure'))
+        print(f"Measures: {len(measures)}")
+        
+        print("\nPhase 0 complete: Successfully loaded and analyzed MuseScore file with music21!")
         
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
+        import traceback
+        traceback.print_exc()
         sys.exit(1)
 
 

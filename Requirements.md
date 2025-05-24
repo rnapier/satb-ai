@@ -90,3 +90,13 @@ When that is approved, you will move forward.
 * You MUST ask permission before moving onto another phase.
 * A phase is not complete until all of its features are complete.
 * Strongly favor maintainability of the code. It should not be clever or use work-arounds.
+* When writing multi-line commands to the terminal, use Heredoc syntax. For example:
+```
+git commit -F - <<EOF
+Phase 3: Implement SATB parts unification
+
+- Added unify_satb_parts() method to MSCZParser
+- Implemented dynamics and lyrics unification rules
+- Successfully tested with 'Crossing The Bar.mscz'
+EOF
+```
