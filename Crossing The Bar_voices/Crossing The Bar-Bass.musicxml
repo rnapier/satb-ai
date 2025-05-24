@@ -19,12 +19,12 @@
     </scaling>
   </defaults>
   <part-list>
-    <score-part id="P075e38cc825cbe5bdccebf7e89d78727">
+    <score-part id="P8dda2d3b58701172141ae6654d2a72ee">
       <part-name>Crossing The Bar (Bass)</part-name>
     </score-part>
   </part-list>
   <!--=========================== Part 1 ===========================-->
-  <part id="P075e38cc825cbe5bdccebf7e89d78727">
+  <part id="P8dda2d3b58701172141ae6654d2a72ee">
     <!--========================= Measure 1 ==========================-->
     <measure implicit="no" number="1">
       <attributes>
@@ -1001,11 +1001,6 @@
         <type>quarter</type>
         <stem>down</stem>
       </note>
-      <direction placement="below">
-        <direction-type>
-          <words default-y="-73.2" font-family="Edwin" font-size="10" font-style="italic">cresc.</words>
-        </direction-type>
-      </direction>
       <note default-x="104.08" default-y="-184.76">
         <pitch>
           <step>E</step>
@@ -1153,14 +1148,6 @@
         <type>quarter</type>
         <stem>down</stem>
       </note>
-      <direction placement="below">
-        <direction-type>
-          <dynamics default-x="2.31" default-y="-40" relative-y="-48.77">
-            <f />
-          </dynamics>
-        </direction-type>
-        <sound dynamics="88" />
-      </direction>
       <note default-x="236.39" default-y="-163.89">
         <pitch>
           <step>D</step>
@@ -1170,6 +1157,15 @@
         <type>quarter</type>
         <stem>down</stem>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <dynamics default-x="2.31" default-y="-40" relative-x="-13.84" relative-y="79.42">
+            <f />
+          </dynamics>
+        </direction-type>
+        <offset sound="yes">-5040</offset>
+        <sound dynamics="88" />
+      </direction>
     </measure>
     <!--========================= Measure 30 =========================-->
     <measure implicit="no" number="30">

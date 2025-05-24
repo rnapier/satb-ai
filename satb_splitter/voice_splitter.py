@@ -127,7 +127,7 @@ def split_satb_voices(file_path):
                 (1, '6'): bass_measure,     # Part 2, Voice 6 -> Bass
             }
             
-            # Extract all musical elements at measure level with their positions
+            # Extract all musical elements at measure level with their positions (ONCE per measure)
             measure_dynamics = []
             measure_slurs = []
             measure_expressions = []
@@ -149,10 +149,37 @@ def split_satb_voices(file_path):
             for tempo in measure.getElementsByClass(music21.tempo.TempoIndication):
                 measure_tempos.append((tempo.offset, tempo))
             
-            # Also check for direction-type elements (like "Andante")
-            for direction in measure.getElementsByClass(music21.expressions.TextExpression):
-                if hasattr(direction, 'content') and 'andante' in str(direction.content).lower():
-                    measure_expressions.append((direction.offset, direction))
+            # Create a set to track measure-level elements we've already processed (to prevent duplication)
+            processed_measure_elements = set()
+            
+            # Add measure-level elements to the appropriate target measure (only once per measure)
+            # For part 1, add to soprano measure; for part 2, add to tenor measure
+            if part_idx == 0:  # Part 1 (treble clef)
+                target_for_measure_elements = soprano_measure
+            elif part_idx == 1:  # Part 2 (bass clef)
+                target_for_measure_elements = tenor_measure
+            else:
+                target_for_measure_elements = soprano_measure  # Default fallback
+            
+            # Add measure-level elements (with copies), but only if this is the first part to avoid duplication
+            # Only add measure-level elements from part 1 to prevent duplication between parts
+            if part_idx == 0:
+                for offset, dynamic in measure_dynamics:
+                    dynamic_copy = copy.deepcopy(dynamic)
+                    target_for_measure_elements.insert(offset, dynamic_copy)
+                    processed_measure_elements.add(id(dynamic))
+                for offset, slur in measure_slurs:
+                    slur_copy = copy.deepcopy(slur)
+                    target_for_measure_elements.insert(offset, slur_copy)
+                    processed_measure_elements.add(id(slur))
+                for offset, expression in measure_expressions:
+                    expr_copy = copy.deepcopy(expression)
+                    target_for_measure_elements.insert(offset, expr_copy)
+                    processed_measure_elements.add(id(expression))
+                for offset, tempo in measure_tempos:
+                    tempo_copy = copy.deepcopy(tempo)
+                    target_for_measure_elements.insert(offset, tempo_copy)
+                    processed_measure_elements.add(id(tempo))
             
             # Extract content from each voice
             for voice in voices:
@@ -174,7 +201,8 @@ def split_satb_voices(file_path):
                     notes = list(voice.getElementsByClass(music21.note.Note))
                     rests = list(voice.getElementsByClass(music21.note.Rest))
                     
-                    # Extract dynamics and other musical elements from voice level with positions
+                    # Extract dynamics and other musical elements from voice level ONLY
+                    # (measure-level elements are handled separately to prevent duplication)
                     voice_dynamics = []
                     voice_slurs = []
                     voice_expressions = []
@@ -189,13 +217,7 @@ def split_satb_voices(file_path):
                     for tempo in voice.getElementsByClass(music21.tempo.TempoIndication):
                         voice_tempos.append((tempo.offset, tempo))
                     
-                    # Combine voice-level and measure-level elements
-                    all_dynamics = voice_dynamics + measure_dynamics
-                    all_slurs = voice_slurs + measure_slurs
-                    all_expressions = voice_expressions + measure_expressions
-                    all_tempos = voice_tempos + measure_tempos
-                    
-                    print(f"{len(notes)} notes, {len(rests)} rests, {len(all_dynamics)} dynamics, {len(all_slurs)} slurs, {len(all_expressions)} expressions, {len(all_tempos)} tempos -> {voice_name}")
+                    print(f"{len(notes)} notes, {len(rests)} rests, {len(voice_dynamics)} voice dynamics, {len(voice_slurs)} voice slurs, {len(voice_expressions)} voice expressions, {len(voice_tempos)} voice tempos -> {voice_name}")
                     
                     # Add notes and rests to target measure (with copies to avoid object reuse)
                     for note in notes:
@@ -203,17 +225,17 @@ def split_satb_voices(file_path):
                     for rest in rests:
                         target_measure.append(copy.deepcopy(rest))
                     
-                    # Add dynamics, slurs, expressions, and tempos at their correct positions (with copies)
-                    for offset, dynamic in all_dynamics:
+                    # Add ONLY voice-level dynamics, slurs, expressions, and tempos (with copies)
+                    for offset, dynamic in voice_dynamics:
                         dynamic_copy = copy.deepcopy(dynamic)
                         target_measure.insert(offset, dynamic_copy)
-                    for offset, slur in all_slurs:
+                    for offset, slur in voice_slurs:
                         slur_copy = copy.deepcopy(slur)
                         target_measure.insert(offset, slur_copy)
-                    for offset, expression in all_expressions:
+                    for offset, expression in voice_expressions:
                         expr_copy = copy.deepcopy(expression)
                         target_measure.insert(offset, expr_copy)
-                    for offset, tempo in all_tempos:
+                    for offset, tempo in voice_tempos:
                         tempo_copy = copy.deepcopy(tempo)
                         target_measure.insert(offset, tempo_copy)
                 else:

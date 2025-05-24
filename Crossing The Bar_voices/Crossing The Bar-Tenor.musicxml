@@ -19,12 +19,12 @@
     </scaling>
   </defaults>
   <part-list>
-    <score-part id="Pc0c1b6b63bf0d7f6183a0e436ef88a65">
+    <score-part id="P59b57698bcd83b30b02749607af6cd6d">
       <part-name>Crossing The Bar (Tenor)</part-name>
     </score-part>
   </part-list>
   <!--=========================== Part 1 ===========================-->
-  <part id="Pc0c1b6b63bf0d7f6183a0e436ef88a65">
+  <part id="P59b57698bcd83b30b02749607af6cd6d">
     <!--========================= Measure 1 ==========================-->
     <measure implicit="no" number="1">
       <attributes>
@@ -1340,16 +1340,7 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>up</stem>
-        <lyric name="1" number="1">
-          <syllabic>single</syllabic>
-          <text>though</text>
-        </lyric>
       </note>
-      <direction placement="below">
-        <direction-type>
-          <words default-y="-73.2" font-family="Edwin" font-size="10" font-style="italic">cresc.</words>
-        </direction-type>
-      </direction>
       <note default-x="104.08" default-y="-169.76">
         <pitch>
           <step>A</step>
@@ -1360,7 +1351,7 @@
         <stem>up</stem>
         <lyric name="1" number="1">
           <syllabic>single</syllabic>
-          <text>from</text>
+          <text>though</text>
         </lyric>
       </note>
       <note default-x="179.63" default-y="-164.76">
@@ -1373,7 +1364,7 @@
         <stem>up</stem>
         <lyric name="1" number="1">
           <syllabic>single</syllabic>
-          <text>out</text>
+          <text>from</text>
         </lyric>
       </note>
       <note default-x="255.19" default-y="-159.76">
@@ -1386,7 +1377,7 @@
         <stem>up</stem>
         <lyric name="1" number="1">
           <syllabic>single</syllabic>
-          <text>our</text>
+          <text>out</text>
         </lyric>
       </note>
     </measure>
@@ -1539,10 +1530,6 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>up</stem>
-        <lyric name="1" number="1">
-          <syllabic>single</syllabic>
-          <text>far</text>
-        </lyric>
       </note>
       <note default-x="95.46" default-y="-148.89">
         <pitch>
@@ -1562,14 +1549,6 @@
         <type>quarter</type>
         <stem>up</stem>
       </note>
-      <direction placement="below">
-        <direction-type>
-          <dynamics default-x="2.31" default-y="-40" relative-y="-48.77">
-            <f />
-          </dynamics>
-        </direction-type>
-        <sound dynamics="88" />
-      </direction>
       <note default-x="236.39" default-y="-138.89">
         <pitch>
           <step>B</step>
@@ -1578,11 +1557,16 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>up</stem>
-        <lyric name="1" number="1">
-          <syllabic>single</syllabic>
-          <text>I</text>
-        </lyric>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <dynamics default-x="2.31" default-y="-40" relative-x="-13.84" relative-y="79.42">
+            <f />
+          </dynamics>
+        </direction-type>
+        <offset sound="yes">-5040</offset>
+        <sound dynamics="88" />
+      </direction>
     </measure>
     <!--========================= Measure 30 =========================-->
     <measure implicit="no" number="30">

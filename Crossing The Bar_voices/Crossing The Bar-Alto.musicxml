@@ -19,12 +19,12 @@
     </scaling>
   </defaults>
   <part-list>
-    <score-part id="Pa505e89d9d8d8f38e2bce4e418a3267a">
+    <score-part id="P4539a2636d7ad540f640cec684058189">
       <part-name>Crossing The Bar (Alto)</part-name>
     </score-part>
   </part-list>
   <!--=========================== Part 1 ===========================-->
-  <part id="Pa505e89d9d8d8f38e2bce4e418a3267a">
+  <part id="P4539a2636d7ad540f640cec684058189">
     <!--========================= Measure 1 ==========================-->
     <measure implicit="no" number="1">
       <attributes>
@@ -34,22 +34,6 @@
           <line>2</line>
         </clef>
       </attributes>
-      <direction placement="above">
-        <direction-type>
-          <words default-x="-37.68" font-size="12" font-weight="bold" relative-y="20">Andante</words>
-        </direction-type>
-      </direction>
-      <direction placement="above">
-        <direction-type>
-          <words default-x="-37.68" font-size="12" font-weight="bold" relative-y="20">Andante</words>
-        </direction-type>
-      </direction>
-      <direction placement="above">
-        <direction-type>
-          <words />
-        </direction-type>
-        <sound tempo="92" />
-      </direction>
       <note default-x="82.97" default-y="-50">
         <pitch>
           <step>C</step>
@@ -1013,11 +997,6 @@
         <type>quarter</type>
         <stem>down</stem>
       </note>
-      <direction placement="below">
-        <direction-type>
-          <words default-y="32.01" font-family="Edwin" font-size="10" font-style="italic" relative-x="5.82">cresc.</words>
-        </direction-type>
-      </direction>
       <note default-x="104.08" default-y="-50">
         <pitch>
           <step>C</step>
