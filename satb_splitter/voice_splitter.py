@@ -76,6 +76,13 @@ def split_satb_voices(file_path):
         # Copy all metadata to this score
         if score.metadata:
             voice_score.metadata = copy.deepcopy(score.metadata)
+        
+        # Copy layout elements from the original score to each voice score
+        layout_elements = score.getElementsByClass([music21.layout.PageLayout, 
+                                                   music21.layout.SystemLayout,
+                                                   music21.layout.StaffLayout])
+        for layout_elem in layout_elements:
+            voice_score.insert(0, copy.deepcopy(layout_elem))
     
     # Copy global elements to each part
     for part in [soprano_part, alto_part, tenor_part, bass_part]:
@@ -143,6 +150,7 @@ def split_satb_voices(file_path):
             measure_slurs = []
             measure_expressions = []
             measure_tempos = []
+            measure_layouts = []
             
             # Get all dynamics with positions
             for dynamic in measure.getElementsByClass(music21.dynamics.Dynamic):
@@ -159,6 +167,12 @@ def split_satb_voices(file_path):
             # Get all tempo indications with positions
             for tempo in measure.getElementsByClass(music21.tempo.TempoIndication):
                 measure_tempos.append((tempo.offset, tempo))
+            
+            # Get all layout elements with positions (NEW: SystemLayout support)
+            for layout in measure.getElementsByClass([music21.layout.SystemLayout, 
+                                                    music21.layout.PageLayout,
+                                                    music21.layout.StaffLayout]):
+                measure_layouts.append((layout.offset, layout))
             
             # Create a set to track measure-level elements we've already processed (to prevent duplication)
             processed_measure_elements = set()
@@ -191,6 +205,12 @@ def split_satb_voices(file_path):
                     tempo_copy = copy.deepcopy(tempo)
                     target_for_measure_elements.insert(offset, tempo_copy)
                     processed_measure_elements.add(id(tempo))
+                # NEW: Add layout elements to preserve system breaks and formatting
+                for offset, layout in measure_layouts:
+                    layout_copy = copy.deepcopy(layout)
+                    target_for_measure_elements.insert(offset, layout_copy)
+                    processed_measure_elements.add(id(layout))
+                    print(f"    Added {type(layout).__name__} to measure {measure_idx + 1}")
             
             # Extract content from each voice
             for voice in voices:
@@ -283,7 +303,8 @@ def split_satb_voices(file_path):
         measures = list(part.getElementsByClass(music21.stream.Measure))
         total_notes = sum(len(list(measure.getElementsByClass(music21.note.Note))) for measure in measures)
         total_dynamics = sum(len(list(measure.getElementsByClass(music21.dynamics.Dynamic))) for measure in measures)
-        print(f"{voice_name}: {len(measures)} measures, {total_notes} total notes, {total_dynamics} dynamics")
+        total_layouts = sum(len(list(measure.getElementsByClass(music21.layout.LayoutBase))) for measure in measures)
+        print(f"{voice_name}: {len(measures)} measures, {total_notes} total notes, {total_dynamics} dynamics, {total_layouts} layout elements")
     
     # Apply unification rules - need to extract parts for the unification function
     print(f"\n=== Applying Unification Rules ===")

@@ -21,14 +21,23 @@
     </scaling>
   </defaults>
   <part-list>
-    <score-part id="P226ad2942df594aa6fb07c874e942ec0">
+    <score-part id="Pcb2860caec774cdf9493eb350fbce379">
       <part-name>Crossing The Bar (Soprano)</part-name>
     </score-part>
   </part-list>
   <!--=========================== Part 1 ===========================-->
-  <part id="P226ad2942df594aa6fb07c874e942ec0">
+  <part id="Pcb2860caec774cdf9493eb350fbce379">
     <!--========================= Measure 1 ==========================-->
     <measure implicit="no" number="1">
+      <print>
+        <system-layout>
+          <system-margins>
+            <left-margin>50</left-margin>
+            <right-margin>0</right-margin>
+          </system-margins>
+          <top-system-distance>191.99</top-system-distance>
+        </system-layout>
+      </print>
       <attributes>
         <divisions>10080</divisions>
         <clef>
@@ -204,6 +213,15 @@
     </measure>
     <!--========================= Measure 4 ==========================-->
     <measure implicit="no" number="4">
+      <print new-system="yes">
+        <system-layout>
+          <system-margins>
+            <left-margin>0</left-margin>
+            <right-margin>0</right-margin>
+          </system-margins>
+          <system-distance>89.1</system-distance>
+        </system-layout>
+      </print>
       <note default-x="60.86" default-y="-45">
         <pitch>
           <step>D</step>
@@ -378,6 +396,15 @@
     </measure>
     <!--========================= Measure 7 ==========================-->
     <measure implicit="no" number="7">
+      <print new-system="yes">
+        <system-layout>
+          <system-margins>
+            <left-margin>0</left-margin>
+            <right-margin>0</right-margin>
+          </system-margins>
+          <system-distance>89.1</system-distance>
+        </system-layout>
+      </print>
       <note default-x="60.86" default-y="-35">
         <pitch>
           <step>F</step>
@@ -510,6 +537,15 @@
     </measure>
     <!--========================= Measure 9 ==========================-->
     <measure implicit="no" number="9">
+      <print new-system="yes">
+        <system-layout>
+          <system-margins>
+            <left-margin>0</left-margin>
+            <right-margin>0</right-margin>
+          </system-margins>
+          <system-distance>89.1</system-distance>
+        </system-layout>
+      </print>
       <note default-x="63.11" default-y="-40">
         <pitch>
           <step>E</step>
@@ -681,6 +717,15 @@
     </measure>
     <!--========================= Measure 12 =========================-->
     <measure implicit="no" number="12">
+      <print new-system="yes">
+        <system-layout>
+          <system-margins>
+            <left-margin>0</left-margin>
+            <right-margin>0</right-margin>
+          </system-margins>
+          <system-distance>89.1</system-distance>
+        </system-layout>
+      </print>
       <note default-x="63.11" default-y="-30">
         <pitch>
           <step>G</step>
@@ -861,6 +906,15 @@
     </measure>
     <!--========================= Measure 15 =========================-->
     <measure implicit="no" number="15">
+      <print new-page="yes">
+        <system-layout>
+          <system-margins>
+            <left-margin>0</left-margin>
+            <right-margin>0</right-margin>
+          </system-margins>
+          <top-system-distance>70</top-system-distance>
+        </system-layout>
+      </print>
       <note default-x="60.86" default-y="-30">
         <pitch>
           <step>G</step>
@@ -1047,6 +1101,15 @@
     </measure>
     <!--========================= Measure 19 =========================-->
     <measure implicit="no" number="19">
+      <print new-system="yes">
+        <system-layout>
+          <system-margins>
+            <left-margin>0</left-margin>
+            <right-margin>0</right-margin>
+          </system-margins>
+          <system-distance>118.65</system-distance>
+        </system-layout>
+      </print>
       <note default-x="61.48" default-y="-30">
         <pitch>
           <step>G</step>
@@ -1279,6 +1342,15 @@
     </measure>
     <!--========================= Measure 23 =========================-->
     <measure implicit="no" number="23">
+      <print new-system="yes">
+        <system-layout>
+          <system-margins>
+            <left-margin>0</left-margin>
+            <right-margin>0</right-margin>
+          </system-margins>
+          <system-distance>118.65</system-distance>
+        </system-layout>
+      </print>
       <note default-x="60.86" default-y="-40">
         <pitch>
           <step>E</step>
@@ -1460,6 +1532,15 @@
     </measure>
     <!--========================= Measure 27 =========================-->
     <measure implicit="no" number="27">
+      <print new-system="yes">
+        <system-layout>
+          <system-margins>
+            <left-margin>0</left-margin>
+            <right-margin>0</right-margin>
+          </system-margins>
+          <system-distance>118.65</system-distance>
+        </system-layout>
+      </print>
       <note default-x="60.86" default-y="-30">
         <pitch>
           <step>G</step>
@@ -1680,6 +1761,15 @@
     </measure>
     <!--========================= Measure 31 =========================-->
     <measure implicit="no" number="31">
+      <print new-system="yes">
+        <system-layout>
+          <system-margins>
+            <left-margin>0</left-margin>
+            <right-margin>0</right-margin>
+          </system-margins>
+          <system-distance>118.65</system-distance>
+        </system-layout>
+      </print>
       <note default-x="60.86" default-y="-20">
         <pitch>
           <step>B</step>
