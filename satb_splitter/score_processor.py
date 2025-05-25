@@ -403,8 +403,39 @@ class ScoreProcessor:
                         import copy
                         new_part.append(copy.deepcopy(element))
             
+            # CRITICAL FIX: Copy spanners (including crescendos) from original part
+            # Spanners are stored separately and not included in elements iteration
+            self._copy_part_spanners(original_part, new_part)
+            
             new_score.append(new_part)
         return new_score
+    def _copy_part_spanners(self, original_part: music21.stream.Part, new_part: music21.stream.Part):
+        """Copy spanners (crescendos, slurs, etc.) from original part to new part."""
+        try:
+            # Get all spanners from the original part
+            spanners = original_part.getElementsByClass('Spanner')
+            
+            if spanners:
+                # If spanners exist, use deepcopy for the entire part to preserve references
+                print(f"Found {len(spanners)} spanners, using deepcopy to preserve references")
+                import copy
+                
+                # Clear the new part and replace with deepcopy
+                new_part.clear()
+                copied_part = copy.deepcopy(original_part)
+                
+                # Copy all elements from the deepcopied part
+                for element in copied_part.elements:
+                    new_part.append(element)
+                    
+                # Copy spanners
+                for spanner in copied_part.getElementsByClass('Spanner'):
+                    if spanner not in new_part:
+                        new_part.append(spanner)
+                        
+        except Exception as e:
+            # If spanner copying fails entirely, log warning but continue
+            print(f"Warning: Could not copy spanners from part: {e}")
     
     def _copy_measure_efficiently(self, original_measure: music21.stream.Measure) -> music21.stream.Measure:
         """Create an efficient copy of a measure without full deep copy."""
