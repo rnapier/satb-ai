@@ -217,18 +217,41 @@ def split_satb_voices(file_path):
             # We'll add them AFTER notes to prevent offset corruption
             measure_elements_to_add = []
             if part_idx == 0:
+                # Store measure-level elements to be copied to ALL voices
+                global_measure_elements = []
+                
                 for offset, dynamic in measure_dynamics:
                     dynamic_copy = copy.deepcopy(dynamic)
-                    measure_elements_to_add.append((offset, dynamic_copy, target_for_measure_elements))
+                    global_measure_elements.append((offset, dynamic_copy, 'dynamic'))
                     processed_measure_elements.add(id(dynamic))
                 for offset, expression in measure_expressions:
                     expr_copy = copy.deepcopy(expression)
-                    measure_elements_to_add.append((offset, expr_copy, target_for_measure_elements))
+                    global_measure_elements.append((offset, expr_copy, 'expression'))
                     processed_measure_elements.add(id(expression))
                 for offset, tempo in measure_tempos:
                     tempo_copy = copy.deepcopy(tempo)
-                    measure_elements_to_add.append((offset, tempo_copy, target_for_measure_elements))
+                    global_measure_elements.append((offset, tempo_copy, 'tempo'))
                     processed_measure_elements.add(id(tempo))
+                
+                # Add these elements to ALL voice measures (Soprano, Alto, Tenor, Bass)
+                # This ensures metronome markings and other global elements appear in all parts
+                for offset, element, element_type in global_measure_elements:
+                    # Add to soprano measure
+                    soprano_copy = copy.deepcopy(element)
+                    measure_elements_to_add.append((offset, soprano_copy, soprano_measure))
+                    
+                    # Add to alto measure
+                    alto_copy = copy.deepcopy(element)
+                    measure_elements_to_add.append((offset, alto_copy, alto_measure))
+                    
+                    # Add to tenor measure
+                    tenor_copy = copy.deepcopy(element)
+                    measure_elements_to_add.append((offset, tenor_copy, tenor_measure))
+                    
+                    # Add to bass measure
+                    bass_copy = copy.deepcopy(element)
+                    measure_elements_to_add.append((offset, bass_copy, bass_measure))
+                
                 # Layout elements are now handled in the unification phase
                 # to ensure they are applied to all SATB parts
             
@@ -267,11 +290,14 @@ def split_satb_voices(file_path):
                     
                     print(f"{len(notes)} notes, {len(rests)} rests, {len(voice_dynamics)} voice dynamics, {len(voice_expressions)} voice expressions, {len(voice_tempos)} voice tempos -> {voice_name}")
                     
-                    # Add notes and rests to target measure (with copies to avoid object reuse)
+                    # Add notes and rests to target measure with preserved timing (with copies to avoid object reuse)
+                    # Use insert() with original offsets instead of append() to preserve timing
                     for note in notes:
-                        target_measure.append(copy.deepcopy(note))
+                        note_copy = copy.deepcopy(note)
+                        target_measure.insert(note.offset, note_copy)
                     for rest in rests:
-                        target_measure.append(copy.deepcopy(rest))
+                        rest_copy = copy.deepcopy(rest)
+                        target_measure.insert(rest.offset, rest_copy)
                     
                     # Add ONLY voice-level dynamics, expressions, and tempos (with copies)
                     for offset, dynamic in voice_dynamics:
