@@ -85,7 +85,7 @@ def main():
         output_dir = f"{input_path.stem}_voices"
         
         # Save the voice parts
-        save_voice_scores(voices, output_dir, input_path.name)
+        save_voice_scores(voices, output_dir, input_path.stem)
         
         print(f"\nProcessing completed successfully!")
         print(f"Voice parts saved to: {output_dir}/")
