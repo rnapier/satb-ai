@@ -185,3 +185,6 @@ $RECYCLE.BIN/
 # Project specific
 *.mscz.backup
 docs
+
+# SATB splitter output directories
+*_voices/
