@@ -4,7 +4,7 @@
   <work>
     <work-title>Crossing The Bar (Bass)</work-title>
   </work>
-  <movement-title>Crossing The Bar.musicxml</movement-title>
+  <movement-title>Crossing The Bar (Bass)</movement-title>
   <identification>
     <creator type="composer">Joseph Barnby</creator>
     <creator type="lyricist">Alfred Tennyson</creator>
@@ -21,12 +21,12 @@
     </scaling>
   </defaults>
   <part-list>
-    <score-part id="Paeba50fc8ba8f2c0197fc4f678d6bc2c">
+    <score-part id="Pcef9c2daacf677a7983a9299ba871de2">
       <part-name>Crossing The Bar (Bass)</part-name>
     </score-part>
   </part-list>
   <!--=========================== Part 1 ===========================-->
-  <part id="Paeba50fc8ba8f2c0197fc4f678d6bc2c">
+  <part id="Pcef9c2daacf677a7983a9299ba871de2">
     <!--========================= Measure 1 ==========================-->
     <measure implicit="no" number="1">
       <attributes>
@@ -44,6 +44,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>Sun</text>
+        </lyric>
       </note>
       <note default-x="174.08" default-y="-179.3">
         <pitch>
@@ -54,6 +58,10 @@
         <type>eighth</type>
         <stem>down</stem>
         <beam number="1">begin</beam>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>set</text>
+        </lyric>
       </note>
       <note default-x="234.82" default-y="-179.3">
         <pitch>
@@ -64,6 +72,10 @@
         <type>eighth</type>
         <stem>down</stem>
         <beam number="1">end</beam>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>and</text>
+        </lyric>
       </note>
       <note default-x="295.56" default-y="-194.3">
         <pitch>
@@ -74,6 +86,10 @@
         <type>quarter</type>
         <dot />
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>ev</text>
+        </lyric>
       </note>
       <note default-x="411.06" default-y="-194.3">
         <pitch>
@@ -83,6 +99,10 @@
         <duration>5040</duration>
         <type>eighth</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>'ning</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 2 ==========================-->
@@ -96,6 +116,10 @@
         <type>half</type>
         <dot />
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>star,</text>
+        </lyric>
       </note>
       <note default-x="198.24" default-y="-189.3">
         <pitch>
@@ -105,6 +129,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>And</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 3 ==========================-->
@@ -117,6 +145,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>one</text>
+        </lyric>
       </note>
       <note default-x="116.11" default-y="-174.3">
         <pitch>
@@ -126,6 +158,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>clear</text>
+        </lyric>
       </note>
       <note default-x="207.22" default-y="-199.3">
         <pitch>
@@ -136,6 +172,10 @@
         <type>quarter</type>
         <dot />
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>call</text>
+        </lyric>
       </note>
       <note default-x="322.71" default-y="-199.3">
         <pitch>
@@ -145,6 +185,10 @@
         <duration>5040</duration>
         <type>eighth</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>for</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 4 ==========================-->
@@ -157,6 +201,10 @@
         <duration>20160</duration>
         <type>half</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>me!</text>
+        </lyric>
       </note>
       <note default-x="254.9" default-y="-160.98">
         <pitch>
@@ -167,6 +215,10 @@
         <type>eighth</type>
         <stem>down</stem>
         <beam number="1">begin</beam>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>And</text>
+        </lyric>
       </note>
       <note default-x="314.6" default-y="-160.98">
         <pitch>
@@ -177,6 +229,10 @@
         <type>eighth</type>
         <stem>down</stem>
         <beam number="1">continue</beam>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>may</text>
+        </lyric>
       </note>
       <note default-x="386.3" default-y="-165.98">
         <pitch>
@@ -187,6 +243,10 @@
         <type>eighth</type>
         <stem>down</stem>
         <beam number="1">end</beam>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>there</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 5 ==========================-->
@@ -199,6 +259,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>be</text>
+        </lyric>
       </note>
       <note default-x="114.56" default-y="-170.98">
         <pitch>
@@ -208,6 +272,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>no</text>
+        </lyric>
       </note>
       <note default-x="204.12" default-y="-170.98">
         <pitch>
@@ -217,6 +285,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>moan</text>
+        </lyric>
       </note>
       <note default-x="293.67" default-y="-170.98">
         <pitch>
@@ -226,6 +298,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>ing</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 6 ==========================-->
@@ -239,6 +315,10 @@
         <type>quarter</type>
         <dot />
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>of</text>
+        </lyric>
       </note>
       <note default-x="138.53" default-y="-165.98">
         <pitch>
@@ -248,6 +328,10 @@
         <duration>5040</duration>
         <type>eighth</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>the</text>
+        </lyric>
       </note>
       <note default-x="198.24" default-y="-165.98">
         <pitch>
@@ -257,6 +341,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>bar,</text>
+        </lyric>
       </note>
       <note default-x="287.79" default-y="-165.98">
         <pitch>
@@ -266,6 +354,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>When</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 7 ==========================-->
@@ -279,6 +371,10 @@
         <type>quarter</type>
         <dot />
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>I</text>
+        </lyric>
       </note>
       <note default-x="234.64" default-y="-171.62">
         <pitch>
@@ -288,6 +384,10 @@
         <duration>5040</duration>
         <type>eighth</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>put</text>
+        </lyric>
       </note>
       <note default-x="326.03" default-y="-191.62">
         <pitch>
@@ -297,6 +397,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>out</text>
+        </lyric>
       </note>
       <note default-x="463.12" default-y="-191.62">
         <pitch>
@@ -306,6 +410,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>to</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 8 ==========================-->
@@ -322,6 +430,10 @@
         <notations>
           <tied type="start" />
         </notations>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>sea</text>
+        </lyric>
       </note>
       <note default-x="230.63" default-y="-176.62">
         <pitch>
@@ -346,6 +458,10 @@
         <type>eighth</type>
         <stem>down</stem>
         <beam number="1">continue</beam>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>But</text>
+        </lyric>
       </note>
       <note default-x="413.41" default-y="-176.62">
         <pitch>
@@ -356,6 +472,10 @@
         <type>eighth</type>
         <stem>down</stem>
         <beam number="1">continue</beam>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>such</text>
+        </lyric>
       </note>
       <note default-x="504.81" default-y="-176.62">
         <pitch>
@@ -366,6 +486,10 @@
         <type>eighth</type>
         <stem>down</stem>
         <beam number="1">end</beam>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>a</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 9 ==========================-->
@@ -378,6 +502,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>tide</text>
+        </lyric>
       </note>
       <note default-x="157.13" default-y="-177.96">
         <pitch>
@@ -387,6 +515,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>as</text>
+        </lyric>
       </note>
       <note default-x="251.16" default-y="-162.96">
         <pitch>
@@ -397,6 +529,10 @@
         <type>eighth</type>
         <stem>down</stem>
         <beam number="1">begin</beam>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>mov</text>
+        </lyric>
       </note>
       <note default-x="313.84" default-y="-162.96">
         <pitch>
@@ -407,6 +543,10 @@
         <type>eighth</type>
         <stem>down</stem>
         <beam number="1">continue</beam>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>ing</text>
+        </lyric>
       </note>
       <note default-x="376.52" default-y="-162.96">
         <pitch>
@@ -417,6 +557,10 @@
         <type>eighth</type>
         <stem>down</stem>
         <beam number="1">continue</beam>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>seems</text>
+        </lyric>
       </note>
       <note default-x="439.2" default-y="-162.96">
         <pitch>
@@ -427,6 +571,10 @@
         <type>eighth</type>
         <stem>down</stem>
         <beam number="1">end</beam>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>a</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 10 =========================-->
@@ -440,6 +588,10 @@
         <type>half</type>
         <dot />
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>sleep,</text>
+        </lyric>
       </note>
       <note default-x="203.78" default-y="-152.96">
         <pitch>
@@ -449,6 +601,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>Too</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 11 =========================-->
@@ -464,6 +620,10 @@
         <dot />
         <accidental>sharp</accidental>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>full</text>
+        </lyric>
       </note>
       <note default-x="144.19" default-y="-157.96">
         <pitch>
@@ -474,6 +634,10 @@
         <duration>5040</duration>
         <type>eighth</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>for</text>
+        </lyric>
       </note>
       <note default-x="206.87" default-y="-142.96">
         <pitch>
@@ -483,6 +647,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>sound</text>
+        </lyric>
       </note>
       <note default-x="300.89" default-y="-142.96">
         <pitch>
@@ -492,6 +660,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>and</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 12 =========================-->
@@ -504,6 +676,10 @@
         <duration>20160</duration>
         <type>half</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>foam,</text>
+        </lyric>
       </note>
       <note default-x="193.7" default-y="-201.4">
         <pitch>
@@ -524,6 +700,10 @@
         <type>eighth</type>
         <stem>down</stem>
         <beam number="1">continue</beam>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>When</text>
+        </lyric>
       </note>
       <note default-x="309.77" default-y="-186.4">
         <pitch>
@@ -536,6 +716,10 @@
         <accidental>natural</accidental>
         <stem>down</stem>
         <beam number="1">continue</beam>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>that</text>
+        </lyric>
       </note>
       <note default-x="367.81" default-y="-186.4">
         <pitch>
@@ -546,6 +730,10 @@
         <type>eighth</type>
         <stem>down</stem>
         <beam number="1">end</beam>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>which</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 13 =========================-->
@@ -559,6 +747,10 @@
         <type>quarter</type>
         <dot />
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>drew</text>
+        </lyric>
       </note>
       <note default-x="135.36" default-y="-201.4">
         <pitch>
@@ -568,6 +760,10 @@
         <duration>5040</duration>
         <type>eighth</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>from</text>
+        </lyric>
       </note>
       <note default-x="193.4" default-y="-196.4">
         <pitch>
@@ -577,6 +773,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>out</text>
+        </lyric>
       </note>
       <note default-x="280.45" default-y="-196.4">
         <pitch>
@@ -586,6 +786,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>the</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 14 =========================-->
@@ -598,6 +802,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>bound</text>
+        </lyric>
       </note>
       <note default-x="125.57" default-y="-206.4">
         <pitch>
@@ -618,6 +826,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>deep</text>
+        </lyric>
       </note>
       <note default-x="314.19" default-y="-226.4">
         <pitch>
@@ -640,6 +852,10 @@
         <type>quarter</type>
         <dot />
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>Turns</text>
+        </lyric>
       </note>
       <note default-x="148.04" default-y="-204.62">
         <pitch>
@@ -649,6 +865,10 @@
         <duration>5040</duration>
         <type>eighth</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>a</text>
+        </lyric>
       </note>
       <note default-x="193.89" default-y="-204.62">
         <pitch>
@@ -658,6 +878,10 @@
         <duration>20160</duration>
         <type>half</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>gain</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 16 =========================-->
@@ -670,6 +894,10 @@
         <duration>20160</duration>
         <type>half</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>home</text>
+        </lyric>
       </note>
       <note default-x="128.16" default-y="-189.62">
         <pitch>
@@ -706,6 +934,10 @@
         <notations>
           <tied type="stop" />
         </notations>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>Twi</text>
+        </lyric>
       </note>
       <note default-x="185.47" default-y="-189.62">
         <pitch>
@@ -784,6 +1016,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>And</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 19 =========================-->
@@ -797,6 +1033,10 @@
         <type>quarter</type>
         <dot />
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>af</text>
+        </lyric>
       </note>
       <note default-x="144.81" default-y="-186.72">
         <pitch>
@@ -806,6 +1046,10 @@
         <duration>5040</duration>
         <type>eighth</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>ter</text>
+        </lyric>
       </note>
       <note default-x="188.63" default-y="-186.72">
         <pitch>
@@ -815,6 +1059,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>that</text>
+        </lyric>
       </note>
       <note default-x="254.37" default-y="-186.72">
         <pitch>
@@ -824,6 +1072,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>the</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 20 =========================-->
@@ -836,6 +1088,10 @@
         <duration>20160</duration>
         <type>half</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>dark!</text>
+        </lyric>
       </note>
       <note default-x="167.43" default-y="-186.72">
         <pitch>
@@ -846,6 +1102,10 @@
         <type>eighth</type>
         <stem>down</stem>
         <beam number="1">begin</beam>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>And</text>
+        </lyric>
       </note>
       <note default-x="211.26" default-y="-181.72">
         <pitch>
@@ -856,6 +1116,10 @@
         <type>eighth</type>
         <stem>down</stem>
         <beam number="1">continue</beam>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>may</text>
+        </lyric>
       </note>
       <note default-x="257.27" default-y="-176.72">
         <pitch>
@@ -866,6 +1130,10 @@
         <type>eighth</type>
         <stem>down</stem>
         <beam number="1">end</beam>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>there</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 21 =========================-->
@@ -878,6 +1146,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>be</text>
+        </lyric>
       </note>
       <note default-x="90.74" default-y="-171.72">
         <pitch>
@@ -887,6 +1159,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>no</text>
+        </lyric>
       </note>
       <note default-x="156.48" default-y="-176.72">
         <pitch>
@@ -896,6 +1172,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>sad</text>
+        </lyric>
       </note>
       <note default-x="222.21" default-y="-176.72">
         <pitch>
@@ -905,6 +1185,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>ness</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 22 =========================-->
@@ -918,6 +1202,10 @@
         <type>quarter</type>
         <dot />
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>of</text>
+        </lyric>
       </note>
       <note default-x="108.33" default-y="-181.72">
         <pitch>
@@ -927,6 +1215,10 @@
         <duration>5040</duration>
         <type>eighth</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>fare</text>
+        </lyric>
       </note>
       <note default-x="152.16" default-y="-181.72">
         <pitch>
@@ -936,6 +1228,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>well,</text>
+        </lyric>
       </note>
       <note default-x="217.9" default-y="-191.72">
         <pitch>
@@ -947,6 +1243,10 @@
         <type>quarter</type>
         <accidental>natural</accidental>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>When</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 23 =========================-->
@@ -959,6 +1259,10 @@
         <duration>20160</duration>
         <type>half</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>I</text>
+        </lyric>
       </note>
       <note default-x="174.19" default-y="-204.76">
         <pitch>
@@ -968,6 +1272,10 @@
         <duration>20160</duration>
         <type>half</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>em</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 24 =========================-->
@@ -981,6 +1289,10 @@
         <type>half</type>
         <dot />
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>bark;</text>
+        </lyric>
       </note>
       <note default-x="168.67" default-y="-174.76">
         <pitch>
@@ -990,6 +1302,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>For,</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 25 =========================-->
@@ -1011,6 +1327,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>though</text>
+        </lyric>
       </note>
       <note default-x="179.63" default-y="-189.76">
         <pitch>
@@ -1020,6 +1340,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>from</text>
+        </lyric>
       </note>
       <note default-x="255.19" default-y="-194.76">
         <pitch>
@@ -1029,6 +1353,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>out</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 26 =========================-->
@@ -1041,6 +1369,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>bourne</text>
+        </lyric>
       </note>
       <note default-x="103.64" default-y="-209.76">
         <pitch>
@@ -1050,6 +1382,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>of</text>
+        </lyric>
       </note>
       <note default-x="179.2" default-y="-204.76">
         <pitch>
@@ -1059,6 +1395,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>time</text>
+        </lyric>
       </note>
       <note default-x="254.75" default-y="-199.76">
         <pitch>
@@ -1068,6 +1408,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>and</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 27 =========================-->
@@ -1080,6 +1424,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>place</text>
+        </lyric>
       </note>
       <note default-x="131.32" default-y="-178.89">
         <pitch>
@@ -1089,6 +1437,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>The</text>
+        </lyric>
       </note>
       <note default-x="201.78" default-y="-173.89">
         <pitch>
@@ -1098,6 +1450,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>flood</text>
+        </lyric>
       </note>
       <note default-x="272.24" default-y="-168.89">
         <pitch>
@@ -1107,6 +1463,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>may</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 28 =========================-->
@@ -1119,6 +1479,10 @@
         <duration>20160</duration>
         <type>half</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>bear</text>
+        </lyric>
       </note>
       <note default-x="130.69" default-y="-173.89">
         <pitch>
@@ -1128,6 +1492,10 @@
         <duration>20160</duration>
         <type>half</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>me</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 29 =========================-->
@@ -1179,6 +1547,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>hope</text>
+        </lyric>
       </note>
       <note default-x="95.46" default-y="-168.89">
         <pitch>
@@ -1188,6 +1560,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>to</text>
+        </lyric>
       </note>
       <note default-x="165.93" default-y="-163.89">
         <pitch>
@@ -1197,6 +1573,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>see</text>
+        </lyric>
       </note>
       <note default-x="236.39" default-y="-158.89">
         <pitch>
@@ -1206,6 +1586,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>my</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 31 =========================-->
@@ -1218,6 +1602,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>Pi</text>
+        </lyric>
       </note>
       <note default-x="116.44" default-y="-165.06">
         <pitch>
@@ -1227,6 +1615,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>lot</text>
+        </lyric>
       </note>
       <note default-x="172.03" default-y="-180.06">
         <pitch>
@@ -1238,6 +1630,10 @@
         <type>quarter</type>
         <accidental>sharp</accidental>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>face</text>
+        </lyric>
       </note>
       <note default-x="227.61" default-y="-175.06">
         <pitch>
@@ -1247,6 +1643,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>to</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 32 =========================-->
@@ -1259,6 +1659,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>face</text>
+        </lyric>
       </note>
       <note default-x="80.58" default-y="-190.06">
         <pitch>
@@ -1268,6 +1672,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>When</text>
+        </lyric>
       </note>
       <note default-x="136.17" default-y="-175.06">
         <pitch>
@@ -1277,6 +1685,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>I</text>
+        </lyric>
       </note>
       <note default-x="191.75" default-y="-200.06">
         <pitch>
@@ -1286,6 +1698,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>have</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 33 =========================-->
@@ -1298,6 +1714,10 @@
         <duration>20160</duration>
         <type>half</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>crossed</text>
+        </lyric>
       </note>
       <note default-x="113.01" default-y="-195.06">
         <pitch>
@@ -1307,6 +1727,10 @@
         <duration>20160</duration>
         <type>half</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>the</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 34 =========================-->
@@ -1318,6 +1742,10 @@
         </pitch>
         <duration>40320</duration>
         <type>whole</type>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>bar.</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 35 =========================-->
@@ -1329,6 +1757,10 @@
         </pitch>
         <duration>40320</duration>
         <type>whole</type>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>A</text>
+        </lyric>
       </note>
     </measure>
     <!--========================= Measure 36 =========================-->
@@ -1340,6 +1772,10 @@
         </pitch>
         <duration>40320</duration>
         <type>whole</type>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>men.</text>
+        </lyric>
       </note>
     </measure>
   </part>

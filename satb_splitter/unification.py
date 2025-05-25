@@ -266,21 +266,14 @@ def unify_lyrics(voices_dict, soprano_lyrics, alto_lyrics, tenor_lyrics, bass_ly
     tenor_count = len(tenor_lyrics)
     bass_count = len(bass_lyrics)
     
-    # If Soprano has significantly more lyrics than others, apply to parts with no lyrics
+    # If Soprano has significantly more lyrics than others, apply to all parts
     other_max = max(alto_count, tenor_count, bass_count)
     if soprano_count > 0 and soprano_count >= other_max * 3:
-        print(f"  Lyrics unification: Soprano has majority of lyrics ({soprano_count} vs max {other_max}) - applying to parts with no lyrics")
+        print(f"  Lyrics unification: Soprano has majority of lyrics ({soprano_count} vs max {other_max}) - applying to all parts (filling missing lyrics only)")
         
-        target_parts = []
-        if alto_count == 0:
-            target_parts.append('Alto')
-        if tenor_count == 0:
-            target_parts.append('Tenor')
-        if bass_count == 0:
-            target_parts.append('Bass')
-        
-        if target_parts:
-            copy_lyrics_to_parts(soprano_lyrics, target_parts, voices_dict)
+        # Apply to all other parts, but only fill in missing lyrics
+        target_parts = ['Alto', 'Tenor', 'Bass']
+        copy_lyrics_to_parts(soprano_lyrics, target_parts, voices_dict)
         return
     
     print("  Lyrics unification: Multiple parts have lyrics - keeping original distribution")

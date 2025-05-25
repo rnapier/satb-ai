@@ -40,11 +40,11 @@ def save_voice_parts(voices_dict, output_dir, original_filename):
         new_title = f"{base_name} ({voice_name})"
         voice_score.metadata.title = new_title
         
-        # Clear movementName if it contains temporary filename
+        # Clear movementName if it contains filename with extension
         if hasattr(voice_score.metadata, 'movementName') and voice_score.metadata.movementName:
-            # Check if movementName looks like a temporary file
+            # Check if movementName looks like a filename (contains .musicxml extension)
             movement_name = str(voice_score.metadata.movementName)
-            if movement_name.startswith('tmp') and movement_name.endswith('.musicxml'):
+            if movement_name.endswith('.musicxml'):
                 voice_score.metadata.movementName = None
         
         # Also set score-level title if it exists
