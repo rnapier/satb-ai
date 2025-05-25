@@ -336,13 +336,16 @@ class ContextualUnifier:
         """Extract dynamics information from a score."""
         dynamics = []
         
-        for element in score.flatten():
-            if isinstance(element, music21.dynamics.Dynamic):
-                dynamics.append({
-                    'dynamic': element.value,
-                    'offset': element.offset,
-                    'measure_number': element.measureNumber
-                })
+        # Iterate through parts and measures to preserve correct offsets
+        for part in score.parts:
+            for measure in part.getElementsByClass(music21.stream.Measure):
+                for element in measure:
+                    if isinstance(element, music21.dynamics.Dynamic):
+                        dynamics.append({
+                            'dynamic': element.value,
+                            'offset': element.offset,
+                            'measure_number': measure.number
+                        })
         
         return dynamics
     
