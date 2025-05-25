@@ -126,15 +126,55 @@ class ScoreProcessor:
         except (AttributeError, ValueError, TypeError) as e:
             processing_time = time.time() - start_time
             errors.append(f"Invalid input data: {e}")
+            return ProcessingResult(
+                success=False,
+                voice_scores={},
+                voice_mapping=None,
+                processing_steps=processing_steps,
+                statistics={},
+                warnings=warnings,
+                errors=errors,
+                processing_time=processing_time
+            )
         except music21.exceptions21.Music21Exception as e:
             processing_time = time.time() - start_time
             errors.append(f"Music21 error: {e}")
+            return ProcessingResult(
+                success=False,
+                voice_scores={},
+                voice_mapping=None,
+                processing_steps=processing_steps,
+                statistics={},
+                warnings=warnings,
+                errors=errors,
+                processing_time=processing_time
+            )
         except FileNotFoundError as e:
             processing_time = time.time() - start_time
             errors.append(f"File not found: {e}")
+            return ProcessingResult(
+                success=False,
+                voice_scores={},
+                voice_mapping=None,
+                processing_steps=processing_steps,
+                statistics={},
+                warnings=warnings,
+                errors=errors,
+                processing_time=processing_time
+            )
         except PermissionError as e:
             processing_time = time.time() - start_time
             errors.append(f"Permission denied: {e}")
+            return ProcessingResult(
+                success=False,
+                voice_scores={},
+                voice_mapping=None,
+                processing_steps=processing_steps,
+                statistics={},
+                warnings=warnings,
+                errors=errors,
+                processing_time=processing_time
+            )
         except Exception as e:
             processing_time = time.time() - start_time
             # Log unexpected exceptions for debugging
@@ -308,10 +348,147 @@ class ScoreProcessor:
         voice_names = ['Soprano', 'Alto', 'Tenor', 'Bass']
         
         for voice_name in voice_names:
-            # Create a deep copy of the original score
-            voice_scores[voice_name] = copy.deepcopy(original)
+            # Create efficient score copy using music21's template method
+            voice_scores[voice_name] = self._create_efficient_score_copy(original)
         
         return voice_scores
+    
+    def _create_efficient_score_copy(self, original: music21.stream.Score) -> music21.stream.Score:
+        """Create an efficient copy of the score avoiding full deep copy."""
+        # Use music21's score template for basic structure
+        new_score = music21.stream.Score()
+        
+        # Copy metadata efficiently
+        if original.metadata:
+            new_score.metadata = music21.metadata.Metadata()
+            # Copy essential metadata fields only
+            if hasattr(original.metadata, 'title') and original.metadata.title:
+                new_score.metadata.title = original.metadata.title
+            if hasattr(original.metadata, 'composer') and original.metadata.composer:
+                new_score.metadata.composer = original.metadata.composer
+            if hasattr(original.metadata, 'workTitle') and original.metadata.workTitle:
+                new_score.metadata.workTitle = original.metadata.workTitle
+        
+        # Copy parts with selective copying
+        for original_part in original.parts:
+            new_part = music21.stream.Part()
+            
+            # Copy part-level attributes
+            if hasattr(original_part, 'partName') and original_part.partName:
+                new_part.partName = original_part.partName
+            if hasattr(original_part, 'partAbbreviation') and original_part.partAbbreviation:
+                new_part.partAbbreviation = original_part.partAbbreviation
+            
+            # Copy essential elements efficiently using music21's built-in methods
+            for element in original_part.elements:
+                if isinstance(element, music21.stream.Measure):
+                    # For measures, create new measure and copy essential content
+                    new_measure = self._copy_measure_efficiently(element)
+                    new_part.append(new_measure)
+                elif isinstance(element, (music21.clef.Clef,
+                                        music21.key.KeySignature,
+                                        music21.meter.TimeSignature,
+                                        music21.instrument.Instrument)):
+                    # For these simple objects, use music21's clone method if available
+                    try:
+                        if hasattr(element, 'clone'):
+                            new_part.append(element.clone())
+                        else:
+                            # Fallback to creating new instances with same properties
+                            new_element = self._clone_element_efficiently(element)
+                            if new_element:
+                                new_part.append(new_element)
+                    except Exception:
+                        # If efficient copying fails, fallback to deepcopy for this element only
+                        import copy
+                        new_part.append(copy.deepcopy(element))
+            
+            new_score.append(new_part)
+        return new_score
+    
+    def _copy_measure_efficiently(self, original_measure: music21.stream.Measure) -> music21.stream.Measure:
+        """Create an efficient copy of a measure without full deep copy."""
+        new_measure = music21.stream.Measure()
+        
+        # Copy measure number and basic properties
+        if hasattr(original_measure, 'number') and original_measure.number is not None:
+            new_measure.number = original_measure.number
+        
+        # Copy elements efficiently
+        for element in original_measure:
+            try:
+                # Use music21's clone method if available for better performance
+                if hasattr(element, 'clone'):
+                    new_measure.append(element.clone())
+                elif isinstance(element, music21.stream.Voice):
+                    # For voices, create new voice and copy contents
+                    new_voice = music21.stream.Voice()
+                    new_voice.id = element.id if hasattr(element, 'id') else None
+                    for voice_element in element:
+                        if hasattr(voice_element, 'clone'):
+                            new_voice.append(voice_element.clone())
+                        else:
+                            # Fallback to deepcopy for complex elements
+                            import copy
+                            new_voice.append(copy.deepcopy(voice_element))
+                    new_measure.append(new_voice)
+                else:
+                    # For other elements, try clone first, then fallback
+                    cloned = self._clone_element_efficiently(element)
+                    if cloned:
+                        new_measure.append(cloned)
+                    else:
+                        import copy
+                        new_measure.append(copy.deepcopy(element))
+            except Exception:
+                # If all else fails, use deepcopy
+                import copy
+                new_measure.append(copy.deepcopy(element))
+        
+        return new_measure
+    
+    def _clone_element_efficiently(self, element) -> object:
+        """Efficiently clone a music21 element."""
+        try:
+            # Try music21's clone method first
+            if hasattr(element, 'clone'):
+                return element.clone()
+            
+            # For specific element types, create new instances efficiently
+            if isinstance(element, music21.clef.TrebleClef):
+                return music21.clef.TrebleClef()
+            elif isinstance(element, music21.clef.BassClef):
+                return music21.clef.BassClef()
+            elif isinstance(element, music21.clef.AltoClef):
+                return music21.clef.AltoClef()
+            elif isinstance(element, music21.key.KeySignature):
+                return music21.key.KeySignature(sharps=element.sharps)
+            elif isinstance(element, music21.meter.TimeSignature):
+                return music21.meter.TimeSignature(element.numerator, element.denominator)
+            elif isinstance(element, music21.instrument.Instrument):
+                new_instrument = music21.instrument.Instrument()
+                if hasattr(element, 'instrumentName'):
+                    new_instrument.instrumentName = element.instrumentName
+                return new_instrument
+            elif isinstance(element, music21.note.Note):
+                return music21.note.Note(
+                    pitch=element.pitch,
+                    quarterLength=element.quarterLength
+                )
+            elif isinstance(element, music21.note.Rest):
+                return music21.note.Rest(quarterLength=element.quarterLength)
+            elif isinstance(element, music21.chord.Chord):
+                return music21.chord.Chord(
+                    notes=[n.pitch for n in element.notes],
+                    quarterLength=element.quarterLength
+                )
+            
+            # If we don't have a specific handler, return None to signal fallback needed
+            return None
+            
+        except Exception:
+            return None
+    
     
     def validate_output(self, voice_scores: Dict[str, music21.stream.Score]) -> ValidationResult:
         """Validate that output scores are correct and complete."""
@@ -385,18 +562,22 @@ class ScoreProcessor:
         # Output statistics
         statistics['output_scores'] = len(voice_scores)
         
-        # Elements preserved per voice
+        # Elements preserved per voice (optimize by caching flattened views)
         elements_preserved = {}
         for voice_name, score in voice_scores.items():
-            elements_preserved[voice_name] = len(score.flatten().notes)
+            # Use cached flattened view for performance
+            flattened_score = score.flatten()
+            elements_preserved[voice_name] = len(flattened_score.notes)
         statistics['elements_preserved'] = elements_preserved
         
-        # Memory usage (approximate)
-        import sys
-        memory_usage = 0
-        for score in voice_scores.values():
-            memory_usage += sys.getsizeof(score)
-        statistics['memory_usage_mb'] = memory_usage / (1024 * 1024)
+        # Processing efficiency metrics (more meaningful than memory usage)
+        statistics['total_elements_processed'] = sum(
+            len(score.flatten().notes) for score in voice_scores.values()
+        )
+        statistics['average_elements_per_voice'] = (
+            statistics['total_elements_processed'] / len(voice_scores)
+            if voice_scores else 0
+        )
         
         return statistics
     

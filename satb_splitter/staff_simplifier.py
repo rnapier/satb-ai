@@ -64,7 +64,9 @@ class StaffSimplifier:
             
             # Merge multiple parts into single part
             merged_part = self.merge_staff_elements(list(score.parts))
-            elements_merged = len(merged_part.flatten().notes)
+            # Cache flattened view for performance
+            flattened_part = merged_part.flatten()
+            elements_merged = len(flattened_part.notes)
             
             # Replace all parts with the merged part
             # Remove all existing parts
@@ -213,4 +215,179 @@ class StaffSimplifier:
             return 'alto'
         else:
             return str(clef)
+    
+    def handle_cross_staff_elements(self, score: music21.stream.Score) -> music21.stream.Score:
+        """
+        Handle cross-staff musical elements like slurs, ties, and beams.
+        
+        Args:
+            score: Score to process for cross-staff elements
+            
+        Returns:
+            Score with cross-staff elements properly handled
+        """
+        try:
+            # Process each part for cross-staff elements
+            for part in score.parts:
+                self._handle_cross_staff_in_part(part, score)
+            
+            return score
+            
+        except Exception as e:
+            # Log warning but don't fail - this is enhancement, not critical
+            if hasattr(self.context, 'add_warning'):
+                self.context.add_warning(f"Cross-staff element handling failed: {e}")
+            return score
+    
+    def _handle_cross_staff_in_part(self, part: music21.stream.Part, full_score: music21.stream.Score):
+        """Handle cross-staff elements within a single part."""
+        # Find spanner elements that might cross staffs
+        spanners = part.getElementsByClass(music21.spanner.Spanner)
+        
+        for spanner in spanners:
+            self._process_cross_staff_spanner(spanner, part, full_score)
+        
+        # Handle ties and slurs that might reference other staffs
+        measures = part.getElementsByClass(music21.stream.Measure)
+        for measure in measures:
+            self._process_cross_staff_in_measure(measure, part, full_score)
+    
+    def _process_cross_staff_spanner(self, spanner: music21.spanner.Spanner,
+                                   current_part: music21.stream.Part,
+                                   full_score: music21.stream.Score):
+        """Process a spanner that might cross staff boundaries."""
+        try:
+            # Check if spanner references notes in other parts
+            spanned_notes = list(spanner)
+            parts_referenced = set()
+            
+            for note in spanned_notes:
+                # Find which part this note belongs to
+                for part_index, part in enumerate(full_score.parts):
+                    if note in part.flatten().notes:
+                        parts_referenced.add(part_index)
+            
+            # If spanner crosses multiple parts, consolidate to current part
+            if len(parts_referenced) > 1:
+                self._consolidate_cross_staff_spanner(spanner, current_part, spanned_notes)
+                
+        except Exception:
+            # If we can't process the spanner, leave it as-is
+            pass
+    
+    def _consolidate_cross_staff_spanner(self, spanner: music21.spanner.Spanner,
+                                       target_part: music21.stream.Part,
+                                       spanned_notes: list):
+        """Consolidate a cross-staff spanner to a single part."""
+        try:
+            # Find notes in the target part that correspond to the spanned notes
+            target_notes = []
+            flattened_part = target_part.flatten()
+            
+            for original_note in spanned_notes:
+                # Find closest note by offset and pitch
+                closest_note = self._find_closest_note(original_note, flattened_part.notes)
+                if closest_note:
+                    target_notes.append(closest_note)
+            
+            # If we found corresponding notes, update the spanner
+            if target_notes:
+                # Remove the old spanner
+                if hasattr(spanner, 'activeSite') and spanner.activeSite:
+                    spanner.activeSite.remove(spanner)
+                
+                # Create new spanner with target notes
+                if isinstance(spanner, music21.spanner.Slur):
+                    new_spanner = music21.spanner.Slur(target_notes)
+                elif isinstance(spanner, music21.spanner.Tie):
+                    # For ties, only connect consecutive notes of same pitch
+                    if len(target_notes) >= 2:
+                        new_spanner = music21.tie.Tie()
+                        target_notes[0].tie = new_spanner
+                        target_notes[1].tie = new_spanner
+                else:
+                    # Generic spanner
+                    new_spanner = music21.spanner.Spanner(target_notes)
+                
+                # Add to target part if it's not a tie (ties are handled differently)
+                if not isinstance(spanner, music21.spanner.Tie):
+                    target_part.insert(0, new_spanner)
+                    
+        except Exception:
+            # If consolidation fails, leave original spanner
+            pass
+    
+    def _process_cross_staff_in_measure(self, measure: music21.stream.Measure,
+                                      current_part: music21.stream.Part,
+                                      full_score: music21.stream.Score):
+        """Process cross-staff elements within a single measure."""
+        # Look for notes with ties or slurs that might reference other parts
+        for element in measure:
+            if isinstance(element, music21.note.Note):
+                self._check_note_cross_staff_references(element, current_part, full_score)
+            elif isinstance(element, music21.chord.Chord):
+                # Check each note in the chord
+                for note in element.notes:
+                    self._check_note_cross_staff_references(note, current_part, full_score)
+    
+    def _check_note_cross_staff_references(self, note: music21.note.Note,
+                                         current_part: music21.stream.Part,
+                                         full_score: music21.stream.Score):
+        """Check if a note has cross-staff references and resolve them."""
+        # Check for ties that might reference other parts
+        if hasattr(note, 'tie') and note.tie:
+            self._resolve_cross_staff_tie(note, current_part, full_score)
+    
+    def _resolve_cross_staff_tie(self, note: music21.note.Note,
+                               current_part: music21.stream.Part,
+                               full_score: music21.stream.Score):
+        """Resolve ties that might reference notes in other parts."""
+        try:
+            if note.tie.type in ['start', 'continue']:
+                # Find the next note of the same pitch in the current part
+                flattened_part = current_part.flatten()
+                notes_after = [n for n in flattened_part.notes
+                             if (hasattr(n, 'offset') and hasattr(note, 'offset') and
+                                 n.offset > note.offset and n.pitch == note.pitch)]
+                
+                if notes_after:
+                    # Connect to the next note in the same part
+                    next_note = min(notes_after, key=lambda n: n.offset)
+                    if not hasattr(next_note, 'tie') or not next_note.tie:
+                        next_note.tie = music21.tie.Tie()
+                        next_note.tie.type = 'stop'
+                        
+        except Exception:
+            # If tie resolution fails, leave as-is
+            pass
+    
+    def _find_closest_note(self, target_note: music21.note.Note,
+                          search_notes: list) -> music21.note.Note:
+        """Find the closest note by offset and pitch."""
+        if not search_notes or not hasattr(target_note, 'offset'):
+            return None
+            
+        best_match = None
+        best_score = float('inf')
+        
+        for note in search_notes:
+            if not hasattr(note, 'offset'):
+                continue
+                
+            # Calculate similarity score (lower is better)
+            offset_diff = abs(float(note.offset) - float(target_note.offset))
+            
+            # Add pitch difference if both notes have pitch
+            pitch_diff = 0
+            if (hasattr(note, 'pitch') and hasattr(target_note, 'pitch') and
+                note.pitch and target_note.pitch):
+                pitch_diff = abs(note.pitch.midi - target_note.pitch.midi)
+            
+            score = offset_diff + (pitch_diff * 0.1)  # Weight offset more than pitch
+            
+            if score < best_score:
+                best_score = score
+                best_match = note
+        
+        return best_match
     

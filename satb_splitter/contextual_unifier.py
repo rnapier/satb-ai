@@ -248,19 +248,56 @@ class ContextualUnifier:
             'potential_unifications': []
         }
     
-    def _apply_dynamic_to_all_voices(self, dynamic_info: dict, 
+    def _apply_dynamic_to_all_voices(self, dynamic_info: dict,
                                    voice_scores: Dict[str, music21.stream.Score]):
-        """Apply a dynamic marking to all voice scores."""
+        """Apply a dynamic marking to all voice scores with proper MusicXML placement."""
         for voice_name, score in voice_scores.items():
             # Find the appropriate location in this voice's score
             target_measure = self._find_measure_by_number(score, dynamic_info['measure_number'])
             if target_measure:
                 # Check if dynamic already exists at this position
-                if not self._dynamic_exists_at_position(target_measure, dynamic_info['offset'], 
+                if not self._dynamic_exists_at_position(target_measure, dynamic_info['offset'],
                                                       dynamic_info['dynamic']):
-                    # Add the dynamic
+                    # Create dynamic with proper MusicXML placement attributes
                     dynamic_obj = music21.dynamics.Dynamic(dynamic_info['dynamic'])
+                    
+                    # Set proper placement for MusicXML export
+                    self._set_dynamic_placement(dynamic_obj, voice_name, target_measure)
+                    
+                    # Insert at the correct offset
                     target_measure.insert(dynamic_info['offset'], dynamic_obj)
+    
+    def _set_dynamic_placement(self, dynamic_obj: music21.dynamics.Dynamic,
+                             voice_name: str, measure: music21.stream.Measure):
+        """Set proper placement attributes for dynamics to ensure correct MusicXML export."""
+        try:
+            # Set placement based on voice type for better MusicXML layout
+            voice_lower = voice_name.lower()
+            
+            if voice_lower in ['soprano', 'alto']:
+                # Upper voices: place dynamics above the staff
+                dynamic_obj.placement = 'above'
+            elif voice_lower in ['tenor', 'bass']:
+                # Lower voices: place dynamics below the staff
+                dynamic_obj.placement = 'below'
+            else:
+                # Default placement
+                dynamic_obj.placement = 'below'
+            
+            # Set staff reference if the measure has multiple voices
+            voices = measure.getElementsByClass(music21.stream.Voice)
+            if len(voices) > 1:
+                # For multi-voice measures, specify which staff this applies to
+                dynamic_obj.staff = 1  # Default to staff 1
+            
+            # Ensure proper relative positioning for MusicXML export
+            # This helps notation software display dynamics correctly
+            if hasattr(dynamic_obj, 'editorial'):
+                dynamic_obj.editorial.placement = dynamic_obj.placement
+            
+        except Exception:
+            # If placement setting fails, use defaults
+            dynamic_obj.placement = 'below'
     
     def _find_soprano_only_dynamics(self, voice_scores: Dict[str, music21.stream.Score]) -> List[dict]:
         """Find dynamics that appear only in the Soprano voice."""

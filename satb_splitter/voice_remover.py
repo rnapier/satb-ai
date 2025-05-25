@@ -51,7 +51,9 @@ class VoiceRemover:
                     warnings.extend(result['warnings'])
                 else:
                     # Mark this entire part for removal
-                    note_count = len(part.flatten().notes)
+                    # Cache flattened view for performance
+                    flattened_part = part.flatten()
+                    note_count = len(flattened_part.notes)
                     elements_removed += note_count
                     voices_removed.append(f"Part {part_idx}")
                     parts_to_remove.append(part)
@@ -87,6 +89,9 @@ class VoiceRemover:
         warnings = []
         
         for measure in part.getElementsByClass(music21.stream.Measure):
+            # Preserve MusicXML layout elements before voice processing
+            layout_elements = self._preserve_layout_elements(measure)
+            
             # Get all voices in this measure
             voices = list(measure.voices)
             
@@ -94,6 +99,8 @@ class VoiceRemover:
                 # No explicit voices, check if this measure has the content we want
                 # For measures without explicit voices, we keep everything if it's the right part
                 elements_preserved += len(measure.notes)
+                # Restore layout elements for measures without voices
+                self._restore_layout_elements(measure, layout_elements)
                 continue
             
             # Find the voice to keep (standardize on string voice IDs per music21 convention)
@@ -141,6 +148,9 @@ class VoiceRemover:
             # using music21's proper element management
             if target_voice:
                 self._flatten_voice_to_measure(measure, target_voice)
+            
+            # Restore preserved layout elements after voice processing
+            self._restore_layout_elements(measure, layout_elements)
         
         return {
             'voices_removed': voices_removed,
@@ -187,7 +197,9 @@ class VoiceRemover:
     def _is_part_empty(self, part: music21.stream.Part) -> bool:
         """Check if a part is empty of musical content."""
         # Check for notes, rests, or other musical elements
-        notes = part.flatten().notes
+        # Cache flattened view for performance
+        flattened_part = part.flatten()
+        notes = flattened_part.notes
         return len(notes) == 0
     
     def _clean_empty_measures(self, score: music21.stream.Score):
@@ -226,4 +238,45 @@ class VoiceRemover:
             # Default to whole rest
             rest = music21.note.Rest(quarterLength=4.0)
             measure.insert(0, rest)
+    
+    def _preserve_layout_elements(self, measure: music21.stream.Measure) -> dict:
+        """Preserve MusicXML layout elements that might be lost during voice processing."""
+        layout_elements = {
+            'page_breaks': [],
+            'system_breaks': [],
+            'staff_layout': [],
+            'tempo_indications': [],
+            'rehearsal_marks': []
+        }
+        
+        # Find layout-related elements
+        for element in measure.elements:
+            # Page breaks (print elements with new-page)
+            if isinstance(element, music21.layout.PageLayout):
+                layout_elements['page_breaks'].append(element)
+            # System breaks (print elements with new-system)
+            elif isinstance(element, music21.layout.SystemLayout):
+                layout_elements['system_breaks'].append(element)
+            # Staff layout elements
+            elif hasattr(element, 'staff') and hasattr(element, 'layout'):
+                layout_elements['staff_layout'].append(element)
+            # Tempo indications at measure level
+            elif isinstance(element, music21.tempo.TempoIndication):
+                layout_elements['tempo_indications'].append(element)
+            # Rehearsal marks
+            elif isinstance(element, music21.expressions.RehearsalMark):
+                layout_elements['rehearsal_marks'].append(element)
+        
+        return layout_elements
+    
+    def _restore_layout_elements(self, measure: music21.stream.Measure,
+                                layout_elements: dict):
+        """Restore preserved layout elements after voice processing."""
+        # Restore all preserved layout elements
+        for element_type, elements in layout_elements.items():
+            for element in elements:
+                # Check if element is not already in the measure
+                if element not in measure.elements:
+                    # Insert at offset 0 for layout elements
+                    measure.insert(0.0, element)
     
