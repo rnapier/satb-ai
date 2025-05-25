@@ -11,6 +11,7 @@ from .voice_identifier import VoiceIdentifier
 from .voice_remover import VoiceRemover
 from .staff_simplifier import StaffSimplifier
 from .contextual_unifier import ContextualUnifier
+from .spanner_processor import SpannerProcessor
 from .exceptions import ProcessingError, InvalidScoreError
 
 
@@ -62,11 +63,17 @@ class ScoreProcessor:
                 voice_mapping=voice_mapping
             )
             
-            # Step 3: Create complete copies for each voice
+            # Step 3: Extract spanners from original score for later processing
+            processing_steps.append("Extracting spanners from original score")
+            spanner_processor = SpannerProcessor()
+            original_spanners = spanner_processor.extract_all_spanners_from_score(original_score)
+            print(f"Extracted {len(original_spanners)} spanners for later processing")
+            
+            # Step 4: Create complete copies for each voice
             processing_steps.append("Creating voice copies")
             voice_scores = self.create_voice_copies(original_score)
             
-            # Step 4: Remove unwanted voices from each copy
+            # Step 5: Remove unwanted voices from each copy
             processing_steps.append("Removing unwanted voices")
             voice_remover = VoiceRemover(context)
             
@@ -79,7 +86,7 @@ class ScoreProcessor:
                     errors.extend(removal_result.errors)
                 warnings.extend(removal_result.warnings)
             
-            # Step 5: Simplify to single-staff layout
+            # Step 6: Simplify to single-staff layout
             processing_steps.append("Simplifying staff layout")
             staff_simplifier = StaffSimplifier(context)
             
@@ -91,7 +98,16 @@ class ScoreProcessor:
                     errors.extend(simplification_result.errors)
                 warnings.extend(simplification_result.warnings)
             
-            # Step 6: Apply contextual unification
+            # Step 7: Process spanners after voice separation
+            processing_steps.append("Processing spanners post-separation")
+            spanner_result = spanner_processor.process_spanners_post_separation(
+                voice_scores, original_spanners)
+            
+            if not spanner_result['success']:
+                errors.extend(spanner_result['errors'])
+            warnings.extend(spanner_result['warnings'])
+            
+            # Step 8: Apply contextual unification
             processing_steps.append("Applying unification rules")
             contextual_unifier = ContextualUnifier(context)
             unification_result = contextual_unifier.apply_unification_rules(voice_scores)
@@ -100,7 +116,7 @@ class ScoreProcessor:
                 errors.extend(unification_result.errors)
             warnings.extend(unification_result.warnings)
             
-            # Step 7: Validate output
+            # Step 9: Validate output
             processing_steps.append("Validating output")
             output_validation = self.validate_output(voice_scores)
             if not output_validation.valid:
@@ -403,39 +419,21 @@ class ScoreProcessor:
                         import copy
                         new_part.append(copy.deepcopy(element))
             
-            # CRITICAL FIX: Copy spanners (including crescendos) from original part
-            # Spanners are stored separately and not included in elements iteration
-            self._copy_part_spanners(original_part, new_part)
+            # Note: Spanner processing now happens AFTER voice separation
+            # This ensures references remain valid and voice-appropriate spanners are selected
             
             new_score.append(new_part)
         return new_score
     def _copy_part_spanners(self, original_part: music21.stream.Part, new_part: music21.stream.Part):
-        """Copy spanners (crescendos, slurs, etc.) from original part to new part."""
-        try:
-            # Get all spanners from the original part
-            spanners = original_part.getElementsByClass('Spanner')
-            
-            if spanners:
-                # If spanners exist, use deepcopy for the entire part to preserve references
-                print(f"Found {len(spanners)} spanners, using deepcopy to preserve references")
-                import copy
-                
-                # Clear the new part and replace with deepcopy
-                new_part.clear()
-                copied_part = copy.deepcopy(original_part)
-                
-                # Copy all elements from the deepcopied part
-                for element in copied_part.elements:
-                    new_part.append(element)
-                    
-                # Copy spanners
-                for spanner in copied_part.getElementsByClass('Spanner'):
-                    if spanner not in new_part:
-                        new_part.append(spanner)
-                        
-        except Exception as e:
-            # If spanner copying fails entirely, log warning but continue
-            print(f"Warning: Could not copy spanners from part: {e}")
+        """
+        Legacy spanner copying method - now replaced by comprehensive post-separation processing.
+        
+        This method is retained for compatibility but spanner processing now happens
+        after voice separation using the SpannerProcessor system.
+        """
+        # Spanners are now processed after voice separation for better accuracy
+        # This placeholder prevents any accidental copying that would be overwritten
+        pass
     
     def _copy_measure_efficiently(self, original_measure: music21.stream.Measure) -> music21.stream.Measure:
         """Create an efficient copy of a measure without full deep copy."""
