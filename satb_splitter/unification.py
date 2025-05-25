@@ -228,11 +228,25 @@ def extract_lyrics_from_part(part):
     lyrics = []
     for measure in part.getElementsByClass(music21.stream.Measure):
         for note in measure.getElementsByClass(music21.note.Note):
-            if note.lyric:
+            # Extract complete lyric objects with syllabic information
+            if hasattr(note, 'lyrics') and note.lyrics:
+                for lyric_obj in note.lyrics:
+                    lyrics.append({
+                        'measure': measure.number,
+                        'offset': note.offset,
+                        'text': lyric_obj.text if hasattr(lyric_obj, 'text') else str(lyric_obj),
+                        'syllabic': lyric_obj.syllabic if hasattr(lyric_obj, 'syllabic') else 'single',
+                        'lyric_object': lyric_obj,
+                        'note': note
+                    })
+            elif hasattr(note, 'lyric') and note.lyric:
+                # Handle simple lyric property (fallback)
                 lyrics.append({
                     'measure': measure.number,
                     'offset': note.offset,
                     'text': note.lyric,
+                    'syllabic': 'single',  # Default for simple lyric property
+                    'lyric_object': None,
                     'note': note
                 })
     return lyrics
@@ -320,21 +334,33 @@ def copy_dynamics_to_parts(source_dynamics, target_part_names, voices_dict):
 
 
 def copy_lyrics_to_parts(source_lyrics, target_part_names, voices_dict):
-    """Copy lyrics from source to target parts."""
+    """Copy lyrics from source to target parts, preserving syllabic information."""
     for part_name in target_part_names:
         target_part = voices_dict[part_name]
         for lyric_info in source_lyrics:
             measure_num = lyric_info['measure']
             offset = lyric_info['offset']
             lyric_text = lyric_info['text']
+            syllabic = lyric_info['syllabic']
             
             # Find the corresponding measure and note in the target part
             for measure in target_part.getElementsByClass(music21.stream.Measure):
                 if measure.number == measure_num:
                     for note in measure.getElementsByClass(music21.note.Note):
                         if abs(note.offset - offset) < 0.1:  # Find note at same position
-                            if not note.lyric:  # Only add if note doesn't already have lyrics
-                                note.lyric = lyric_text
+                            # Check if note already has lyrics
+                            has_existing_lyrics = (hasattr(note, 'lyrics') and note.lyrics) or (hasattr(note, 'lyric') and note.lyric)
+                            
+                            if not has_existing_lyrics:  # Only add if note doesn't already have lyrics
+                                # Create a new Lyric object with proper syllabic information
+                                new_lyric = music21.note.Lyric(text=lyric_text, syllabic=syllabic)
+                                
+                                # Clear any existing lyrics and add the new one
+                                if hasattr(note, 'lyrics'):
+                                    note.lyrics.clear()
+                                note.lyrics.append(new_lyric)
+                                
+                                print(f"    Copied lyric '{lyric_text}' (syllabic: {syllabic}) to {part_name} measure {measure_num}")
                             break
                     break
 
