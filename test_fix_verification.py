@@ -12,7 +12,6 @@ import music21
 sys.path.insert(0, '.')
 
 from satb_splitter import split_satb_voices
-from satb_splitter.utils import ProcessingOptions
 
 def verify_fix():
     """Verify that the dynamics duplication fix works."""
@@ -20,15 +19,9 @@ def verify_fix():
     print("=" * 50)
     
     try:
-        # Process the score with the fix
-        options = ProcessingOptions(
-            apply_dynamics_unification=True,
-            apply_lyrics_unification=True,
-            apply_spanner_unification=True
-        )
-        
+        # Process the score with default settings
         print("Processing score with fixed unification...")
-        voice_scores = split_satb_voices("Crossing The Bar.musicxml", options=options)
+        voice_scores = split_satb_voices("Crossing The Bar.musicxml")
         
         print("✓ Processing completed successfully")
         

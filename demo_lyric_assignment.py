@@ -7,7 +7,6 @@ Shows the feature working with "Crossing The Bar" and saves the results.
 import music21
 import os
 from satb_splitter.main import split_satb_voices
-from satb_splitter.utils import ProcessingOptions
 
 def demonstrate_lyric_assignment():
     """Demonstrate the lyric assignment feature end-to-end."""
@@ -25,22 +24,11 @@ def demonstrate_lyric_assignment():
     print(f"Output directory: {output_dir}")
     print()
     
-    # Configure options to enable lyric assignment
-    options = ProcessingOptions(
-        auto_detect_voices=True,
-        apply_lyrics_unification=True,  # This enables our feature!
-        apply_dynamics_unification=True,
-        apply_spanner_unification=True,
-        preserve_original_clefs=False,
-        single_staff_output=True
-    )
-    
     try:
-        # Process the score with lyric assignment
+        # Process the score with lyric assignment (using default settings)
         voice_scores = split_satb_voices(
             input_file=input_file,
-            output_dir=output_dir,
-            options=options
+            output_dir=output_dir
         )
         
         print("✓ Score processing completed successfully!")

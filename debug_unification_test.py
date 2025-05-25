@@ -11,7 +11,7 @@ import music21
 # Add the current directory to Python path
 sys.path.insert(0, '.')
 
-from satb_splitter.utils import ProcessingOptions, load_score, ProcessingContext
+from satb_splitter.utils import load_score, ProcessingContext
 from satb_splitter.voice_identifier import VoiceIdentifier
 from satb_splitter.score_processor import ScoreProcessor
 from satb_splitter.contextual_unifier import ContextualUnifier
@@ -71,25 +71,19 @@ def test_unification_step_by_step():
     
     # Load and prepare
     original_score = load_score("Crossing The Bar.musicxml")
-    options = ProcessingOptions(
-        apply_dynamics_unification=True,
-        apply_lyrics_unification=False,
-        apply_spanner_unification=False
-    )
     
     # Create voice identifier and mapping
-    voice_identifier = VoiceIdentifier(original_score, options)
+    voice_identifier = VoiceIdentifier(original_score)
     voice_mapping = voice_identifier.analyze_score()
     
     # Create context
     context = ProcessingContext(
         original_score=original_score,
-        voice_mapping=voice_mapping,
-        processing_options=options
+        voice_mapping=voice_mapping
     )
     
     # Create voice copies
-    processor = ScoreProcessor(options)
+    processor = ScoreProcessor()
     voice_scores = processor.create_voice_copies(original_score)
     
     print("\n--- BEFORE UNIFICATION ---")

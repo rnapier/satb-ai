@@ -50,34 +50,10 @@ class PartInfo:
 
 
 @dataclass
-class ProcessingOptions:
-    """Configuration options for SATB processing."""
-    # Voice detection options
-    auto_detect_voices: bool = True
-    manual_voice_mapping: Optional[VoiceMapping] = None
-    fallback_to_defaults: bool = True
-    
-    # Unification options
-    apply_dynamics_unification: bool = True
-    apply_lyrics_unification: bool = True
-    apply_spanner_unification: bool = True
-    
-    # Output options
-    preserve_original_clefs: bool = False
-    single_staff_output: bool = True
-    include_part_names: bool = True
-    
-    # Processing options
-    validate_output: bool = True
-    detailed_logging: bool = False
-
-
-@dataclass
 class ProcessingContext:
     """Context information for processing operations."""
     original_score: music21.stream.Score
     voice_mapping: VoiceMapping
-    processing_options: ProcessingOptions
     
     def get_voice_location(self, voice_name: str) -> VoiceLocation:
         """Get location for specific voice."""

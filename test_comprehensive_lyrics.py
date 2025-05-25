@@ -6,22 +6,14 @@ Tests the specific requirements mentioned in the task.
 
 import music21
 from satb_splitter.score_processor import ScoreProcessor
-from satb_splitter.utils import ProcessingOptions
 
 def test_comprehensive_lyric_assignment():
     """Test lyric assignment with specific examples from the task."""
     
     print("=== Comprehensive Lyric Assignment Test ===")
     
-    # Load and process the score
-    options = ProcessingOptions(
-        auto_detect_voices=True,
-        apply_lyrics_unification=True,
-        apply_dynamics_unification=True,
-        apply_spanner_unification=True
-    )
-    
-    processor = ScoreProcessor(options)
+    # Load and process the score (using default settings)
+    processor = ScoreProcessor()
     result = processor.process_satb_score("Crossing The Bar.musicxml")
     
     print(f"✓ Score processed. Voices: {list(result.voice_scores.keys())}")

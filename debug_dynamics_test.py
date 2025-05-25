@@ -12,7 +12,7 @@ import music21
 sys.path.insert(0, '.')
 
 from satb_splitter import split_satb_voices
-from satb_splitter.utils import ProcessingOptions, load_score
+from satb_splitter.utils import load_score
 from satb_splitter.voice_identifier import VoiceIdentifier
 from satb_splitter.score_processor import ScoreProcessor
 
@@ -70,18 +70,11 @@ def test_processing_pipeline():
     # Load original score
     original_score = load_score("Crossing The Bar.musicxml")
     
-    # Create processor with detailed options
-    options = ProcessingOptions(
-        apply_dynamics_unification=True,
-        apply_lyrics_unification=False,
-        apply_spanner_unification=False,
-        validate_output=True
-    )
-    
-    processor = ScoreProcessor(options)
+    # Create processor with default settings
+    processor = ScoreProcessor()
     
     print("\n--- Step 1: Voice Identification ---")
-    voice_identifier = VoiceIdentifier(original_score, options)
+    voice_identifier = VoiceIdentifier(original_score)
     voice_mapping = voice_identifier.analyze_score()
     print(f"Voice mapping confidence: {voice_mapping.confidence:.2f}")
     

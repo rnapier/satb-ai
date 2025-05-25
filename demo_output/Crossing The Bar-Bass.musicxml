@@ -72,11 +72,11 @@
     <score-part id="P1">
       <part-name>Crossing The Bar (Bass)</part-name>
       <part-abbreviation>Pno.</part-abbreviation>
-      <score-instrument id="I81c000bff66d9d8e4249796d96785967">
+      <score-instrument id="I959ae8870832de28a9c91f4ed538d4c2">
         <instrument-name>Bass</instrument-name>
         <instrument-abbreviation>Pno</instrument-abbreviation>
       </score-instrument>
-      <midi-instrument id="I81c000bff66d9d8e4249796d96785967">
+      <midi-instrument id="I959ae8870832de28a9c91f4ed538d4c2">
         <midi-channel>1</midi-channel>
         <midi-program>1</midi-program>
       </midi-instrument>

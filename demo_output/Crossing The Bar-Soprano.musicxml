@@ -78,11 +78,11 @@
     <score-part id="P1">
       <part-name>Crossing The Bar (Soprano)</part-name>
       <part-abbreviation>Pno.</part-abbreviation>
-      <score-instrument id="I2f7c4f14ec677e9c361409e5a373a417">
+      <score-instrument id="Ic6b16e2c16d31b0a2f0b6641049b0c06">
         <instrument-name>Soprano</instrument-name>
         <instrument-abbreviation>Pno</instrument-abbreviation>
       </score-instrument>
-      <midi-instrument id="I2f7c4f14ec677e9c361409e5a373a417">
+      <midi-instrument id="Ic6b16e2c16d31b0a2f0b6641049b0c06">
         <midi-channel>1</midi-channel>
         <midi-program>1</midi-program>
       </midi-instrument>

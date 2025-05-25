@@ -4,17 +4,16 @@ Voice identification module for detecting SATB voice locations in scores.
 
 from typing import Dict, List, Optional, Tuple
 import music21
-from .utils import VoiceMapping, VoiceLocation, PartInfo, ProcessingOptions
+from .utils import VoiceMapping, VoiceLocation, PartInfo
 from .exceptions import VoiceDetectionError
 
 
 class VoiceIdentifier:
     """Identifies SATB voice locations in a score."""
     
-    def __init__(self, score: music21.stream.Score, options: ProcessingOptions):
-        """Initialize with score and processing options."""
+    def __init__(self, score: music21.stream.Score):
+        """Initialize with score."""
         self.score = score
-        self.options = options
         
     def analyze_score(self) -> VoiceMapping:
         """
@@ -26,38 +25,26 @@ class VoiceIdentifier:
         Raises:
             VoiceDetectionError: If voices cannot be detected
         """
-        # If manual mapping is provided, use it
-        if self.options.manual_voice_mapping:
-            if self.options.manual_voice_mapping.validate():
-                return self.options.manual_voice_mapping
-            else:
-                raise VoiceDetectionError("Manual voice mapping is invalid")
-        
         # Try automatic detection
-        if self.options.auto_detect_voices:
-            try:
-                return self._detect_voices_automatically()
-            except (AttributeError, ValueError, TypeError) as e:
-                if not self.options.fallback_to_defaults:
-                    raise VoiceDetectionError(f"Invalid score data for voice detection: {e}")
-            except music21.exceptions21.Music21Exception as e:
-                if not self.options.fallback_to_defaults:
-                    raise VoiceDetectionError(f"Music21 error during voice detection: {e}")
-            except KeyError as e:
-                if not self.options.fallback_to_defaults:
-                    raise VoiceDetectionError(f"Missing required score elements: {e}")
-            except Exception as e:
-                # Log unexpected exceptions for debugging
-                import logging
-                logging.error(f"Unexpected error in voice detection: {type(e).__name__}: {e}")
-                if not self.options.fallback_to_defaults:
-                    raise VoiceDetectionError(f"Unexpected error during voice detection: {type(e).__name__}: {e}")
+        try:
+            return self._detect_voices_automatically()
+        except (AttributeError, ValueError, TypeError) as e:
+            # Fall back to default mapping
+            pass
+        except music21.exceptions21.Music21Exception as e:
+            # Fall back to default mapping
+            pass
+        except KeyError as e:
+            # Fall back to default mapping
+            pass
+        except Exception as e:
+            # Log unexpected exceptions for debugging
+            import logging
+            logging.error(f"Unexpected error in voice detection: {type(e).__name__}: {e}")
+            # Fall back to default mapping
         
         # Fall back to default assumptions
-        if self.options.fallback_to_defaults:
-            return self._create_default_mapping()
-        
-        raise VoiceDetectionError("Could not detect voices and no fallback enabled")
+        return self._create_default_mapping()
     
     def _detect_voices_automatically(self) -> VoiceMapping:
         """Detect voices using pattern recognition and analysis."""

@@ -52,34 +52,31 @@ class ContextualUnifier:
             errors = []
             
             # Apply dynamics unification
-            if self.context.processing_options.apply_dynamics_unification:
-                dynamics_result = self.unify_dynamics(voice_scores)
-                if dynamics_result['success']:
-                    rules_applied.append('dynamics')
-                    dynamics_unified = dynamics_result['elements_unified']
-                    warnings.extend(dynamics_result.get('warnings', []))
-                else:
-                    errors.extend(dynamics_result.get('errors', []))
+            dynamics_result = self.unify_dynamics(voice_scores)
+            if dynamics_result['success']:
+                rules_applied.append('dynamics')
+                dynamics_unified = dynamics_result['elements_unified']
+                warnings.extend(dynamics_result.get('warnings', []))
+            else:
+                errors.extend(dynamics_result.get('errors', []))
             
             # Apply lyrics unification
-            if self.context.processing_options.apply_lyrics_unification:
-                lyrics_result = self.unify_lyrics(voice_scores)
-                if lyrics_result['success']:
-                    rules_applied.append('lyrics')
-                    lyrics_unified = lyrics_result['elements_unified']
-                    warnings.extend(lyrics_result.get('warnings', []))
-                else:
-                    errors.extend(lyrics_result.get('errors', []))
+            lyrics_result = self.unify_lyrics(voice_scores)
+            if lyrics_result['success']:
+                rules_applied.append('lyrics')
+                lyrics_unified = lyrics_result['elements_unified']
+                warnings.extend(lyrics_result.get('warnings', []))
+            else:
+                errors.extend(lyrics_result.get('errors', []))
             
             # Apply spanner unification
-            if self.context.processing_options.apply_spanner_unification:
-                spanners_result = self.unify_spanners(voice_scores)
-                if spanners_result['success']:
-                    rules_applied.append('spanners')
-                    spanners_unified = spanners_result['elements_unified']
-                    warnings.extend(spanners_result.get('warnings', []))
-                else:
-                    errors.extend(spanners_result.get('errors', []))
+            spanners_result = self.unify_spanners(voice_scores)
+            if spanners_result['success']:
+                rules_applied.append('spanners')
+                spanners_unified = spanners_result['elements_unified']
+                warnings.extend(spanners_result.get('warnings', []))
+            else:
+                errors.extend(spanners_result.get('errors', []))
             
             # Apply tempo markings unification
             tempo_result = self.unify_tempo_markings(voice_scores)

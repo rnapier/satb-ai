@@ -11,7 +11,7 @@ from pathlib import Path
 sys.path.insert(0, '.')
 
 from satb_splitter import split_satb_voices
-from satb_splitter.utils import ProcessingOptions, load_score
+from satb_splitter.utils import load_score
 
 def analyze_voice_separation():
     """Analyze the voice separation to ensure it's working correctly."""
@@ -44,8 +44,7 @@ def analyze_voice_separation():
     print()
     
     # Process with voice splitter
-    options = ProcessingOptions()
-    voice_scores = split_satb_voices(test_file, options=options)
+    voice_scores = split_satb_voices(test_file)
     
     print("Voice separation results:")
     total_separated_notes = 0

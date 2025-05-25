@@ -12,17 +12,15 @@ from .voice_remover import VoiceRemover
 from .staff_simplifier import StaffSimplifier
 from .contextual_unifier import ContextualUnifier
 from .exceptions import *
-from .utils import ProcessingOptions
 
 __version__ = "2.0.0"
 __all__ = [
     "split_satb_voices",
     "ScoreProcessor",
     "VoiceIdentifier",
-    "VoiceMapping", 
+    "VoiceMapping",
     "VoiceLocation",
     "VoiceRemover",
     "StaffSimplifier",
     "ContextualUnifier",
-    "ProcessingOptions",
 ]

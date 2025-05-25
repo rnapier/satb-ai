@@ -6,22 +6,20 @@ import sys
 from pathlib import Path
 from typing import Dict, Optional
 import music21
-from .utils import ProcessingOptions, save_voice_scores
+from .utils import save_voice_scores
 from .score_processor import ScoreProcessor
 from .converter import convert_mscz_to_musicxml, check_mscore_available
 from .exceptions import ProcessingError, InvalidScoreError
 
 
-def split_satb_voices(input_file: str, 
-                     output_dir: Optional[str] = None,
-                     options: Optional[ProcessingOptions] = None) -> Dict[str, music21.stream.Score]:
+def split_satb_voices(input_file: str,
+                     output_dir: Optional[str] = None) -> Dict[str, music21.stream.Score]:
     """
     Split SATB score into individual voice parts using copy-and-remove approach.
     
     Args:
         input_file: Path to input .mscz or .musicxml file
         output_dir: Directory for output files (optional)
-        options: Processing options (optional)
         
     Returns:
         Dictionary mapping voice names to Score objects
@@ -30,9 +28,6 @@ def split_satb_voices(input_file: str,
         InvalidScoreError: If input score is not valid SATB
         ProcessingError: If processing fails
     """
-    # Use default options if none provided
-    if options is None:
-        options = ProcessingOptions()
     
     # Handle file conversion if needed
     working_file = input_file
@@ -41,7 +36,7 @@ def split_satb_voices(input_file: str,
         working_file = convert_mscz_to_musicxml(input_file)
     
     # Process the score
-    processor = ScoreProcessor(options)
+    processor = ScoreProcessor()
     result = processor.process_satb_score(working_file)
     
     if not result.success:
@@ -84,10 +79,7 @@ def main():
     try:
         print(f"Processing {input_file} with copy-and-remove architecture...")
         
-        # Use default processing options
-        options = ProcessingOptions()
-        
-        voices = split_satb_voices(input_file, options=options)
+        voices = split_satb_voices(input_file)
         
         # Create output directory
         output_dir = f"{input_path.stem}_voices"

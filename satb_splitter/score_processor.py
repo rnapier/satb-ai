@@ -6,7 +6,7 @@ import copy
 import time
 from typing import Dict
 import music21
-from .utils import ProcessingOptions, ProcessingContext, ProcessingResult, ValidationResult, load_score
+from .utils import ProcessingContext, ProcessingResult, ValidationResult, load_score
 from .voice_identifier import VoiceIdentifier
 from .voice_remover import VoiceRemover
 from .staff_simplifier import StaffSimplifier
@@ -17,9 +17,9 @@ from .exceptions import ProcessingError, InvalidScoreError
 class ScoreProcessor:
     """Main orchestrator for SATB splitting process."""
     
-    def __init__(self, options: ProcessingOptions):
-        """Initialize with processing options."""
-        self.options = options
+    def __init__(self):
+        """Initialize the score processor."""
+        pass
         
     def process_satb_score(self, input_file: str) -> ProcessingResult:
         """
@@ -53,14 +53,13 @@ class ScoreProcessor:
             
             # Step 2: Identify voice locations
             processing_steps.append("Identifying voice locations")
-            voice_identifier = VoiceIdentifier(original_score, self.options)
+            voice_identifier = VoiceIdentifier(original_score)
             voice_mapping = voice_identifier.analyze_score()
             
             # Create processing context
             context = ProcessingContext(
                 original_score=original_score,
-                voice_mapping=voice_mapping,
-                processing_options=self.options
+                voice_mapping=voice_mapping
             )
             
             # Step 3: Create complete copies for each voice
@@ -102,12 +101,11 @@ class ScoreProcessor:
             warnings.extend(unification_result.warnings)
             
             # Step 7: Validate output
-            if self.options.validate_output:
-                processing_steps.append("Validating output")
-                output_validation = self.validate_output(voice_scores)
-                if not output_validation.valid:
-                    errors.extend(output_validation.errors)
-                warnings.extend(output_validation.warnings)
+            processing_steps.append("Validating output")
+            output_validation = self.validate_output(voice_scores)
+            if not output_validation.valid:
+                errors.extend(output_validation.errors)
+            warnings.extend(output_validation.warnings)
             
             # Calculate statistics
             statistics = self._calculate_statistics(original_score, voice_scores)

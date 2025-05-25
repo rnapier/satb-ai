@@ -11,7 +11,6 @@ from pathlib import Path
 sys.path.insert(0, '.')
 
 from satb_splitter import split_satb_voices
-from satb_splitter.utils import ProcessingOptions
 
 def test_basic_functionality():
     """Test basic functionality with the test file."""
@@ -24,9 +23,8 @@ def test_basic_functionality():
         return False
     
     try:
-        # Test with default options
-        options = ProcessingOptions()
-        voice_scores = split_satb_voices(test_file, options=options)
+        # Test with default settings
+        voice_scores = split_satb_voices(test_file)
         
         # Validate results
         expected_voices = ['Soprano', 'Alto', 'Tenor', 'Bass']
@@ -62,9 +60,8 @@ def test_voice_detection():
         
         test_file = "Crossing The Bar.musicxml"
         score = load_score(test_file)
-        options = ProcessingOptions()
         
-        identifier = VoiceIdentifier(score, options)
+        identifier = VoiceIdentifier(score)
         voice_mapping = identifier.analyze_score()
         
         print(f"✓ Voice detection confidence: {voice_mapping.confidence:.2f}")
@@ -80,32 +77,6 @@ def test_voice_detection():
         print(f"✗ Voice detection test failed: {e}")
         assert False, f"Voice detection test failed: {e}"
 
-def test_processing_options():
-    """Test different processing options."""
-    print("\nTesting processing options...")
-    
-    try:
-        test_file = "Crossing The Bar.musicxml"
-        
-        # Test with unification disabled
-        options = ProcessingOptions(
-            apply_dynamics_unification=False,
-            apply_lyrics_unification=False,
-            apply_spanner_unification=False
-        )
-        
-        voice_scores = split_satb_voices(test_file, options=options)
-        print("✓ Processing with unification disabled works")
-        
-        # Test with validation disabled
-        options = ProcessingOptions(validate_output=False)
-        voice_scores = split_satb_voices(test_file, options=options)
-        print("✓ Processing with validation disabled works")
-        
-    except Exception as e:
-        print(f"✗ Processing options test failed: {e}")
-        assert False, f"Processing options test failed: {e}"
-
 def main():
     """Run all tests."""
     print("=" * 50)
@@ -114,8 +85,7 @@ def main():
     
     tests = [
         test_basic_functionality,
-        test_voice_detection,
-        test_processing_options
+        test_voice_detection
     ]
     
     passed = 0

@@ -72,11 +72,11 @@
     <score-part id="P1">
       <part-name>Crossing The Bar (Tenor)</part-name>
       <part-abbreviation>Pno.</part-abbreviation>
-      <score-instrument id="Ic4f0495f645aded7a57d4f524f35b423">
+      <score-instrument id="I10c006eccdfed96d89c3f683b7ffda55">
         <instrument-name>Tenor</instrument-name>
         <instrument-abbreviation>Pno</instrument-abbreviation>
       </score-instrument>
-      <midi-instrument id="Ic4f0495f645aded7a57d4f524f35b423">
+      <midi-instrument id="I10c006eccdfed96d89c3f683b7ffda55">
         <midi-channel>1</midi-channel>
         <midi-program>1</midi-program>
       </midi-instrument>

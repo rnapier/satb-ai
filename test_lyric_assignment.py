@@ -6,7 +6,6 @@ Validates that lyrics are correctly assigned to voices with matching notes.
 
 import music21
 from satb_splitter.score_processor import ScoreProcessor
-from satb_splitter.utils import ProcessingOptions
 
 def test_lyric_assignment():
     """Test the lyric assignment feature with Crossing The Bar."""
@@ -24,16 +23,8 @@ def test_lyric_assignment():
         print(f"✗ Failed to load score: {e}")
         return False
     
-    # Set up processing options
-    options = ProcessingOptions(
-        auto_detect_voices=True,
-        apply_lyrics_unification=True,
-        apply_dynamics_unification=True,
-        apply_spanner_unification=True
-    )
-    
-    # Process the score
-    processor = ScoreProcessor(options)
+    # Process the score (using default settings)
+    processor = ScoreProcessor()
     
     try:
         result = processor.process_satb_score(input_file)
