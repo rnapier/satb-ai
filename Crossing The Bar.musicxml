@@ -124,13 +124,10 @@
         </attributes>
       <direction placement="above" system="only-top">
         <direction-type>
-          <metronome parentheses="no" default-x="-37.68" relative-x="-1.75" relative-y="41.04">
-            <beat-unit>quarter</beat-unit>
-            <per-minute>80</per-minute>
-            </metronome>
+          <words default-x="-37.68" relative-y="20" font-weight="bold" font-size="12">Andante</words>
           </direction-type>
         <staff>1</staff>
-        <sound tempo="80"/>
+        <sound tempo="92"/>
         </direction>
       <note default-x="82.97" default-y="-40">
         <pitch>
@@ -749,7 +746,7 @@
         </note>
       <direction placement="below">
         <direction-type>
-          <wedge type="crescendo" default-y="33.03" relative-x="12.4" number="1"/>
+          <wedge type="crescendo" default-y="35.6" relative-x="-13.31" number="1"/>
           </direction-type>
         <staff>1</staff>
         </direction>
@@ -769,6 +766,12 @@
           <text>And</text>
           </lyric>
         </note>
+      <direction placement="below">
+        <direction-type>
+          <wedge type="stop" number="1"/>
+          </direction-type>
+        <staff>1</staff>
+        </direction>
       <note default-x="314.6" default-y="-40">
         <pitch>
           <step>E</step>
@@ -785,12 +788,6 @@
           <text>may</text>
           </lyric>
         </note>
-      <direction placement="below">
-        <direction-type>
-          <wedge type="stop" number="1"/>
-          </direction-type>
-        <staff>1</staff>
-        </direction>
       <note default-x="374.31" default-y="-35">
         <pitch>
           <step>F</step>
@@ -5965,9 +5962,9 @@
         </note>
       </measure>
     <measure number="29" width="308.65">
-      <direction placement="above">
+      <direction placement="below">
         <direction-type>
-          <wedge type="crescendo" default-y="38.61" relative-x="11.23" number="1"/>
+          <wedge type="crescendo" default-y="38.25" relative-x="5.97" number="1"/>
           </direction-type>
         <staff>1</staff>
         </direction>
@@ -6029,7 +6026,7 @@
           <slur type="start" number="1"/>
           </notations>
         </note>
-      <direction placement="above">
+      <direction placement="below">
         <direction-type>
           <wedge type="stop" number="1"/>
           </direction-type>

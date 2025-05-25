@@ -280,15 +280,124 @@ class ContextualUnifier:
     
     def _find_lyric_gaps(self, voice_scores: Dict[str, music21.stream.Score]) -> List[dict]:
         """Find positions where some voices have lyrics, others don't."""
-        # This is a simplified implementation
-        # In a full implementation, this would analyze lyric positions across all voices
-        return []
+        gaps = []
+        
+        # Get all voice names for analysis
+        voice_names = list(voice_scores.keys())
+        
+        # Analyze each measure across all voices
+        for voice_name, score in voice_scores.items():
+            for part in score.parts:
+                for measure_idx, measure in enumerate(part.getElementsByClass('Measure')):
+                    measure_number = measure.number if hasattr(measure, 'number') else measure_idx + 1
+                    
+                    # Get all notes with lyrics in this measure for this voice
+                    notes_with_lyrics = self._get_notes_with_lyrics_in_measure(measure)
+                    
+                    # For each note with lyrics, check if other voices at same position need the lyric
+                    for note_info in notes_with_lyrics:
+                        gap_candidates = self._find_matching_notes_without_lyrics(
+                            note_info, measure_number, voice_scores, voice_name
+                        )
+                        
+                        for candidate in gap_candidates:
+                            gaps.append({
+                                'source_voice': voice_name,
+                                'target_voice': candidate['voice'],
+                                'measure_number': measure_number,
+                                'offset': note_info['offset'],
+                                'duration': note_info['duration'],
+                                'lyric': note_info['lyric'],
+                                'target_note': candidate['note']
+                            })
+        
+        return gaps
     
-    def _fill_lyric_gap(self, gap_info: dict, 
+    def _fill_lyric_gap(self, gap_info: dict,
                        voice_scores: Dict[str, music21.stream.Score]) -> bool:
         """Fill a lyric gap by copying lyrics from another voice."""
-        # Simplified implementation
-        return False
+        try:
+            target_note = gap_info['target_note']
+            source_lyric = gap_info['lyric']
+            
+            # Create a copy of the lyric for the target note
+            # Use the addLyric method which creates the lyric object properly
+            lyric_text = source_lyric.text
+            lyric_number = getattr(source_lyric, 'number', 1)
+            lyric_syllabic = getattr(source_lyric, 'syllabic', None)
+            
+            # Add the lyric to the target note
+            target_note.addLyric(lyric_text, lyric_number)
+            
+            # Set syllabic if available
+            if lyric_syllabic and target_note.lyrics:
+                target_note.lyrics[-1].syllabic = lyric_syllabic
+            
+            return True
+            
+        except Exception as e:
+            print(f"Warning: Failed to fill lyric gap: {e}")
+            return False
+    
+    def _get_notes_with_lyrics_in_measure(self, measure) -> List[dict]:
+        """Extract all notes with lyrics from a measure."""
+        notes_with_lyrics = []
+        
+        for note in measure.getElementsByClass('Note'):
+            if note.lyrics:
+                # Get the primary lyric (usually number 1)
+                primary_lyric = note.lyrics[0] if note.lyrics else None
+                if primary_lyric and primary_lyric.text:
+                    notes_with_lyrics.append({
+                        'note': note,
+                        'offset': note.offset,
+                        'duration': note.duration.quarterLength,
+                        'lyric': primary_lyric
+                    })
+        
+        return notes_with_lyrics
+    
+    def _find_matching_notes_without_lyrics(self, note_info: dict, measure_number: int,
+                                          voice_scores: Dict[str, music21.stream.Score],
+                                          source_voice: str) -> List[dict]:
+        """Find notes in other voices at same position/duration that don't have lyrics."""
+        candidates = []
+        
+        for voice_name, score in voice_scores.items():
+            if voice_name == source_voice:
+                continue
+                
+            # Find the corresponding measure in this voice
+            target_measure = self._find_measure_in_score(score, measure_number)
+            if not target_measure:
+                continue
+            
+            # Look for notes at the same offset with same duration
+            for note in target_measure.getElementsByClass('Note'):
+                if (abs(note.offset - note_info['offset']) < 0.01 and  # Same timing (with small tolerance)
+                    abs(note.duration.quarterLength - note_info['duration']) < 0.01 and  # Same duration
+                    not note.lyrics):  # No existing lyrics
+                    
+                    candidates.append({
+                        'voice': voice_name,
+                        'note': note
+                    })
+        
+        return candidates
+    
+    def _find_measure_in_score(self, score: music21.stream.Score, measure_number: int):
+        """Find a specific measure by number in a score."""
+        for part in score.parts:
+            for measure in part.getElementsByClass('Measure'):
+                if hasattr(measure, 'number') and measure.number == measure_number:
+                    return measure
+                # Fallback for measures without explicit numbers
+                elif not hasattr(measure, 'number'):
+                    # Assume measures are in order, use index
+                    measures = list(part.getElementsByClass('Measure'))
+                    if len(measures) >= measure_number:
+                        return measures[measure_number - 1]
+        return None
     
     def _identify_system_spanners(self, voice_scores: Dict[str, music21.stream.Score]) -> List[dict]:
         """Identify spanners that should apply to all voices."""
