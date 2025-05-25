@@ -35,9 +35,7 @@ def test_basic_functionality():
         print(f"✓ Generated {len(voice_scores)} voice parts")
         
         for voice in expected_voices:
-            if voice not in voice_scores:
-                print(f"✗ Missing voice: {voice}")
-                return False
+            assert voice in voice_scores, f"Missing voice: {voice}"
             
             score = voice_scores[voice]
             note_count = len(score.flatten().notes)
@@ -45,17 +43,14 @@ def test_basic_functionality():
             
             print(f"✓ {voice}: {note_count} notes, {part_count} part(s)")
             
-            if note_count == 0:
-                print(f"✗ {voice} has no notes")
-                return False
+            assert note_count > 0, f"{voice} has no notes"
         
         print("✓ All voices have musical content")
         print("✓ Test passed!")
-        return True
         
     except Exception as e:
         print(f"✗ Test failed: {e}")
-        return False
+        assert False, f"Test failed: {e}"
 
 def test_voice_detection():
     """Test voice detection capabilities."""
@@ -78,16 +73,12 @@ def test_voice_detection():
         print(f"✓ Tenor: Part {voice_mapping.tenor.part_index}, Voice {voice_mapping.tenor.voice_id}")
         print(f"✓ Bass: Part {voice_mapping.bass.part_index}, Voice {voice_mapping.bass.voice_id}")
         
-        if voice_mapping.validate():
-            print("✓ Voice mapping is valid")
-            return True
-        else:
-            print("✗ Voice mapping validation failed")
-            return False
-            
+        assert voice_mapping.validate(), "Voice mapping validation failed"
+        print("✓ Voice mapping is valid")
+        
     except Exception as e:
         print(f"✗ Voice detection test failed: {e}")
-        return False
+        assert False, f"Voice detection test failed: {e}"
 
 def test_processing_options():
     """Test different processing options."""
@@ -111,11 +102,9 @@ def test_processing_options():
         voice_scores = split_satb_voices(test_file, options=options)
         print("✓ Processing with validation disabled works")
         
-        return True
-        
     except Exception as e:
         print(f"✗ Processing options test failed: {e}")
-        return False
+        assert False, f"Processing options test failed: {e}"
 
 def main():
     """Run all tests."""

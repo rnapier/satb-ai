@@ -14,7 +14,6 @@ class VoiceRemover:
     def __init__(self, context: ProcessingContext):
         """Initialize with processing context."""
         self.context = context
-        self.removal_stats = {}
         
     def remove_voices_except(self, score: music21.stream.Score, 
                            keep_voice: VoiceLocation) -> RemovalResult:
@@ -97,20 +96,28 @@ class VoiceRemover:
                 elements_preserved += len(measure.notes)
                 continue
             
-            # Find the voice to keep
+            # Find the voice to keep (standardize on string voice IDs per music21 convention)
             target_voice = None
+            keep_voice_id_str = str(keep_voice_id)
+            
+            # First try to find by voice ID
             for voice in voices:
-                if str(voice.id) == keep_voice_id:
+                if str(voice.id) == keep_voice_id_str:
                     target_voice = voice
                     break
             
-            if target_voice is None:
-                # Target voice not found in this measure, try to find by index
-                if len(voices) > int(keep_voice_id) - 1:
-                    target_voice = voices[int(keep_voice_id) - 1]
+            # If not found and keep_voice_id is numeric, try index-based access as fallback
+            if target_voice is None and keep_voice_id_str.isdigit():
+                voice_index = int(keep_voice_id_str) - 1  # Convert to 0-based index
+                if 0 <= voice_index < len(voices):
+                    target_voice = voices[voice_index]
+                    warnings.append(f"Voice ID {keep_voice_id_str} not found in measure {measure.number}, using index-based fallback")
                 else:
-                    warnings.append(f"Target voice {keep_voice_id} not found in measure {measure.number}")
+                    warnings.append(f"Target voice {keep_voice_id_str} not found in measure {measure.number}")
                     continue
+            elif target_voice is None:
+                warnings.append(f"Target voice {keep_voice_id_str} not found in measure {measure.number}")
+                continue
             
             # Remove all other voices
             voices_to_remove = []
@@ -206,73 +213,3 @@ class VoiceRemover:
             rest = music21.note.Rest(quarterLength=4.0)
             measure.insert(0, rest)
     
-    def preserve_non_voice_elements(self, measure: music21.stream.Measure):
-        """Ensure non-voice elements are preserved during removal."""
-        # This method ensures that dynamics, lyrics, spanners, and other
-        # non-voice elements are preserved. In the copy-and-remove approach,
-        # these are automatically preserved since we start with complete copies.
-        
-        # Get all non-voice elements
-        non_voice_elements = []
-        for element in measure:
-            if not isinstance(element, (music21.stream.Voice, music21.note.Note, 
-                                      music21.note.Rest, music21.chord.Chord)):
-                non_voice_elements.append(element)
-        
-        # These elements are already preserved in the copy, so no action needed
-        # This method serves as a validation point
-        return len(non_voice_elements)
-    
-    def get_removal_statistics(self) -> dict:
-        """Get detailed statistics about last removal operation."""
-        return self.removal_stats.copy()
-    
-    def preview_removal(self, score: music21.stream.Score, 
-                       keep_voice: VoiceLocation) -> dict:
-        """
-        Preview what would be removed without actually removing.
-        
-        Args:
-            score: Score to analyze
-            keep_voice: Voice to preserve
-            
-        Returns:
-            Dictionary with preview information
-        """
-        voices_to_remove = []
-        elements_to_preserve = 0
-        elements_to_remove = 0
-        potential_issues = []
-        
-        # Analyze each part
-        for part_idx, part in enumerate(score.parts):
-            if part_idx == keep_voice.part_index:
-                # Analyze voices in target part
-                for measure in part.getElementsByClass(music21.stream.Measure):
-                    voices = list(measure.voices)
-                    if voices:
-                        for voice in voices:
-                            if str(voice.id) == keep_voice.voice_id:
-                                elements_to_preserve += len(voice.notes)
-                            else:
-                                voices_to_remove.append(f"Part {part_idx}, Voice {voice.id}")
-                                elements_to_remove += len(voice.notes)
-                    else:
-                        # No explicit voices
-                        elements_to_preserve += len(measure.notes)
-            else:
-                # Entire part will be removed
-                note_count = len(part.flatten().notes)
-                elements_to_remove += note_count
-                voices_to_remove.append(f"Part {part_idx} (entire part)")
-        
-        # Check for potential issues
-        if elements_to_preserve == 0:
-            potential_issues.append("No elements will be preserved - target voice may not exist")
-        
-        return {
-            'voices_to_remove': voices_to_remove,
-            'elements_to_preserve': elements_to_preserve,
-            'elements_to_remove': elements_to_remove,
-            'potential_issues': potential_issues
-        }

@@ -15,7 +15,6 @@ class VoiceIdentifier:
         """Initialize with score and processing options."""
         self.score = score
         self.options = options
-        self.analysis_cache = {}
         
     def analyze_score(self) -> VoiceMapping:
         """
@@ -38,9 +37,21 @@ class VoiceIdentifier:
         if self.options.auto_detect_voices:
             try:
                 return self._detect_voices_automatically()
-            except Exception as e:
+            except (AttributeError, ValueError, TypeError) as e:
                 if not self.options.fallback_to_defaults:
-                    raise VoiceDetectionError(f"Automatic voice detection failed: {e}")
+                    raise VoiceDetectionError(f"Invalid score data for voice detection: {e}")
+            except music21.exceptions21.Music21Exception as e:
+                if not self.options.fallback_to_defaults:
+                    raise VoiceDetectionError(f"Music21 error during voice detection: {e}")
+            except KeyError as e:
+                if not self.options.fallback_to_defaults:
+                    raise VoiceDetectionError(f"Missing required score elements: {e}")
+            except Exception as e:
+                # Log unexpected exceptions for debugging
+                import logging
+                logging.error(f"Unexpected error in voice detection: {type(e).__name__}: {e}")
+                if not self.options.fallback_to_defaults:
+                    raise VoiceDetectionError(f"Unexpected error during voice detection: {type(e).__name__}: {e}")
         
         # Fall back to default assumptions
         if self.options.fallback_to_defaults:
@@ -106,6 +117,42 @@ class VoiceIdentifier:
         
         return part_infos
     
+    def _get_predominant_clef(self, score: music21.stream.Score, part_index: int) -> music21.clef.Clef:
+        """Get the predominant clef for a part using proper music21 type checking."""
+        import music21
+        
+        if part_index >= len(score.parts):
+            return music21.clef.TrebleClef()  # Default fallback
+        
+        part = score.parts[part_index]
+        clefs = part.flat.getElementsByClass(music21.clef.Clef)
+        
+        if not clefs:
+            return music21.clef.TrebleClef()  # Default fallback
+        
+        # Count occurrences of each clef type
+        clef_counts = {}
+        for clef in clefs:
+            clef_type = type(clef)
+            clef_counts[clef_type] = clef_counts.get(clef_type, 0) + 1
+        
+        # Return the most common clef type
+        if clef_counts:
+            predominant_clef_type = max(clef_counts, key=clef_counts.get)
+            return predominant_clef_type()
+        
+        return music21.clef.TrebleClef()  # Default fallback
+    
+    def _is_treble_clef(self, clef: music21.clef.Clef) -> bool:
+        """Check if clef is a treble clef using proper type checking."""
+        import music21
+        return isinstance(clef, (music21.clef.TrebleClef, music21.clef.Treble8vbClef, music21.clef.Treble8vaClef))
+    
+    def _is_bass_clef(self, clef: music21.clef.Clef) -> bool:
+        """Check if clef is a bass clef using proper type checking."""
+        import music21
+        return isinstance(clef, (music21.clef.BassClef, music21.clef.Bass8vbClef, music21.clef.Bass8vaClef))
+    
     def _detect_closed_score_pattern(self, part_info: List[PartInfo]) -> Optional[VoiceMapping]:
         """Detect closed score pattern (SA on treble staff, TB on bass staff)."""
         if len(part_info) != 2:
@@ -115,9 +162,11 @@ class VoiceIdentifier:
         bass_part = None
         
         for part in part_info:
-            if 'treble' in part.clef.lower():
+            # Get the predominant clef for this part using proper music21 type checking
+            clef = self._get_predominant_clef(self.score, part.index)
+            if self._is_treble_clef(clef):
                 treble_part = part
-            elif 'bass' in part.clef.lower():
+            elif self._is_bass_clef(clef):
                 bass_part = part
         
         if not (treble_part and bass_part):
@@ -259,45 +308,3 @@ class VoiceIdentifier:
         except:
             return 60.0  # Default to middle C
     
-    def get_detection_confidence(self) -> float:
-        """
-        Get confidence level of voice detection (0.0 to 1.0).
-        
-        Returns:
-            Confidence score for the detection
-        """
-        try:
-            mapping = self.analyze_score()
-            return mapping.confidence
-        except:
-            return 0.0
-    
-    def suggest_manual_mapping(self) -> List[VoiceMapping]:
-        """
-        Suggest possible manual voice mappings.
-        
-        Returns:
-            List of possible voice mappings for user selection
-        """
-        suggestions = []
-        part_info = self.detect_part_structure()
-        
-        # Try all detection patterns
-        patterns = [
-            self._detect_closed_score_pattern(part_info),
-            self._detect_open_score_pattern(part_info),
-            self._detect_piano_reduction_pattern(part_info)
-        ]
-        
-        for pattern in patterns:
-            if pattern:
-                suggestions.append(pattern)
-        
-        # Add default mapping as fallback
-        try:
-            default = self._create_default_mapping()
-            suggestions.append(default)
-        except:
-            pass
-        
-        return suggestions

@@ -36,46 +36,6 @@ class VoiceMapping:
         ]
         return len(set(locations)) == 4
     
-    def to_dict(self) -> Dict[str, Dict[str, Any]]:
-        """Convert to dictionary for serialization."""
-        return {
-            'soprano': {
-                'part_index': self.soprano.part_index,
-                'voice_id': self.soprano.voice_id,
-                'clef_type': self.soprano.clef_type,
-                'confidence': self.soprano.confidence
-            },
-            'alto': {
-                'part_index': self.alto.part_index,
-                'voice_id': self.alto.voice_id,
-                'clef_type': self.alto.clef_type,
-                'confidence': self.alto.confidence
-            },
-            'tenor': {
-                'part_index': self.tenor.part_index,
-                'voice_id': self.tenor.voice_id,
-                'clef_type': self.tenor.clef_type,
-                'confidence': self.tenor.confidence
-            },
-            'bass': {
-                'part_index': self.bass.part_index,
-                'voice_id': self.bass.voice_id,
-                'clef_type': self.bass.clef_type,
-                'confidence': self.bass.confidence
-            },
-            'confidence': self.confidence
-        }
-    
-    @classmethod
-    def from_dict(cls, data: Dict[str, Dict[str, Any]]) -> 'VoiceMapping':
-        """Create from dictionary."""
-        return cls(
-            soprano=VoiceLocation(**data['soprano']),
-            alto=VoiceLocation(**data['alto']),
-            tenor=VoiceLocation(**data['tenor']),
-            bass=VoiceLocation(**data['bass']),
-            confidence=data.get('confidence', 1.0)
-        )
 
 
 @dataclass
@@ -110,7 +70,6 @@ class ProcessingOptions:
     # Processing options
     validate_output: bool = True
     detailed_logging: bool = False
-    memory_optimization: bool = True
 
 
 @dataclass

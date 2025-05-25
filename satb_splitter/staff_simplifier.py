@@ -220,14 +220,3 @@ class StaffSimplifier:
         else:
             return str(clef)
     
-    def handle_cross_staff_elements(self, score: music21.stream.Score) -> music21.stream.Score:
-        """Handle elements that span multiple staves."""
-        # In the copy-and-remove approach, cross-staff elements are automatically
-        # handled because we start with complete copies. Elements that span
-        # multiple staves will be preserved in each copy, and the voice removal
-        # process will clean up the parts that don't belong to the target voice.
-        
-        # This method serves as a placeholder for any special handling that
-        # might be needed in the future.
-        
-        return score

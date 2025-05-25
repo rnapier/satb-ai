@@ -125,9 +125,24 @@ class ScoreProcessor:
                 processing_time=processing_time
             )
             
+        except (AttributeError, ValueError, TypeError) as e:
+            processing_time = time.time() - start_time
+            errors.append(f"Invalid input data: {e}")
+        except music21.exceptions21.Music21Exception as e:
+            processing_time = time.time() - start_time
+            errors.append(f"Music21 error: {e}")
+        except FileNotFoundError as e:
+            processing_time = time.time() - start_time
+            errors.append(f"File not found: {e}")
+        except PermissionError as e:
+            processing_time = time.time() - start_time
+            errors.append(f"Permission denied: {e}")
         except Exception as e:
             processing_time = time.time() - start_time
-            errors.append(str(e))
+            # Log unexpected exceptions for debugging
+            import logging
+            logging.error(f"Unexpected error in score processing: {type(e).__name__}: {e}")
+            errors.append(f"Unexpected error: {type(e).__name__}: {e}")
             
             return ProcessingResult(
                 success=False,

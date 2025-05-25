@@ -102,8 +102,17 @@ class ContextualUnifier:
                 processing_time=processing_time
             )
             
+        except (AttributeError, ValueError, TypeError) as e:
+            raise UnificationError(f"Invalid input data for unification: {e}")
+        except music21.exceptions21.Music21Exception as e:
+            raise UnificationError(f"Music21 error during unification: {e}")
+        except KeyError as e:
+            raise UnificationError(f"Missing required data for unification: {e}")
         except Exception as e:
-            raise UnificationError(f"Unification failed: {e}")
+            # Log the unexpected exception for debugging
+            import logging
+            logging.error(f"Unexpected error in unification: {type(e).__name__}: {e}")
+            raise UnificationError(f"Unexpected error during unification: {type(e).__name__}: {e}")
     
     def unify_dynamics(self, voice_scores: Dict[str, music21.stream.Score]) -> dict:
         """Smart dynamics unification based on actual content."""
@@ -174,11 +183,11 @@ class ContextualUnifier:
             warnings = []
             
             # Identify system-wide spanners (tempo, rehearsal marks)
-            system_spanners = self._identify_system_spanners(voice_scores)
+            system_spanners = []  # Placeholder - method was unused/empty
             
             # Apply system spanners to all voices
             for spanner_info in system_spanners:
-                self._apply_spanner_to_all_voices(spanner_info, voice_scores)
+                # Placeholder - method was unused/empty
                 elements_unified += 1
             
             return {
@@ -398,17 +407,6 @@ class ContextualUnifier:
                     if len(measures) >= measure_number:
                         return measures[measure_number - 1]
         return None
-    
-    def _identify_system_spanners(self, voice_scores: Dict[str, music21.stream.Score]) -> List[dict]:
-        """Identify spanners that should apply to all voices."""
-        # This would identify tempo markings, rehearsal marks, etc.
-        return []
-    
-    def _apply_spanner_to_all_voices(self, spanner_info: dict,
-                                   voice_scores: Dict[str, music21.stream.Score]):
-        """Apply a spanner to all voice scores."""
-        # Simplified implementation
-        pass
     
     def _find_tempo_markings(self, voice_scores: Dict[str, music21.stream.Score]) -> List[dict]:
         """Find tempo markings in any voice."""
