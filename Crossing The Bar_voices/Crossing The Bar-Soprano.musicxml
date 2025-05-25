@@ -4,7 +4,7 @@
   <work>
     <work-title>Crossing The Bar (Soprano)</work-title>
   </work>
-  <movement-title>Crossing The Bar (Soprano)</movement-title>
+  <movement-title>Crossing The Bar.musicxml</movement-title>
   <identification>
     <creator type="composer">Joseph Barnby</creator>
     <creator type="lyricist">Alfred Tennyson</creator>
@@ -21,12 +21,12 @@
     </scaling>
   </defaults>
   <part-list>
-    <score-part id="Pbbdb2fef6f69c00567c78006843e1eef">
+    <score-part id="P1499141d05ec7ceb4de92d5a0cf29765">
       <part-name>Crossing The Bar (Soprano)</part-name>
     </score-part>
   </part-list>
   <!--=========================== Part 1 ===========================-->
-  <part id="Pbbdb2fef6f69c00567c78006843e1eef">
+  <part id="P1499141d05ec7ceb4de92d5a0cf29765">
     <!--========================= Measure 1 ==========================-->
     <measure implicit="no" number="1">
       <print>
@@ -338,6 +338,11 @@
     </measure>
     <!--========================= Measure 6 ==========================-->
     <measure implicit="no" number="6">
+      <direction placement="below">
+        <direction-type>
+          <wedge number="5" spread="15" type="diminuendo" />
+        </direction-type>
+      </direction>
       <note default-x="25" default-y="-20">
         <pitch>
           <step>B</step>
@@ -352,6 +357,11 @@
           <text>of</text>
         </lyric>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <wedge number="5" spread="0" type="stop" />
+        </direction-type>
+      </direction>
       <note default-x="138.53" default-y="-25">
         <pitch>
           <step>A</step>
@@ -643,6 +653,11 @@
           <text>sleep,</text>
         </lyric>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <wedge number="1" spread="0" type="crescendo" />
+        </direction-type>
+      </direction>
       <note default-x="203.78" default-y="-25">
         <pitch>
           <step>A</step>
@@ -673,6 +688,11 @@
           <text>full</text>
         </lyric>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <wedge number="1" spread="15" type="stop" />
+        </direction-type>
+      </direction>
       <note default-x="144.19" default-y="-15">
         <pitch>
           <step>C</step>
@@ -699,6 +719,11 @@
           <text>sound</text>
         </lyric>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <wedge number="2" spread="15" type="diminuendo" />
+        </direction-type>
+      </direction>
       <note default-x="300.89" default-y="-25">
         <pitch>
           <step>A</step>
@@ -739,6 +764,11 @@
           <text>foam,</text>
         </lyric>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <wedge number="2" spread="0" type="stop" />
+        </direction-type>
+      </direction>
       <note default-x="193.7" default-y="-30">
         <pitch>
           <step>G</step>
@@ -751,6 +781,11 @@
         <stem>up</stem>
         <beam number="1">begin</beam>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <wedge number="3" spread="0" type="crescendo" />
+        </direction-type>
+      </direction>
       <note default-x="251.73" default-y="-30">
         <pitch>
           <step>G</step>
@@ -765,6 +800,11 @@
           <text>When</text>
         </lyric>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <wedge number="3" spread="15" type="stop" />
+        </direction-type>
+      </direction>
       <note default-x="309.77" default-y="-25">
         <pitch>
           <step>A</step>
@@ -836,6 +876,11 @@
           <text>out</text>
         </lyric>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <wedge number="4" spread="15" type="diminuendo" />
+        </direction-type>
+      </direction>
       <note default-x="280.45" default-y="-20">
         <pitch>
           <step>B</step>
@@ -849,6 +894,11 @@
           <text>the</text>
         </lyric>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <wedge number="4" spread="0" type="stop" />
+        </direction-type>
+      </direction>
     </measure>
     <!--========================= Measure 14 =========================-->
     <measure implicit="no" number="14">
@@ -887,6 +937,9 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>up</stem>
+        <notations>
+          <slur number="1" type="start" />
+        </notations>
         <lyric default-y="-80.06" name="1" number="1" relative-y="-30">
           <syllabic>single</syllabic>
           <text>deep</text>
@@ -900,6 +953,9 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>up</stem>
+        <notations>
+          <slur number="1" type="stop" />
+        </notations>
       </note>
     </measure>
     <!--========================= Measure 15 =========================-->
@@ -1768,6 +1824,11 @@
           <system-distance>118.65</system-distance>
         </system-layout>
       </print>
+      <direction placement="below">
+        <direction-type>
+          <wedge number="6" spread="15" type="diminuendo" />
+        </direction-type>
+      </direction>
       <note default-x="60.86" default-y="-20">
         <pitch>
           <step>B</step>
@@ -1794,6 +1855,11 @@
           <text>lot</text>
         </lyric>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <wedge number="6" spread="0" type="stop" />
+        </direction-type>
+      </direction>
       <note default-x="172.03" default-y="-30">
         <pitch>
           <step>G</step>

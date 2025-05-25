@@ -12,7 +12,9 @@ except ImportError:
     sys.exit(1)
 
 from .converter import convert_mscz_to_musicxml
-from .unification import apply_unification
+from .unification import apply_unification, unify_spanners
+from .spanner_extractor import extract_spanners_from_score
+from .spanner_builder import rebuild_spanners_in_parts, validate_spanners_in_parts
 
 
 def split_satb_voices(file_path):
@@ -292,9 +294,23 @@ def split_satb_voices(file_path):
         total_layouts = sum(len(list(measure.getElementsByClass(music21.layout.LayoutBase))) for measure in measures)
         print(f"{voice_name}: {len(measures)} measures, {total_notes} total notes, {total_dynamics} dynamics, {total_layouts} layout elements")
     
+    # Extract spanners from original score before applying unification
+    print(f"\n=== Extracting Spanners from Original Score ===")
+    extracted_spanners = extract_spanners_from_score(score)
+    
     # Apply unification rules - need to extract parts for the unification function
     print(f"\n=== Applying Unification Rules ===")
     parts_dict = {name: voice_score.parts[0] for name, voice_score in result.items()}
     apply_unification(parts_dict)
+    
+    # Apply spanner unification and get assignments
+    spanner_assignments = unify_spanners(result, extracted_spanners)
+    
+    # Rebuild spanners in individual voice parts
+    print(f"\n=== Rebuilding Spanners in Voice Parts ===")
+    rebuild_spanners_in_parts(result, spanner_assignments)
+    
+    # Validate spanner reconstruction
+    validation_results = validate_spanners_in_parts(result)
     
     return result

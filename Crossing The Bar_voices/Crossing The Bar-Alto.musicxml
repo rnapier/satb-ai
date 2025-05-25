@@ -4,7 +4,7 @@
   <work>
     <work-title>Crossing The Bar (Alto)</work-title>
   </work>
-  <movement-title>Crossing The Bar (Alto)</movement-title>
+  <movement-title>Crossing The Bar.musicxml</movement-title>
   <identification>
     <creator type="composer">Joseph Barnby</creator>
     <creator type="lyricist">Alfred Tennyson</creator>
@@ -21,12 +21,12 @@
     </scaling>
   </defaults>
   <part-list>
-    <score-part id="P1658c00bdcfe26ac474ef4ff0feb7e56">
+    <score-part id="P638eeb7effd78927363c4215d65ad2ec">
       <part-name>Crossing The Bar (Alto)</part-name>
     </score-part>
   </part-list>
   <!--=========================== Part 1 ===========================-->
-  <part id="P1658c00bdcfe26ac474ef4ff0feb7e56">
+  <part id="P638eeb7effd78927363c4215d65ad2ec">
     <!--========================= Measure 1 ==========================-->
     <measure implicit="no" number="1">
       <attributes>
@@ -624,6 +624,9 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <notations>
+          <slur number="1" type="start" />
+        </notations>
         <lyric default-y="-80.06" name="1" number="1" relative-y="-51.04">
           <syllabic>single</syllabic>
           <text>deep</text>
@@ -637,6 +640,9 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <notations>
+          <slur number="1" type="stop" />
+        </notations>
       </note>
     </measure>
     <!--========================= Measure 15 =========================-->
@@ -1130,6 +1136,11 @@
     </measure>
     <!--========================= Measure 29 =========================-->
     <measure implicit="no" number="29">
+      <direction placement="below">
+        <direction-type>
+          <wedge number="1" spread="0" type="crescendo" />
+        </direction-type>
+      </direction>
       <note default-x="25" default-y="-40">
         <pitch>
           <step>E</step>
@@ -1138,7 +1149,15 @@
         <duration>20160</duration>
         <type>half</type>
         <stem>down</stem>
+        <notations>
+          <slur number="2" type="start" />
+        </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <wedge number="1" spread="15" type="stop" />
+        </direction-type>
+      </direction>
       <note default-x="165.93" default-y="-35">
         <pitch>
           <step>F</step>
@@ -1149,6 +1168,9 @@
         <type>quarter</type>
         <accidental>natural</accidental>
         <stem>down</stem>
+        <notations>
+          <slur number="2" type="stop" />
+        </notations>
       </note>
       <note default-x="236.39" default-y="-30">
         <pitch>

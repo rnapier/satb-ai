@@ -1,9 +1,10 @@
 """
-Unification rules for dynamics and lyrics in satb-split.
+Unification rules for dynamics, lyrics, and spanners in satb-split.
 """
 
 import copy
 import music21
+from typing import Dict, List, Any
 
 
 def apply_unification(voices_dict):
@@ -31,6 +32,173 @@ def apply_unification(voices_dict):
     
     # Apply lyrics unification rules
     unify_lyrics(voices_dict, soprano_lyrics, alto_lyrics, tenor_lyrics, bass_lyrics)
+
+
+def unify_spanners(voices_dict: Dict[str, music21.stream.Score],
+                  extracted_spanners: Dict[str, List[Dict[str, Any]]]) -> Dict[str, List[Dict[str, Any]]]:
+    """
+    Apply unification rules for spanners across SATB parts.
+    
+    Args:
+        voices_dict: Dictionary mapping voice names to Score objects
+        extracted_spanners: Extracted spanners from original score
+        
+    Returns:
+        Dictionary mapping voice names to their assigned spanners
+    """
+    print("=== Applying Spanner Unification Rules ===")
+    
+    spanner_assignments = {
+        'Soprano': [],
+        'Alto': [],
+        'Tenor': [],
+        'Bass': []
+    }
+    
+    # Process each spanner type
+    unify_wedges(extracted_spanners['wedges'], spanner_assignments)
+    distribute_slurs(extracted_spanners['slurs'], spanner_assignments)
+    distribute_ties(extracted_spanners['ties'], spanner_assignments)
+    distribute_other_spanners(extracted_spanners['other_spanners'], spanner_assignments)
+    
+    # Print summary
+    for voice_name, spanners in spanner_assignments.items():
+        print(f"  {voice_name}: {len(spanners)} spanners assigned")
+    
+    return spanner_assignments
+
+
+def unify_wedges(wedges: List[Dict[str, Any]], assignments: Dict[str, List[Dict[str, Any]]]) -> None:
+    """Apply wedge (crescendo/diminuendo) unification rules."""
+    print("  Applying wedge unification rules...")
+    
+    # Group wedges by timing to find potential system-wide wedges
+    wedge_groups = group_wedges_by_timing(wedges)
+    
+    for group in wedge_groups:
+        if len(group) == 1:
+            # Single wedge - apply voice-specific or system-wide rules
+            wedge = group[0]
+            apply_single_wedge_rules(wedge, assignments)
+        else:
+            # Multiple wedges at similar timing - likely system-wide
+            apply_multiple_wedge_rules(group, assignments)
+
+
+def distribute_slurs(slurs: List[Dict[str, Any]], assignments: Dict[str, List[Dict[str, Any]]]) -> None:
+    """Distribute slurs to appropriate voices (typically voice-specific)."""
+    print("  Distributing slurs...")
+    
+    for slur in slurs:
+        # Slurs are typically voice-specific
+        target_voices = get_voice_assignment_for_spanner(slur)
+        
+        for voice_name in target_voices:
+            if voice_name in assignments:
+                assignments[voice_name].append(slur)
+                print(f"    Assigned slur to {voice_name}")
+
+
+def distribute_ties(ties: List[Dict[str, Any]], assignments: Dict[str, List[Dict[str, Any]]]) -> None:
+    """Distribute ties to appropriate voices (always voice-specific)."""
+    print("  Distributing ties...")
+    
+    for tie in ties:
+        # Ties are always voice-specific
+        target_voices = get_voice_assignment_for_spanner(tie)
+        
+        for voice_name in target_voices:
+            if voice_name in assignments:
+                assignments[voice_name].append(tie)
+
+
+def distribute_other_spanners(other_spanners: List[Dict[str, Any]], assignments: Dict[str, List[Dict[str, Any]]]) -> None:
+    """Distribute other types of spanners."""
+    print("  Distributing other spanners...")
+    
+    for spanner in other_spanners:
+        # Default to voice-specific distribution
+        target_voices = get_voice_assignment_for_spanner(spanner)
+        
+        for voice_name in target_voices:
+            if voice_name in assignments:
+                assignments[voice_name].append(spanner)
+                print(f"    Assigned {spanner['type']} to {voice_name}")
+
+
+def group_wedges_by_timing(wedges: List[Dict[str, Any]]) -> List[List[Dict[str, Any]]]:
+    """Group wedges that occur at similar times (potentially system-wide)."""
+    groups = []
+    tolerance = 1.0  # 1 beat tolerance
+    
+    for wedge in wedges:
+        start_time = wedge.get('start_offset', 0)
+        
+        # Find existing group with similar timing
+        found_group = False
+        for group in groups:
+            group_start = group[0].get('start_offset', 0)
+            if abs(start_time - group_start) <= tolerance:
+                group.append(wedge)
+                found_group = True
+                break
+        
+        if not found_group:
+            groups.append([wedge])
+    
+    return groups
+
+
+def apply_single_wedge_rules(wedge: Dict[str, Any], assignments: Dict[str, List[Dict[str, Any]]]) -> None:
+    """Apply rules for a single wedge (no similar wedges in other parts)."""
+    target_voices = get_voice_assignment_for_spanner(wedge)
+    
+    if not target_voices:
+        # If no specific voice assignment, apply soprano-only rule
+        print(f"    Single {wedge['type']} with no voice assignment - applying to Soprano only")
+        assignments['Soprano'].append(wedge)
+    elif len(target_voices) == 1 and target_voices[0] == 'Soprano':
+        # Rule: If only Soprano has wedge, apply to all parts
+        print(f"    Single {wedge['type']} in Soprano - applying to all parts")
+        for voice_name in assignments.keys():
+            assignments[voice_name].append(copy.deepcopy(wedge))
+    else:
+        # Apply to specific voices
+        for voice_name in target_voices:
+            if voice_name in assignments:
+                assignments[voice_name].append(wedge)
+                print(f"    Assigned {wedge['type']} to {voice_name}")
+
+
+def apply_multiple_wedge_rules(wedge_group: List[Dict[str, Any]], assignments: Dict[str, List[Dict[str, Any]]]) -> None:
+    """Apply rules for multiple wedges occurring at similar times."""
+    wedge_type = wedge_group[0]['type']
+    
+    # Check if Soprano and Bass both have this wedge type
+    has_soprano = any(w for w in wedge_group if 'Soprano' in get_voice_assignment_for_spanner(w))
+    has_bass = any(w for w in wedge_group if 'Bass' in get_voice_assignment_for_spanner(w))
+    
+    if has_soprano and has_bass:
+        # Rule: If Soprano and Bass have matching wedges, apply to all parts
+        print(f"    Multiple {wedge_type} in Soprano and Bass - applying to all parts")
+        representative_wedge = wedge_group[0]
+        for voice_name in assignments.keys():
+            assignments[voice_name].append(copy.deepcopy(representative_wedge))
+    else:
+        # Apply each wedge to its specific voice
+        for wedge in wedge_group:
+            target_voices = get_voice_assignment_for_spanner(wedge)
+            for voice_name in target_voices:
+                if voice_name in assignments:
+                    assignments[voice_name].append(wedge)
+                    print(f"    Assigned {wedge['type']} to {voice_name}")
+
+
+# Import function to avoid circular imports - moved to top level
+def get_voice_assignment_for_spanner(spanner_info: Dict[str, Any]) -> List[str]:
+    """Get voice assignment for a spanner (imported to avoid circular import)."""
+    from .spanner_extractor import get_voice_assignment_for_spanner as get_assignment
+    return get_assignment(spanner_info)
 
 
 def extract_dynamics_from_part(part):
