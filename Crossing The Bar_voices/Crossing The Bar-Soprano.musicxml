@@ -21,12 +21,12 @@
     </scaling>
   </defaults>
   <part-list>
-    <score-part id="P652b7825d918b6c74d16e627c735ed39">
+    <score-part id="P9db294c703892eca417f992bd4019886">
       <part-name>Crossing The Bar (Soprano)</part-name>
     </score-part>
   </part-list>
   <!--=========================== Part 1 ===========================-->
-  <part id="P652b7825d918b6c74d16e627c735ed39">
+  <part id="P9db294c703892eca417f992bd4019886">
     <!--========================= Measure 1 ==========================-->
     <measure implicit="no" number="1">
       <print>
@@ -243,6 +243,11 @@
           <text>me!</text>
         </lyric>
       </note>
+      <note default-x="195.19" default-y="-20">
+        <rest />
+        <duration>5040</duration>
+        <type>eighth</type>
+      </note>
       <direction placement="below">
         <direction-type>
           <wedge number="1" spread="0" type="crescendo" />
@@ -294,11 +299,6 @@
           <syllabic>single</syllabic>
           <text>there</text>
         </lyric>
-      </note>
-      <note default-x="195.19" default-y="-20">
-        <rest />
-        <duration>5040</duration>
-        <type>eighth</type>
       </note>
     </measure>
     <!--========================= Measure 5 ==========================-->
@@ -1283,6 +1283,11 @@
           <text>dark!</text>
         </lyric>
       </note>
+      <note default-x="123.61" default-y="-20">
+        <rest />
+        <duration>5040</duration>
+        <type>eighth</type>
+      </note>
       <note default-x="167.43" default-y="-40">
         <pitch>
           <step>E</step>
@@ -1324,11 +1329,6 @@
           <syllabic>single</syllabic>
           <text>there</text>
         </lyric>
-      </note>
-      <note default-x="123.61" default-y="-20">
-        <rest />
-        <duration>5040</duration>
-        <type>eighth</type>
       </note>
     </measure>
     <!--========================= Measure 21 =========================-->
@@ -1540,6 +1540,11 @@
           <words default-y="32.01" font-family="Edwin" font-size="10" font-style="italic" relative-x="5.82">cresc.</words>
         </direction-type>
       </direction>
+      <direction placement="below">
+        <direction-type>
+          <words font-size="10" font-style="italic">cresc.</words>
+        </direction-type>
+      </direction>
       <note default-x="104.08" default-y="-30">
         <pitch>
           <step>G</step>
@@ -1652,6 +1657,11 @@
       <attributes>
         <staff-details print-object="yes" />
       </attributes>
+      <direction placement="below">
+        <direction-type>
+          <words font-size="10" font-style="italic">(cresc.)</words>
+        </direction-type>
+      </direction>
       <note default-x="60.86" default-y="-30">
         <pitch>
           <step>G</step>

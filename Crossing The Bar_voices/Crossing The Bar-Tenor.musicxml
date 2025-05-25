@@ -21,12 +21,12 @@
     </scaling>
   </defaults>
   <part-list>
-    <score-part id="P29c347637d7482e20a0c4dab5a9cb790">
+    <score-part id="P96c7dcf73b2e839ef505b63b6bc39156">
       <part-name>Crossing The Bar (Tenor)</part-name>
     </score-part>
   </part-list>
   <!--=========================== Part 1 ===========================-->
-  <part id="P29c347637d7482e20a0c4dab5a9cb790">
+  <part id="P96c7dcf73b2e839ef505b63b6bc39156">
     <!--========================= Measure 1 ==========================-->
     <measure implicit="no" number="1">
       <print>
@@ -49,6 +49,15 @@
         </clef>
         <staff-details print-object="yes" />
       </attributes>
+      <direction placement="above">
+        <direction-type>
+          <metronome parentheses="no">
+            <beat-unit>quarter</beat-unit>
+            <per-minute>80</per-minute>
+          </metronome>
+        </direction-type>
+        <sound tempo="80" />
+      </direction>
       <note default-x="82.97" default-y="-159.3">
         <pitch>
           <step>G</step>
@@ -58,7 +67,7 @@
         <type>quarter</type>
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>begin</syllabic>
           <text>Sun</text>
         </lyric>
       </note>
@@ -72,7 +81,7 @@
         <stem>up</stem>
         <beam number="1">begin</beam>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>end</syllabic>
           <text>set</text>
         </lyric>
       </note>
@@ -100,7 +109,7 @@
         <dot />
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>begin</syllabic>
           <text>ev</text>
         </lyric>
       </note>
@@ -113,7 +122,7 @@
         <type>eighth</type>
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>end</syllabic>
           <text>'ning</text>
         </lyric>
       </note>
@@ -234,6 +243,11 @@
           <text>me!</text>
         </lyric>
       </note>
+      <note default-x="195.19" default-y="-175.98">
+        <rest />
+        <duration>5040</duration>
+        <type>eighth</type>
+      </note>
       <note default-x="254.9" default-y="-160.98">
         <pitch>
           <step>G</step>
@@ -276,11 +290,6 @@
           <text>there</text>
         </lyric>
       </note>
-      <note default-x="195.19" default-y="-175.98">
-        <rest />
-        <duration>5040</duration>
-        <type>eighth</type>
-      </note>
     </measure>
     <!--========================= Measure 5 ==========================-->
     <measure implicit="no" number="5">
@@ -321,7 +330,7 @@
         <accidental>sharp</accidental>
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>begin</syllabic>
           <text>moan</text>
         </lyric>
       </note>
@@ -335,7 +344,7 @@
         <type>quarter</type>
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>end</syllabic>
           <text>ing</text>
         </lyric>
       </note>
@@ -603,7 +612,7 @@
         <stem>up</stem>
         <beam number="1">begin</beam>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>begin</syllabic>
           <text>mov</text>
         </lyric>
       </note>
@@ -617,7 +626,7 @@
         <stem>up</stem>
         <beam number="1">continue</beam>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>end</syllabic>
           <text>ing</text>
         </lyric>
       </note>
@@ -645,7 +654,7 @@
         <stem>up</stem>
         <beam number="1">end</beam>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>begin</syllabic>
           <text>a</text>
         </lyric>
       </note>
@@ -662,7 +671,7 @@
         <dot />
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>end</syllabic>
           <text>sleep,</text>
         </lyric>
       </note>
@@ -896,7 +905,7 @@
         <accidental>sharp</accidental>
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>begin</syllabic>
           <text>bound</text>
         </lyric>
       </note>
@@ -972,7 +981,7 @@
         <type>eighth</type>
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>begin</syllabic>
           <text>a</text>
         </lyric>
       </note>
@@ -985,7 +994,7 @@
         <type>half</type>
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>end</syllabic>
           <text>gain</text>
         </lyric>
       </note>
@@ -1034,7 +1043,7 @@
         <type>quarter</type>
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>begin</syllabic>
           <text>Twi</text>
         </lyric>
       </note>
@@ -1048,7 +1057,7 @@
         <stem>up</stem>
         <beam number="1">begin</beam>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>end</syllabic>
           <text>light</text>
         </lyric>
       </note>
@@ -1076,7 +1085,7 @@
         <dot />
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>begin</syllabic>
           <text>ev</text>
         </lyric>
       </note>
@@ -1089,7 +1098,7 @@
         <type>eighth</type>
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>end</syllabic>
           <text>'ning</text>
         </lyric>
       </note>
@@ -1153,7 +1162,7 @@
         <accidental>flat</accidental>
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>begin</syllabic>
           <text>af</text>
         </lyric>
       </note>
@@ -1167,7 +1176,7 @@
         <type>eighth</type>
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>end</syllabic>
           <text>ter</text>
         </lyric>
       </note>
@@ -1213,6 +1222,11 @@
           <text>dark!</text>
         </lyric>
       </note>
+      <note default-x="123.61" default-y="-181.72">
+        <rest />
+        <duration>5040</duration>
+        <type>eighth</type>
+      </note>
       <note default-x="167.43" default-y="-151.72">
         <pitch>
           <step>C</step>
@@ -1257,11 +1271,6 @@
           <text>there</text>
         </lyric>
       </note>
-      <note default-x="123.61" default-y="-181.72">
-        <rest />
-        <duration>5040</duration>
-        <type>eighth</type>
-      </note>
     </measure>
     <!--========================= Measure 21 =========================-->
     <measure implicit="no" number="21">
@@ -1300,7 +1309,7 @@
         <type>quarter</type>
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>begin</syllabic>
           <text>sad</text>
         </lyric>
       </note>
@@ -1313,7 +1322,7 @@
         <type>quarter</type>
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>end</syllabic>
           <text>ness</text>
         </lyric>
       </note>
@@ -1345,7 +1354,7 @@
         <type>eighth</type>
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>begin</syllabic>
           <text>fare</text>
         </lyric>
       </note>
@@ -1358,7 +1367,7 @@
         <type>quarter</type>
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>end</syllabic>
           <text>well,</text>
         </lyric>
       </note>
@@ -1415,7 +1424,7 @@
         <type>half</type>
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>begin</syllabic>
           <text>em</text>
         </lyric>
       </note>
@@ -1432,7 +1441,7 @@
         <dot />
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>end</syllabic>
           <text>bark;</text>
         </lyric>
       </note>
@@ -1465,6 +1474,11 @@
           <text>though</text>
         </lyric>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words default-y="32.01" font-family="Edwin" font-size="10" font-style="italic" relative-x="5.82">cresc.</words>
+        </direction-type>
+      </direction>
       <note default-x="104.08" default-y="-169.76">
         <pitch>
           <step>A</step>
@@ -1796,7 +1810,7 @@
         <type>quarter</type>
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>begin</syllabic>
           <text>Pi</text>
         </lyric>
       </note>
@@ -1809,7 +1823,7 @@
         <type>quarter</type>
         <stem>up</stem>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>end</syllabic>
           <text>lot</text>
         </lyric>
       </note>
@@ -1954,7 +1968,7 @@
         <duration>40320</duration>
         <type>whole</type>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>begin</syllabic>
           <text>A</text>
         </lyric>
       </note>
@@ -1969,7 +1983,7 @@
         <duration>40320</duration>
         <type>whole</type>
         <lyric name="1" number="1">
-          <syllabic>single</syllabic>
+          <syllabic>end</syllabic>
           <text>men.</text>
         </lyric>
       </note>

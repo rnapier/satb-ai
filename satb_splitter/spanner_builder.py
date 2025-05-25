@@ -83,6 +83,8 @@ def recreate_spanner_in_part(part: music21.stream.Part, spanner_info: Dict[str, 
             recreate_slur_in_part(part, spanner_info)
         elif spanner_type in ['Crescendo', 'Diminuendo']:
             recreate_wedge_in_part(part, spanner_info)
+        elif spanner_type == 'Dashes':
+            recreate_dashes_in_part(part, spanner_info)
         else:
             print(f"    Warning: Unknown spanner type {spanner_type}, skipping")
             return
@@ -308,3 +310,68 @@ def validate_spanners_in_parts(voices_dict: Dict[str, music21.stream.Score]) -> 
         print(f"{voice_name}: {total_spanners} spanners, {tied_notes} tied notes")
     
     return validation_results
+def recreate_dashes_in_part(part: music21.stream.Part, dashes_info: Dict[str, Any]) -> None:
+    """
+    Recreate a dashes spanner in a voice part.
+    
+    Dashes spanners are text-based crescendos/diminuendos with dashed continuation lines.
+    They consist of:
+    1. Text element (e.g., "cresc.") at the start
+    2. Dashed line continuation until the end
+    
+    Args:
+        part: music21.stream.Part to add the dashes spanner to
+        dashes_info: Information about the dashes spanner
+    """
+    start_measure = dashes_info['start_measure']
+    end_measure = dashes_info.get('end_measure')
+    text_content = dashes_info['text_content']
+    start_offset = dashes_info.get('start_offset', 0.0)
+    
+    print(f"    Recreating dashes spanner: '{text_content}' from measure {start_measure} to {end_measure}")
+    
+    # Find the start measure
+    start_measure_obj = None
+    for measure in part.getElementsByClass('Measure'):
+        if measure.number == start_measure:
+            start_measure_obj = measure
+            break
+    
+    if not start_measure_obj:
+        print(f"    Warning: Could not find start measure {start_measure}")
+        return
+    
+    # Add the text expression at the start
+    text_expr = music21.expressions.TextExpression(text_content)
+    text_expr.style.fontStyle = 'italic'
+    text_expr.style.fontSize = 10
+    text_expr.placement = 'below'
+    
+    # Insert the text expression at the specified offset
+    start_measure_obj.insert(start_offset, text_expr)
+    print(f"    Added text expression '{text_content}' at measure {start_measure}, offset {start_offset}")
+    
+    # For now, we'll create a simple text-based spanner
+    # In a more complete implementation, we would create actual dashed lines
+    # using music21's line spanners or custom direction elements
+    
+    # If there's an end measure, we could add continuation markers
+    if end_measure and end_measure != start_measure:
+        # Find the end measure
+        end_measure_obj = None
+        for measure in part.getElementsByClass('Measure'):
+            if measure.number == end_measure:
+                end_measure_obj = measure
+                break
+        
+        if end_measure_obj:
+            # Add a continuation marker (this is a simplified approach)
+            # In the original MusicXML, this would be handled by dashes start/stop elements
+            continuation_expr = music21.expressions.TextExpression(f"({text_content})")
+            continuation_expr.style.fontStyle = 'italic'
+            continuation_expr.style.fontSize = 10
+            continuation_expr.placement = 'below'
+            
+            # Insert at the beginning of the end measure
+            end_measure_obj.insert(0.0, continuation_expr)
+            print(f"    Added continuation '({text_content})' at measure {end_measure}")

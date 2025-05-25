@@ -63,6 +63,7 @@ def unify_spanners(voices_dict: Dict[str, music21.stream.Score],
     unify_wedges(extracted_spanners['wedges'], spanner_assignments)
     distribute_slurs(extracted_spanners['slurs'], spanner_assignments)
     distribute_ties(extracted_spanners['ties'], spanner_assignments)
+    distribute_dashes(extracted_spanners['dashes'], spanner_assignments)
     distribute_other_spanners(extracted_spanners['other_spanners'], spanner_assignments)
     
     # Print summary
@@ -196,6 +197,27 @@ def apply_multiple_wedge_rules(wedge_group: List[Dict[str, Any]], assignments: D
                 if voice_name in assignments:
                     assignments[voice_name].append(wedge)
                     print(f"    Assigned {wedge['type']} to {voice_name}")
+def distribute_dashes(dashes: List[Dict[str, Any]], assignments: Dict[str, List[Dict[str, Any]]]) -> None:
+    """
+    Distribute dashes spanners to appropriate voice parts.
+    
+    Dashes spanners are text-based crescendos/diminuendos that typically apply to specific voices.
+    They should be assigned based on the voice context where they appear.
+    
+    Args:
+        dashes: List of dashes spanner information
+        assignments: Dictionary to store voice assignments
+    """
+    print(f"  Distributing {len(dashes)} dashes spanners...")
+    
+    for dashes_spanner in dashes:
+        # Dashes spanners are typically voice-specific
+        target_voices = get_voice_assignment_for_spanner(dashes_spanner)
+        
+        for voice_name in target_voices:
+            if voice_name in assignments:
+                assignments[voice_name].append(dashes_spanner)
+                print(f"    Assigned dashes '{dashes_spanner['text_content']}' to {voice_name}")
 
 
 # Import function to avoid circular imports - moved to top level
