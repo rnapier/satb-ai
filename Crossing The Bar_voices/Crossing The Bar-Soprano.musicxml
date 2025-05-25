@@ -21,12 +21,12 @@
     </scaling>
   </defaults>
   <part-list>
-    <score-part id="P077c933dbfc815ce472686a33d63383f">
+    <score-part id="P35e84fa431dd9b08ca9559b94355ff3f">
       <part-name>Crossing The Bar (Soprano)</part-name>
     </score-part>
   </part-list>
   <!--=========================== Part 1 ===========================-->
-  <part id="P077c933dbfc815ce472686a33d63383f">
+  <part id="P35e84fa431dd9b08ca9559b94355ff3f">
     <!--========================= Measure 1 ==========================-->
     <measure implicit="no" number="1">
       <print>
@@ -37,6 +37,9 @@
           </system-margins>
           <top-system-distance>191.99</top-system-distance>
         </system-layout>
+        <staff-layout number="2">
+          <staff-distance>114.3</staff-distance>
+        </staff-layout>
       </print>
       <attributes>
         <divisions>10080</divisions>
@@ -44,6 +47,7 @@
           <sign>G</sign>
           <line>2</line>
         </clef>
+        <staff-details print-object="yes" />
       </attributes>
       <direction placement="above">
         <direction-type>
@@ -219,7 +223,13 @@
           </system-margins>
           <system-distance>89.1</system-distance>
         </system-layout>
+        <staff-layout number="2">
+          <staff-distance>115.98</staff-distance>
+        </staff-layout>
       </print>
+      <attributes>
+        <staff-details print-object="yes" />
+      </attributes>
       <note default-x="60.86" default-y="-45">
         <pitch>
           <step>D</step>
@@ -412,7 +422,13 @@
           </system-margins>
           <system-distance>89.1</system-distance>
         </system-layout>
+        <staff-layout number="2">
+          <staff-distance>111.62</staff-distance>
+        </staff-layout>
       </print>
+      <attributes>
+        <staff-details print-object="yes" />
+      </attributes>
       <note default-x="60.86" default-y="-35">
         <pitch>
           <step>F</step>
@@ -553,7 +569,13 @@
           </system-margins>
           <system-distance>89.1</system-distance>
         </system-layout>
+        <staff-layout number="2">
+          <staff-distance>107.96</staff-distance>
+        </staff-layout>
       </print>
+      <attributes>
+        <staff-details print-object="yes" />
+      </attributes>
       <note default-x="63.11" default-y="-40">
         <pitch>
           <step>E</step>
@@ -748,7 +770,13 @@
           </system-margins>
           <system-distance>89.1</system-distance>
         </system-layout>
+        <staff-layout number="2">
+          <staff-distance>141.4</staff-distance>
+        </staff-layout>
       </print>
+      <attributes>
+        <staff-details print-object="yes" />
+      </attributes>
       <note default-x="63.11" default-y="-30">
         <pitch>
           <step>G</step>
@@ -968,7 +996,13 @@
           </system-margins>
           <top-system-distance>70</top-system-distance>
         </system-layout>
+        <staff-layout number="2">
+          <staff-distance>124.62</staff-distance>
+        </staff-layout>
       </print>
+      <attributes>
+        <staff-details print-object="yes" />
+      </attributes>
       <note default-x="60.86" default-y="-30">
         <pitch>
           <step>G</step>
@@ -1163,7 +1197,13 @@
           </system-margins>
           <system-distance>118.65</system-distance>
         </system-layout>
+        <staff-layout number="2">
+          <staff-distance>121.72</staff-distance>
+        </staff-layout>
       </print>
+      <attributes>
+        <staff-details print-object="yes" />
+      </attributes>
       <note default-x="61.48" default-y="-30">
         <pitch>
           <step>G</step>
@@ -1404,7 +1444,13 @@
           </system-margins>
           <system-distance>118.65</system-distance>
         </system-layout>
+        <staff-layout number="2">
+          <staff-distance>129.76</staff-distance>
+        </staff-layout>
       </print>
+      <attributes>
+        <staff-details print-object="yes" />
+      </attributes>
       <note default-x="60.86" default-y="-40">
         <pitch>
           <step>E</step>
@@ -1594,7 +1640,13 @@
           </system-margins>
           <system-distance>118.65</system-distance>
         </system-layout>
+        <staff-layout number="2">
+          <staff-distance>103.89</staff-distance>
+        </staff-layout>
       </print>
+      <attributes>
+        <staff-details print-object="yes" />
+      </attributes>
       <note default-x="60.86" default-y="-30">
         <pitch>
           <step>G</step>
@@ -1823,7 +1875,13 @@
           </system-margins>
           <system-distance>118.65</system-distance>
         </system-layout>
+        <staff-layout number="2">
+          <staff-distance>115.06</staff-distance>
+        </staff-layout>
       </print>
+      <attributes>
+        <staff-details print-object="yes" />
+      </attributes>
       <direction placement="below">
         <direction-type>
           <wedge number="6" spread="15" type="diminuendo" />

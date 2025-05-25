@@ -17,6 +17,35 @@ from .spanner_extractor import extract_spanners_from_score
 from .spanner_builder import rebuild_spanners_in_parts, validate_spanners_in_parts
 
 
+def extract_layout_elements_from_score(score):
+    """Extract layout elements from original score for unification."""
+    layout_elements = []
+    
+    print("=== Extracting Layout Elements from Original Score ===")
+    
+    for part_idx, part in enumerate(score.parts):
+        print(f"Processing Part {part_idx + 1} for layout elements...")
+        
+        for measure_idx, measure in enumerate(part.getElementsByClass(music21.stream.Measure)):
+            # Extract layout elements with their positions
+            for layout in measure.getElementsByClass([music21.layout.SystemLayout,
+                                                    music21.layout.PageLayout,
+                                                    music21.layout.StaffLayout]):
+                layout_info = {
+                    'type': type(layout).__name__,
+                    'measure_number': measure_idx + 1,
+                    'offset': layout.offset,
+                    'part_idx': part_idx,
+                    'part_name': part.partName,
+                    'layout_object': layout
+                }
+                layout_elements.append(layout_info)
+                print(f"  Found {type(layout).__name__} in measure {measure_idx + 1} at offset {layout.offset}")
+    
+    print(f"Layout extraction complete: {len(layout_elements)} elements found")
+    return layout_elements
+
+
 def split_satb_voices(file_path):
     """Split a closed-score SATB file into separate voice parts.
     
@@ -199,12 +228,8 @@ def split_satb_voices(file_path):
                     tempo_copy = copy.deepcopy(tempo)
                     target_for_measure_elements.insert(offset, tempo_copy)
                     processed_measure_elements.add(id(tempo))
-                # Add layout elements to preserve system breaks and formatting
-                for offset, layout in measure_layouts:
-                    layout_copy = copy.deepcopy(layout)
-                    target_for_measure_elements.insert(offset, layout_copy)
-                    processed_measure_elements.add(id(layout))
-                    print(f"    Added {type(layout).__name__} to measure {measure_idx + 1}")
+                # Layout elements are now handled in the unification phase
+                # to ensure they are applied to all SATB parts
             
             # Extract content from each voice
             for voice in voices:
@@ -298,10 +323,13 @@ def split_satb_voices(file_path):
     print(f"\n=== Extracting Spanners from Original Score ===")
     extracted_spanners = extract_spanners_from_score(score)
     
+    # Extract layout elements from original score before applying unification
+    extracted_layouts = extract_layout_elements_from_score(score)
+    
     # Apply unification rules - need to extract parts for the unification function
     print(f"\n=== Applying Unification Rules ===")
     parts_dict = {name: voice_score.parts[0] for name, voice_score in result.items()}
-    apply_unification(parts_dict)
+    apply_unification(parts_dict, extracted_layouts)
     
     # Apply spanner unification and get assignments
     spanner_assignments = unify_spanners(result, extracted_spanners)

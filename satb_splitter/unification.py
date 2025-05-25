@@ -7,9 +7,9 @@ import music21
 from typing import Dict, List, Any
 
 
-def apply_unification(voices_dict):
-    """Apply unification rules for dynamics and lyrics across SATB parts."""
-    print("Analyzing dynamics and lyrics for unification...")
+def apply_unification(voices_dict, extracted_layouts=None):
+    """Apply unification rules for dynamics, lyrics, and layout elements across SATB parts."""
+    print("Analyzing dynamics, lyrics, and layout elements for unification...")
     
     # Extract dynamics from each voice
     soprano_dynamics = extract_dynamics_from_part(voices_dict['Soprano'])
@@ -32,6 +32,10 @@ def apply_unification(voices_dict):
     
     # Apply lyrics unification rules
     unify_lyrics(voices_dict, soprano_lyrics, alto_lyrics, tenor_lyrics, bass_lyrics)
+    
+    # Apply layout element unification rules
+    if extracted_layouts:
+        unify_layout_elements(voices_dict, extracted_layouts)
 
 
 def unify_spanners(voices_dict: Dict[str, music21.stream.Score],
@@ -333,3 +337,66 @@ def copy_lyrics_to_parts(source_lyrics, target_part_names, voices_dict):
                                 note.lyric = lyric_text
                             break
                     break
+
+
+def unify_layout_elements(voices_dict, extracted_layouts):
+    """Apply layout element unification rules across all SATB parts."""
+    print("  Applying layout element unification rules...")
+    
+    if not extracted_layouts:
+        print("    No layout elements to unify")
+        return
+    
+    # Group layout elements by measure and type, avoiding duplicates
+    layout_by_measure = {}
+    processed_layouts = set()
+    
+    for layout_info in extracted_layouts:
+        measure_num = layout_info['measure_number']
+        layout_type = layout_info['type']
+        offset = layout_info['offset']
+        
+        # Create a unique key to avoid duplicates from multiple parts
+        layout_key = (measure_num, layout_type, offset)
+        
+        if layout_key not in processed_layouts:
+            if measure_num not in layout_by_measure:
+                layout_by_measure[measure_num] = []
+            layout_by_measure[measure_num].append(layout_info)
+            processed_layouts.add(layout_key)
+    
+    print(f"    Found layout elements in {len(layout_by_measure)} measures")
+    
+    # Apply layout elements to all SATB parts
+    for measure_num, layouts in layout_by_measure.items():
+        for layout_info in layouts:
+            layout_type = layout_info['type']
+            offset = layout_info['offset']
+            original_layout = layout_info['layout_object']
+            
+            # Rule: System breaks and page breaks apply to all parts
+            if layout_type in ['SystemLayout', 'PageLayout']:
+                print(f"    Applying {layout_type} to all parts in measure {measure_num}")
+                copy_layout_to_all_parts(original_layout, offset, measure_num, voices_dict)
+            
+            # Rule: Staff layout may apply to all parts (can be refined later if needed)
+            elif layout_type == 'StaffLayout':
+                print(f"    Applying {layout_type} to all parts in measure {measure_num}")
+                copy_layout_to_all_parts(original_layout, offset, measure_num, voices_dict)
+            
+            else:
+                print(f"    Unknown layout type {layout_type} - applying to all parts")
+                copy_layout_to_all_parts(original_layout, offset, measure_num, voices_dict)
+
+
+def copy_layout_to_all_parts(original_layout, offset, measure_num, voices_dict):
+    """Copy a layout element to all SATB parts at the specified measure and offset."""
+    for part_name, part in voices_dict.items():
+        # Find the corresponding measure in this part
+        for measure in part.getElementsByClass(music21.stream.Measure):
+            if measure.number == measure_num:
+                # Create a copy of the layout element
+                layout_copy = copy.deepcopy(original_layout)
+                measure.insert(offset, layout_copy)
+                print(f"      Added {type(layout_copy).__name__} to {part_name} measure {measure_num}")
+                break
