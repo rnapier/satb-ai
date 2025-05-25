@@ -213,20 +213,21 @@ def split_satb_voices(file_path):
             else:
                 target_for_measure_elements = soprano_measure  # Default fallback
             
-            # Add measure-level elements (with copies), but only if this is the first part to avoid duplication
-            # Only add measure-level elements from part 1 to prevent duplication between parts
+            # CRITICAL FIX: Store measure-level elements for later insertion
+            # We'll add them AFTER notes to prevent offset corruption
+            measure_elements_to_add = []
             if part_idx == 0:
                 for offset, dynamic in measure_dynamics:
                     dynamic_copy = copy.deepcopy(dynamic)
-                    target_for_measure_elements.insert(offset, dynamic_copy)
+                    measure_elements_to_add.append((offset, dynamic_copy, target_for_measure_elements))
                     processed_measure_elements.add(id(dynamic))
                 for offset, expression in measure_expressions:
                     expr_copy = copy.deepcopy(expression)
-                    target_for_measure_elements.insert(offset, expr_copy)
+                    measure_elements_to_add.append((offset, expr_copy, target_for_measure_elements))
                     processed_measure_elements.add(id(expression))
                 for offset, tempo in measure_tempos:
                     tempo_copy = copy.deepcopy(tempo)
-                    target_for_measure_elements.insert(offset, tempo_copy)
+                    measure_elements_to_add.append((offset, tempo_copy, target_for_measure_elements))
                     processed_measure_elements.add(id(tempo))
                 # Layout elements are now handled in the unification phase
                 # to ensure they are applied to all SATB parts
@@ -284,6 +285,12 @@ def split_satb_voices(file_path):
                         target_measure.insert(offset, tempo_copy)
                 else:
                     print(f"unmapped voice (part={part_idx}, voice={voice_id})")
+            
+            # CRITICAL FIX: Add measure-level elements AFTER all notes have been processed
+            # This prevents Music21 from auto-adjusting note offsets
+            for offset, element, target_measure in measure_elements_to_add:
+                # Use safe insertion method to prevent note corruption
+                target_measure.insert(offset, element)
     
     # Add all measures to their respective parts with unified numbering
     print(f"\nAdding {total_measures} measures to each SATB part...")

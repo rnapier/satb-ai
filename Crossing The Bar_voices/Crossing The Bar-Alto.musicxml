@@ -9,7 +9,7 @@
     <creator type="composer">Joseph Barnby</creator>
     <creator type="lyricist">Alfred Tennyson</creator>
     <encoding>
-      <encoding-date>2025-05-24</encoding-date>
+      <encoding-date>2025-05-25</encoding-date>
       <software>music21 v.9.7.0</software>
       <software>MuseScore 4.5.2</software>
     </encoding>
@@ -21,12 +21,12 @@
     </scaling>
   </defaults>
   <part-list>
-    <score-part id="Pf1893293c9a65da7014cf793a30c50b4">
+    <score-part id="P0d91dfda7f16dccd88ea1c5e9caefab6">
       <part-name>Crossing The Bar (Alto)</part-name>
     </score-part>
   </part-list>
   <!--=========================== Part 1 ===========================-->
-  <part id="Pf1893293c9a65da7014cf793a30c50b4">
+  <part id="P0d91dfda7f16dccd88ea1c5e9caefab6">
     <!--========================= Measure 1 ==========================-->
     <measure implicit="no" number="1">
       <print>
@@ -1450,6 +1450,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>though</text>
+        </lyric>
       </note>
       <note default-x="104.08" default-y="-50">
         <pitch>
@@ -1461,7 +1465,7 @@
         <stem>down</stem>
         <lyric name="1" number="1">
           <syllabic>single</syllabic>
-          <text>though</text>
+          <text>from</text>
         </lyric>
       </note>
       <note default-x="179.63" default-y="-45">
@@ -1474,7 +1478,7 @@
         <stem>down</stem>
         <lyric name="1" number="1">
           <syllabic>single</syllabic>
-          <text>from</text>
+          <text>out</text>
         </lyric>
       </note>
       <note default-x="255.19" default-y="-40">
@@ -1487,7 +1491,7 @@
         <stem>down</stem>
         <lyric name="1" number="1">
           <syllabic>single</syllabic>
-          <text>out</text>
+          <text>our</text>
         </lyric>
       </note>
     </measure>
@@ -1665,6 +1669,10 @@
         <notations>
           <slur number="2" type="start" />
         </notations>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>far</text>
+        </lyric>
       </note>
       <direction placement="below">
         <direction-type>
@@ -1693,6 +1701,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>down</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>I</text>
+        </lyric>
       </note>
       <direction placement="below">
         <direction-type>

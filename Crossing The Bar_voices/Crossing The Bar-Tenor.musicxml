@@ -9,7 +9,7 @@
     <creator type="composer">Joseph Barnby</creator>
     <creator type="lyricist">Alfred Tennyson</creator>
     <encoding>
-      <encoding-date>2025-05-24</encoding-date>
+      <encoding-date>2025-05-25</encoding-date>
       <software>music21 v.9.7.0</software>
       <software>MuseScore 4.5.2</software>
     </encoding>
@@ -21,12 +21,12 @@
     </scaling>
   </defaults>
   <part-list>
-    <score-part id="Pba8631efe27d574dcfcb4341526976d6">
+    <score-part id="P29c347637d7482e20a0c4dab5a9cb790">
       <part-name>Crossing The Bar (Tenor)</part-name>
     </score-part>
   </part-list>
   <!--=========================== Part 1 ===========================-->
-  <part id="Pba8631efe27d574dcfcb4341526976d6">
+  <part id="P29c347637d7482e20a0c4dab5a9cb790">
     <!--========================= Measure 1 ==========================-->
     <measure implicit="no" number="1">
       <print>
@@ -1460,6 +1460,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>up</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>though</text>
+        </lyric>
       </note>
       <note default-x="104.08" default-y="-169.76">
         <pitch>
@@ -1471,7 +1475,7 @@
         <stem>up</stem>
         <lyric name="1" number="1">
           <syllabic>single</syllabic>
-          <text>though</text>
+          <text>from</text>
         </lyric>
       </note>
       <note default-x="179.63" default-y="-164.76">
@@ -1484,7 +1488,7 @@
         <stem>up</stem>
         <lyric name="1" number="1">
           <syllabic>single</syllabic>
-          <text>from</text>
+          <text>out</text>
         </lyric>
       </note>
       <note default-x="255.19" default-y="-159.76">
@@ -1497,7 +1501,7 @@
         <stem>up</stem>
         <lyric name="1" number="1">
           <syllabic>single</syllabic>
-          <text>out</text>
+          <text>our</text>
         </lyric>
       </note>
     </measure>
@@ -1665,6 +1669,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>up</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>far</text>
+        </lyric>
       </note>
       <note default-x="95.46" default-y="-148.89">
         <pitch>
@@ -1692,6 +1700,10 @@
         <duration>10080</duration>
         <type>quarter</type>
         <stem>up</stem>
+        <lyric name="1" number="1">
+          <syllabic>single</syllabic>
+          <text>I</text>
+        </lyric>
       </note>
       <direction placement="below">
         <direction-type>

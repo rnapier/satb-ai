@@ -6,9 +6,13 @@ Rebuilds spanners in individual voice parts after voice splitting.
 import copy
 import music21
 from typing import Dict, List, Any
+from .timing_validator import (
+    backup_measure_timing, validate_measure_timing, get_affected_measures,
+    validate_part_timing_integrity
+)
 
 
-def rebuild_spanners_in_parts(voices_dict: Dict[str, music21.stream.Score], 
+def rebuild_spanners_in_parts(voices_dict: Dict[str, music21.stream.Score],
                              spanner_assignments: Dict[str, List[Dict[str, Any]]]) -> None:
     """
     Recreate spanners in individual voice parts based on assignments.
@@ -19,6 +23,14 @@ def rebuild_spanners_in_parts(voices_dict: Dict[str, music21.stream.Score],
     """
     print("=== Rebuilding Spanners in Voice Parts ===")
     
+    # Validate timing integrity before spanner processing
+    print("Validating timing integrity before spanner processing...")
+    for voice_name, voice_score in voices_dict.items():
+        voice_part = voice_score.parts[0]
+        is_valid, errors = validate_part_timing_integrity(voice_part, voice_name)
+        if not is_valid and voice_name == "Soprano":
+            print(f"  WARNING: Pre-existing timing issues in {voice_name}")
+    
     for voice_name, voice_score in voices_dict.items():
         voice_spanners = spanner_assignments.get(voice_name, [])
         if voice_spanners:
@@ -27,31 +39,76 @@ def rebuild_spanners_in_parts(voices_dict: Dict[str, music21.stream.Score],
             
             for spanner_info in voice_spanners:
                 try:
-                    recreate_spanner_in_part(voice_part, spanner_info)
+                    recreate_spanner_in_part(voice_part, spanner_info, voice_name)
                 except Exception as e:
                     print(f"  Warning: Failed to recreate {spanner_info['type']} in {voice_name}: {e}")
         else:
             print(f"No spanners to rebuild for {voice_name}")
+    
+    # Validate timing integrity after spanner processing
+    print("Validating timing integrity after spanner processing...")
+    for voice_name, voice_score in voices_dict.items():
+        voice_part = voice_score.parts[0]
+        is_valid, errors = validate_part_timing_integrity(voice_part, voice_name)
+        if not is_valid:
+            print(f"  ERROR: Timing corruption detected in {voice_name} after spanner processing")
 
 
-def recreate_spanner_in_part(part: music21.stream.Part, spanner_info: Dict[str, Any]) -> None:
+def recreate_spanner_in_part(part: music21.stream.Part, spanner_info: Dict[str, Any], voice_name: str = "Unknown") -> None:
     """
-    Recreate a single spanner in a voice part.
+    Recreate a single spanner in a voice part with timing validation.
     
     Args:
         part: music21.stream.Part to add the spanner to
         spanner_info: Information about the spanner to recreate
+        voice_name: Name of the voice for debugging
     """
     spanner_type = spanner_info['type']
     
-    if spanner_type == 'Tie':
-        recreate_tie_in_part(part, spanner_info)
-    elif spanner_type == 'Slur':
-        recreate_slur_in_part(part, spanner_info)
-    elif spanner_type in ['Crescendo', 'Diminuendo']:
-        recreate_wedge_in_part(part, spanner_info)
-    else:
-        print(f"    Warning: Unknown spanner type {spanner_type}, skipping")
+    # Get affected measures and create backups
+    affected_measures = get_affected_measures(part, spanner_info)
+    measure_backups = {}
+    
+    # Create timing snapshots for affected measures
+    for measure in affected_measures:
+        measure_backups[measure.number] = backup_measure_timing(measure)
+        if voice_name == "Soprano" and measure.number == 29:
+            print(f"    Backing up Soprano measure 29: {measure_backups[measure.number].get_summary()}")
+    
+    try:
+        # Original spanner recreation logic
+        if spanner_type == 'Tie':
+            recreate_tie_in_part(part, spanner_info)
+        elif spanner_type == 'Slur':
+            recreate_slur_in_part(part, spanner_info)
+        elif spanner_type in ['Crescendo', 'Diminuendo']:
+            recreate_wedge_in_part(part, spanner_info)
+        else:
+            print(f"    Warning: Unknown spanner type {spanner_type}, skipping")
+            return
+        
+        # Validate timing after spanner creation
+        corruption_detected = False
+        for measure in affected_measures:
+            if measure.number in measure_backups:
+                backup = measure_backups[measure.number]
+                is_valid, errors = validate_measure_timing(measure, backup)
+                
+                if not is_valid:
+                    print(f"    ERROR: Timing corruption detected in {voice_name} measure {measure.number}")
+                    for error in errors:
+                        print(f"      {error}")
+                    corruption_detected = True
+                    
+                    # Special handling for Soprano measure 29
+                    if voice_name == "Soprano" and measure.number == 29:
+                        print(f"    CRITICAL: Soprano measure 29 corruption detected during {spanner_type} processing")
+        
+        if corruption_detected:
+            print(f"    Spanner {spanner_type} in {voice_name} may have corrupted timing")
+            
+    except Exception as e:
+        print(f"    Error recreating {spanner_type} in {voice_name}: {e}")
 
 
 def recreate_tie_in_part(part: music21.stream.Part, tie_info: Dict[str, Any]) -> None:
@@ -162,7 +219,7 @@ def recreate_wedge_in_part(part: music21.stream.Part, wedge_info: Dict[str, Any]
 
 def find_note_in_part(part: music21.stream.Part, measure_number: int, pitch: str, offset: float) -> music21.note.Note:
     """
-    Find a specific note in a part by measure, pitch, and offset.
+    Find a specific note in a part by measure, pitch, and offset with enhanced matching logic.
     
     Args:
         part: music21.stream.Part to search in
@@ -180,12 +237,34 @@ def find_note_in_part(part: music21.stream.Part, measure_number: int, pitch: str
     for measure in part.getElementsByClass(music21.stream.Measure):
         if measure.number == measure_number:
             # Look for the note with matching pitch and offset
+            candidates = []
+            
             for note in measure.getElementsByClass(music21.note.Note):
-                if (str(note.pitch) == pitch and 
-                    abs(note.offset - offset) < 0.1):  # Small tolerance for floating point comparison
-                    return note
-            break
-    
+                if str(note.pitch) == pitch:
+                    offset_diff = abs(note.offset - offset)
+                    candidates.append((note, offset_diff))
+            
+            if not candidates:
+                # Debug logging for Soprano measure 29
+                if measure_number == 29:
+                    notes_in_measure = list(measure.getElementsByClass(music21.note.Note))
+                    print(f"    Debug: No notes with pitch {pitch} found in measure {measure_number}")
+                    print(f"    Available notes: {[(str(n.pitch), n.offset) for n in notes_in_measure]}")
+                return None
+            
+            # Sort by offset difference and take the closest match
+            candidates.sort(key=lambda x: x[1])
+            best_match, offset_diff = candidates[0]
+            
+            if offset_diff > 0.1:  # Tolerance check
+                print(f"    Warning: Best match for {pitch} at offset {offset} has difference {offset_diff}")
+                # For Soprano measure 29, be more strict
+                if measure_number == 29 and offset_diff > 0.5:
+                    print(f"    Error: Offset difference too large for measure 29, rejecting match")
+                    return None
+            
+            return best_match
+            
     return None
 
 
