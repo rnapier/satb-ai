@@ -21,12 +21,12 @@
     </scaling>
   </defaults>
   <part-list>
-    <score-part id="Pa9ddf14e7dea6c69377140d2708ee7a9">
+    <score-part id="P03655e5c030a7f77fbe078dc8511ae7b">
       <part-name>Crossing The Bar (Bass)</part-name>
     </score-part>
   </part-list>
   <!--=========================== Part 1 ===========================-->
-  <part id="Pa9ddf14e7dea6c69377140d2708ee7a9">
+  <part id="P03655e5c030a7f77fbe078dc8511ae7b">
     <!--========================= Measure 1 ==========================-->
     <measure implicit="no" number="1">
       <attributes>
@@ -1159,6 +1159,15 @@
         <type>quarter</type>
         <stem>down</stem>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <dynamics default-x="2.31" default-y="-40" relative-x="-13.84" relative-y="79.42">
+            <f />
+          </dynamics>
+        </direction-type>
+        <offset sound="yes">-5040</offset>
+        <sound dynamics="88" />
+      </direction>
     </measure>
     <!--========================= Measure 30 =========================-->
     <measure implicit="no" number="30">

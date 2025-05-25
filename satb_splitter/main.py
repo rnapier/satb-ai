@@ -32,11 +32,24 @@ def save_voice_parts(voices_dict, output_dir, original_filename):
             voice_score.parts[0].partName = f"{base_name} ({voice_name})"
         
         # Update the score's title metadata with proper format: "<original> (<Part>)"
-        if voice_score.metadata:
-            voice_score.metadata.title = f"{base_name} ({voice_name})"
-            # Clean up movement title to match the work title
-            if hasattr(voice_score.metadata, 'movementName') and voice_score.metadata.movementName:
-                voice_score.metadata.movementName = f"{base_name} ({voice_name})"
+        # Ensure metadata exists
+        if not voice_score.metadata:
+            voice_score.metadata = music21.metadata.Metadata()
+        
+        # Set title to override any temporary filenames from .mscz conversion
+        new_title = f"{base_name} ({voice_name})"
+        voice_score.metadata.title = new_title
+        
+        # Clear movementName if it contains temporary filename
+        if hasattr(voice_score.metadata, 'movementName') and voice_score.metadata.movementName:
+            # Check if movementName looks like a temporary file
+            movement_name = str(voice_score.metadata.movementName)
+            if movement_name.startswith('tmp') and movement_name.endswith('.musicxml'):
+                voice_score.metadata.movementName = None
+        
+        # Also set score-level title if it exists
+        if hasattr(voice_score, 'title'):
+            voice_score.title = new_title
         
         # Write to file (voice_score is already a complete Score object)
         voice_score.write('musicxml', fp=str(filepath))

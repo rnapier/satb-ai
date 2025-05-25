@@ -34,7 +34,7 @@ def apply_unification(voices_dict):
 
 
 def extract_dynamics_from_part(part):
-    """Extract all dynamics from a music21 Part, including crescendos at part level."""
+    """Extract all dynamics from a music21 Part."""
     dynamics = []
     
     # Extract regular dynamics from measures
@@ -47,20 +47,6 @@ def extract_dynamics_from_part(part):
                 'object': dynamic,
                 'type': 'measure'
             })
-    
-    # IMPORTANT: Also extract part-level crescendos/diminuendos
-    # These are at the part level and don't belong to specific measures
-    part_crescendos = list(part.getElementsByClass([music21.dynamics.Crescendo,
-                                                  music21.dynamics.Diminuendo,
-                                                  music21.dynamics.DynamicWedge]))
-    for cresc in part_crescendos:
-        dynamics.append({
-            'measure': None,  # Part-level, not measure-specific
-            'offset': cresc.offset,
-            'value': str(cresc),
-            'object': cresc,
-            'type': 'part'
-        })
     
     return dynamics
 
@@ -149,28 +135,23 @@ def dynamics_match(dynamics1, dynamics2):
 
 
 def copy_dynamics_to_parts(source_dynamics, target_part_names, voices_dict):
-    """Copy dynamics from source to target parts, handling both measure and part-level dynamics."""
+    """Copy dynamics from source to target parts."""
     for part_name in target_part_names:
         target_part = voices_dict[part_name]
         for dynamic_info in source_dynamics:
             original_dynamic = dynamic_info['object']
             new_dynamic = copy.deepcopy(original_dynamic)
             
-            if dynamic_info['type'] == 'part':
-                # Part-level dynamic (crescendo/diminuendo)
-                target_part.insert(dynamic_info['offset'], new_dynamic)
-                print(f"    Copied part-level {type(new_dynamic).__name__} to {part_name}")
-            else:
-                # Measure-level dynamic
-                measure_num = dynamic_info['measure']
-                offset = dynamic_info['offset']
-                
-                # Find the corresponding measure in the target part
-                for measure in target_part.getElementsByClass(music21.stream.Measure):
-                    if measure.number == measure_num:
-                        measure.insert(offset, new_dynamic)
-                        print(f"    Copied measure-level {type(new_dynamic).__name__} to {part_name} measure {measure_num}")
-                        break
+            # Measure-level dynamic
+            measure_num = dynamic_info['measure']
+            offset = dynamic_info['offset']
+            
+            # Find the corresponding measure in the target part
+            for measure in target_part.getElementsByClass(music21.stream.Measure):
+                if measure.number == measure_num:
+                    measure.insert(offset, new_dynamic)
+                    print(f"    Copied measure-level {type(new_dynamic).__name__} to {part_name} measure {measure_num}")
+                    break
 
 
 def copy_lyrics_to_parts(source_lyrics, target_part_names, voices_dict):

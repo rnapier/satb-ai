@@ -94,21 +94,6 @@ def split_satb_voices(file_path):
             element_copy = copy.deepcopy(element)
             part.insert(0, element_copy)
     
-    # Copy part-level crescendos and diminuendos to each SATB part
-    # These exist at the part level (offset 0.0) and need special handling
-    print(f"\n=== Copying Part-Level Crescendos ===")
-    for original_part in score.parts:
-        part_crescendos = list(original_part.getElementsByClass([music21.dynamics.Crescendo,
-                                                               music21.dynamics.Diminuendo,
-                                                               music21.dynamics.DynamicWedge]))
-        if part_crescendos:
-            print(f"Found {len(part_crescendos)} part-level crescendo/diminuendo elements")
-            # Copy these to all SATB parts
-            for target_part in [soprano_part, alto_part, tenor_part, bass_part]:
-                for cresc in part_crescendos:
-                    cresc_copy = copy.deepcopy(cresc)
-                    target_part.insert(cresc.offset, cresc_copy)
-                    print(f"  Copied {type(cresc).__name__} to {target_part.partName}")
     
     # Get all measures from the first part to establish unified measure numbering
     first_part_measures = list(score.parts[0].getElementsByClass(music21.stream.Measure))
@@ -163,19 +148,13 @@ def split_satb_voices(file_path):
             
             # Extract all musical elements at measure level with their positions (ONCE per measure)
             measure_dynamics = []
-            measure_slurs = []
             measure_expressions = []
             measure_tempos = []
             measure_layouts = []
-            measure_crescendos = []
             
             # Get all dynamics with positions
             for dynamic in measure.getElementsByClass(music21.dynamics.Dynamic):
                 measure_dynamics.append((dynamic.offset, dynamic))
-            
-            # Get all slurs with positions  
-            for slur in measure.getElementsByClass(music21.spanner.Slur):
-                measure_slurs.append((slur.offset, slur))
             
             # Get all text expressions (including tempo markings) with positions
             for expr in measure.getElementsByClass(music21.expressions.TextExpression):
@@ -186,19 +165,10 @@ def split_satb_voices(file_path):
                 measure_tempos.append((tempo.offset, tempo))
             
             # Get all layout elements with positions (SystemLayout support)
-            for layout in measure.getElementsByClass([music21.layout.SystemLayout, 
+            for layout in measure.getElementsByClass([music21.layout.SystemLayout,
                                                     music21.layout.PageLayout,
                                                     music21.layout.StaffLayout]):
                 measure_layouts.append((layout.offset, layout))
-            
-            # Get all crescendo/diminuendo elements with positions
-            # NOTE: music21's MusicXML parser currently doesn't preserve wedge crescendos properly.
-            # See: https://github.com/cuthbertLab/music21/pull/1768 for a fix that should address this.
-            # Text crescendo markings (like "cresc.") are preserved as TextExpression objects.
-            for cresc in measure.getElementsByClass([music21.dynamics.Crescendo,
-                                                   music21.dynamics.Diminuendo,
-                                                   music21.dynamics.DynamicWedge]):
-                measure_crescendos.append((cresc.offset, cresc))
             
             # Create a set to track measure-level elements we've already processed (to prevent duplication)
             processed_measure_elements = set()
@@ -219,10 +189,6 @@ def split_satb_voices(file_path):
                     dynamic_copy = copy.deepcopy(dynamic)
                     target_for_measure_elements.insert(offset, dynamic_copy)
                     processed_measure_elements.add(id(dynamic))
-                for offset, slur in measure_slurs:
-                    slur_copy = copy.deepcopy(slur)
-                    target_for_measure_elements.insert(offset, slur_copy)
-                    processed_measure_elements.add(id(slur))
                 for offset, expression in measure_expressions:
                     expr_copy = copy.deepcopy(expression)
                     target_for_measure_elements.insert(offset, expr_copy)
@@ -237,12 +203,6 @@ def split_satb_voices(file_path):
                     target_for_measure_elements.insert(offset, layout_copy)
                     processed_measure_elements.add(id(layout))
                     print(f"    Added {type(layout).__name__} to measure {measure_idx + 1}")
-                # Add crescendo/diminuendo elements to preserve dynamic markings
-                for offset, cresc in measure_crescendos:
-                    cresc_copy = copy.deepcopy(cresc)
-                    target_for_measure_elements.insert(offset, cresc_copy)
-                    processed_measure_elements.add(id(cresc))
-                    print(f"    Added {type(cresc).__name__} to measure {measure_idx + 1}")
             
             # Extract content from each voice
             for voice in voices:
@@ -267,26 +227,17 @@ def split_satb_voices(file_path):
                     # Extract dynamics and other musical elements from voice level ONLY
                     # (measure-level elements are handled separately to prevent duplication)
                     voice_dynamics = []
-                    voice_slurs = []
                     voice_expressions = []
                     voice_tempos = []
-                    voice_crescendos = []
                     
                     for dynamic in voice.getElementsByClass(music21.dynamics.Dynamic):
                         voice_dynamics.append((dynamic.offset, dynamic))
-                    for slur in voice.getElementsByClass(music21.spanner.Slur):
-                        voice_slurs.append((slur.offset, slur))
                     for expr in voice.getElementsByClass(music21.expressions.TextExpression):
                         voice_expressions.append((expr.offset, expr))
                     for tempo in voice.getElementsByClass(music21.tempo.TempoIndication):
                         voice_tempos.append((tempo.offset, tempo))
-                    # Extract crescendo/diminuendo elements from voice level
-                    for cresc in voice.getElementsByClass([music21.dynamics.Crescendo,
-                                                          music21.dynamics.Diminuendo,
-                                                          music21.dynamics.DynamicWedge]):
-                        voice_crescendos.append((cresc.offset, cresc))
                     
-                    print(f"{len(notes)} notes, {len(rests)} rests, {len(voice_dynamics)} voice dynamics, {len(voice_slurs)} voice slurs, {len(voice_expressions)} voice expressions, {len(voice_tempos)} voice tempos, {len(voice_crescendos)} voice crescendos -> {voice_name}")
+                    print(f"{len(notes)} notes, {len(rests)} rests, {len(voice_dynamics)} voice dynamics, {len(voice_expressions)} voice expressions, {len(voice_tempos)} voice tempos -> {voice_name}")
                     
                     # Add notes and rests to target measure (with copies to avoid object reuse)
                     for note in notes:
@@ -294,23 +245,16 @@ def split_satb_voices(file_path):
                     for rest in rests:
                         target_measure.append(copy.deepcopy(rest))
                     
-                    # Add ONLY voice-level dynamics, slurs, expressions, tempos, and crescendos (with copies)
+                    # Add ONLY voice-level dynamics, expressions, and tempos (with copies)
                     for offset, dynamic in voice_dynamics:
                         dynamic_copy = copy.deepcopy(dynamic)
                         target_measure.insert(offset, dynamic_copy)
-                    for offset, slur in voice_slurs:
-                        slur_copy = copy.deepcopy(slur)
-                        target_measure.insert(offset, slur_copy)
                     for offset, expression in voice_expressions:
                         expr_copy = copy.deepcopy(expression)
                         target_measure.insert(offset, expr_copy)
                     for offset, tempo in voice_tempos:
                         tempo_copy = copy.deepcopy(tempo)
                         target_measure.insert(offset, tempo_copy)
-                    # Add voice-level crescendo/diminuendo elements
-                    for offset, cresc in voice_crescendos:
-                        cresc_copy = copy.deepcopy(cresc)
-                        target_measure.insert(offset, cresc_copy)
                 else:
                     print(f"unmapped voice (part={part_idx}, voice={voice_id})")
     
@@ -346,15 +290,7 @@ def split_satb_voices(file_path):
         total_notes = sum(len(list(measure.getElementsByClass(music21.note.Note))) for measure in measures)
         total_dynamics = sum(len(list(measure.getElementsByClass(music21.dynamics.Dynamic))) for measure in measures)
         total_layouts = sum(len(list(measure.getElementsByClass(music21.layout.LayoutBase))) for measure in measures)
-        # Count crescendos/diminuendos at both part level and measure level
-        part_crescendos = len(list(part.getElementsByClass([music21.dynamics.Crescendo,
-                                                          music21.dynamics.Diminuendo,
-                                                          music21.dynamics.DynamicWedge])))
-        measure_crescendos = sum(len(list(measure.getElementsByClass([music21.dynamics.Crescendo,
-                                                                    music21.dynamics.Diminuendo,
-                                                                    music21.dynamics.DynamicWedge]))) for measure in measures)
-        total_crescendos = part_crescendos + measure_crescendos
-        print(f"{voice_name}: {len(measures)} measures, {total_notes} total notes, {total_dynamics} dynamics, {total_layouts} layout elements, {total_crescendos} crescendos/diminuendos ({part_crescendos} part-level + {measure_crescendos} measure-level)")
+        print(f"{voice_name}: {len(measures)} measures, {total_notes} total notes, {total_dynamics} dynamics, {total_layouts} layout elements")
     
     # Apply unification rules - need to extract parts for the unification function
     print(f"\n=== Applying Unification Rules ===")
