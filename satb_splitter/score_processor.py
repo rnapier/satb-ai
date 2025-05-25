@@ -160,7 +160,9 @@ class ScoreProcessor:
         details = {}
         
         try:
-            # Check if score has parts
+            # Comprehensive MusicXML structure validation
+            
+            # 1. Check if score has parts
             if not score.parts:
                 errors.append("Score has no parts")
                 return ValidationResult(
@@ -170,7 +172,7 @@ class ScoreProcessor:
                     details=details
                 )
             
-            # Check part count
+            # 2. Validate part count and structure
             part_count = len(score.parts)
             details['part_count'] = part_count
             
@@ -179,24 +181,104 @@ class ScoreProcessor:
             elif part_count > 4:
                 warnings.append(f"Score has {part_count} parts, which is more than typical for SATB")
             
-            # Check for musical content
+            # 3. Validate MusicXML-specific structure for each part
             total_notes = 0
-            for part in score.parts:
-                notes = part.flatten().notes
-                total_notes += len(notes)
+            valid_parts = 0
+            
+            for i, part in enumerate(score.parts):
+                part_errors = []
+                part_warnings = []
+                
+                # Check for musical content
+                try:
+                    # Use cached flattened view for better performance
+                    flattened_part = part.flatten()
+                    notes = flattened_part.notes
+                    part_note_count = len(notes)
+                    total_notes += part_note_count
+                    
+                    if part_note_count == 0:
+                        part_warnings.append(f"Part {i+1} contains no notes")
+                    else:
+                        valid_parts += 1
+                except Exception as e:
+                    part_errors.append(f"Part {i+1} structure error: {e}")
+                
+                # Validate clef structure using proper music21 API
+                try:
+                    clefs = part.getElementsByClass(music21.clef.Clef)
+                    if not clefs:
+                        part_warnings.append(f"Part {i+1} has no clef information")
+                    else:
+                        # Check if clefs are valid music21 clef objects
+                        for clef in clefs:
+                            if not isinstance(clef, music21.clef.Clef):
+                                part_errors.append(f"Part {i+1} has invalid clef object")
+                except Exception as e:
+                    part_errors.append(f"Part {i+1} clef validation error: {e}")
+                
+                # Validate time signature structure
+                try:
+                    time_sigs = part.getElementsByClass(music21.meter.TimeSignature)
+                    if not time_sigs:
+                        part_warnings.append(f"Part {i+1} has no time signature")
+                except Exception as e:
+                    part_errors.append(f"Part {i+1} time signature validation error: {e}")
+                
+                # Validate measure structure
+                try:
+                    measures = part.getElementsByClass(music21.stream.Measure)
+                    if not measures:
+                        part_warnings.append(f"Part {i+1} has no explicit measures")
+                    else:
+                        # Check for voice structure within measures
+                        voice_count = 0
+                        for measure in measures[:5]:  # Check first 5 measures for performance
+                            if hasattr(measure, 'voices') and measure.voices:
+                                voice_count = max(voice_count, len(measure.voices))
+                        
+                        if voice_count > 4:
+                            part_warnings.append(f"Part {i+1} has {voice_count} voices, more than typical for SATB")
+                except Exception as e:
+                    part_errors.append(f"Part {i+1} measure validation error: {e}")
+                
+                # Aggregate part-level issues
+                if part_errors:
+                    errors.extend(part_errors)
+                if part_warnings:
+                    warnings.extend(part_warnings)
             
             details['total_notes'] = total_notes
+            details['valid_parts'] = valid_parts
             
+            # 4. Overall score validation
             if total_notes == 0:
                 errors.append("Score contains no musical notes")
             elif total_notes < 10:
                 warnings.append("Score has very few notes, results may be limited")
             
-            # Check for measures
+            if valid_parts == 0:
+                errors.append("No valid parts found in score")
+            
+            # 5. Validate MusicXML metadata structure
+            try:
+                if hasattr(score, 'metadata') and score.metadata:
+                    # Check for basic metadata that affects MusicXML export
+                    if not hasattr(score.metadata, 'title') or not score.metadata.title:
+                        warnings.append("Score lacks title metadata")
+                else:
+                    warnings.append("Score lacks metadata information")
+            except Exception as e:
+                warnings.append(f"Metadata validation error: {e}")
+            
+            # 6. Check for measures across all parts
             total_measures = 0
             for part in score.parts:
-                measures = part.getElementsByClass(music21.stream.Measure)
-                total_measures = max(total_measures, len(measures))
+                try:
+                    measures = part.getElementsByClass(music21.stream.Measure)
+                    total_measures = max(total_measures, len(measures))
+                except Exception as e:
+                    warnings.append(f"Measure counting error in part: {e}")
             
             details['total_measures'] = total_measures
             

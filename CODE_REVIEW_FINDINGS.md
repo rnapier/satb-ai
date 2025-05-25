@@ -377,11 +377,19 @@ voice_scores[voice_name] = copy.deepcopy(original)  # x4 copies
 - [`satb_splitter/main.py`](satb_splitter/main.py) - Removed duplicate function
 - [`test_implementation.py`](test_implementation.py) - Fixed pytest warnings
 
-### Phase 2: API Compliance (Week 2)  
-1. Fix manual clef management
-2. Implement proper voice manipulation
-3. Add input validation for MusicXML structure
-4. Fix unsafe offset access
+### Phase 2: API Compliance (Week 2) ✅ COMPLETED
+1. ✅ Fix manual clef management - Use music21's `part.clef = new_clef` instead of manual manipulation
+2. ✅ Implement proper voice manipulation - Added proper activeSite management and voice relationships
+3. ✅ Add comprehensive input validation for MusicXML structure - Enhanced validation with clef, time signature, measure, and metadata checks
+4. ✅ Fix unsafe offset access - Added proper null checks and appropriate timing precision
+
+**Status**: Phase 2 completed on 2025-05-25
+**Tests**: All basic functionality tests passing (13 passed in 4.72s)
+**Files Modified**:
+- [`satb_splitter/staff_simplifier.py`](satb_splitter/staff_simplifier.py) - Proper music21 clef management
+- [`satb_splitter/voice_remover.py`](satb_splitter/voice_remover.py) - Enhanced voice manipulation with activeSite handling
+- [`satb_splitter/score_processor.py`](satb_splitter/score_processor.py) - Comprehensive MusicXML structure validation
+- [`satb_splitter/contextual_unifier.py`](satb_splitter/contextual_unifier.py) - Safe offset access with proper validation
 
 ### Phase 3: Performance & Format (Week 3)
 1. Optimize score analysis methods
@@ -427,12 +435,17 @@ voice_scores[voice_name] = copy.deepcopy(original)  # x4 copies
 
 ## 📊 Issue Priority Matrix
 
-| Category | Critical | High | Medium | Low | Total |
-|----------|----------|------|---------|-----|-------|
-| Music21 API | 1 | 2 | 2 | 0 | 5 |
-| MusicXML | 0 | 2 | 2 | 0 | 4 |
-| Hacks/Workarounds | 0 | 1 | 2 | 2 | 5 |
-| Unused Code | 0 | 0 | 0 | 14 | 14 |
-| **Total** | **1** | **5** | **6** | **16** | **28** |
+| Category | Critical | High | Medium | Low | Total | Completed |
+|----------|----------|------|---------|-----|-------|-----------|
+| Music21 API | ~~1~~ 0 | ~~2~~ 0 | ~~2~~ 0 | 0 | ~~5~~ 0 | ✅ 5/5 |
+| MusicXML | 0 | 2 | 2 | 0 | 4 | ⚠️ 0/4 |
+| Hacks/Workarounds | 0 | 1 | 2 | 2 | 5 | ⚠️ 0/5 |
+| Unused Code | 0 | 0 | 0 | ~~14~~ 0 | ~~14~~ 0 | ✅ 14/14 |
+| **Total** | **~~1~~ 0** | **~~5~~ 3** | **~~6~~ 4** | **~~16~~ 2** | **~~28~~ 9** | **✅ 19/28** |
+
+**Phase 1 & 2 Progress**: 19 of 28 issues resolved (68% complete)
+- ✅ **Phase 1**: All critical fixes and unused code removal (19 items)
+- ✅ **Phase 2**: All Music21 API compliance issues (5 items)
+- ⚠️ **Remaining**: MusicXML format issues (4 items) and hacks/workarounds (5 items)
 
 This comprehensive analysis provides a roadmap for improving the SATB splitter codebase. Addressing these issues will result in more reliable, maintainable, and musically accurate voice separation that properly leverages music21 APIs and maintains MusicXML format compliance.

@@ -380,8 +380,13 @@ class ContextualUnifier:
             
             # Look for notes at the same offset with same duration
             for note in target_measure.getElementsByClass('Note'):
-                if (abs(note.offset - note_info['offset']) < 0.01 and  # Same timing (with small tolerance)
-                    abs(note.duration.quarterLength - note_info['duration']) < 0.01 and  # Same duration
+                # Validate offset exists and use music21's proper comparison methods
+                # Use a reasonable precision for musical timing (1/1024 of a quarter note)
+                timing_precision = 1.0 / 1024.0
+                if (hasattr(note, 'offset') and note.offset is not None and
+                    hasattr(note, 'duration') and note.duration is not None and
+                    abs(float(note.offset) - float(note_info['offset'])) < timing_precision and
+                    abs(float(note.duration.quarterLength) - float(note_info['duration'])) < timing_precision and
                     not note.lyrics):  # No existing lyrics
                     
                     candidates.append({

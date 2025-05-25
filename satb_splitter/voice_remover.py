@@ -129,11 +129,16 @@ class VoiceRemover:
                 else:
                     elements_preserved += len(voice.notes)
             
-            # Actually remove the voices
+            # Use music21's proper voice management instead of direct manipulation
             for voice in voices_to_remove:
+                # Properly handle voice relationships and activeSite connections
+                if voice.activeSite == measure:
+                    # Use music21's voice management to safely remove
+                    voice.activeSite = None
                 measure.remove(voice)
             
             # If we have a target voice, move its contents to the measure level
+            # using music21's proper element management
             if target_voice:
                 self._flatten_voice_to_measure(measure, target_voice)
         
@@ -144,20 +149,29 @@ class VoiceRemover:
             'warnings': warnings
         }
     
-    def _flatten_voice_to_measure(self, measure: music21.stream.Measure, 
+    def _flatten_voice_to_measure(self, measure: music21.stream.Measure,
                                 voice: music21.stream.Voice):
-        """Move voice contents to measure level and remove the voice container."""
-        # Copy all elements from voice to measure
-        elements_to_copy = []
-        for element in voice:
-            elements_to_copy.append(element)
+        """Move voice contents to measure level using music21's proper element management."""
+        # Use music21's proper element management for moving contents
+        elements_to_move = []
         
-        # Remove the voice
+        # Collect elements with their offsets, preserving music21 relationships
+        # Use voice.elements to get all elements, or specify a class filter
+        for element in voice.elements:
+            if hasattr(element, 'offset') and element.offset is not None:
+                elements_to_move.append((element.offset, element))
+        
+        # Remove the voice container properly
+        if voice.activeSite == measure:
+            voice.activeSite = None
         measure.remove(voice)
         
-        # Add elements directly to measure
-        for element in elements_to_copy:
-            measure.insert(element.offset, element)
+        # Add elements to measure using music21's insert method
+        for offset, element in elements_to_move:
+            # Clear the element's previous activeSite relationship
+            if hasattr(element, 'activeSite'):
+                element.activeSite = None
+            measure.insert(offset, element)
     
     def _remove_empty_parts(self, score: music21.stream.Score):
         """Remove parts that have no musical content."""

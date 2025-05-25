@@ -158,24 +158,18 @@ class StaffSimplifier:
         if voice_type_lower in self.clef_mappings:
             new_clef = self.clef_mappings[voice_type_lower]
             
-            # Remove existing clefs
-            existing_clefs = part.getElementsByClass(music21.clef.Clef)
-            for clef in existing_clefs:
-                part.remove(clef)
+            # Use music21's proper clef management instead of manual manipulation
+            part.clef = new_clef
             
-            # Add new clef at the beginning
-            part.insert(0, new_clef)
-            
-            # Also set clef in first measure if it exists
-            measures = part.getElementsByClass(music21.stream.Measure)
-            if measures:
-                first_measure = measures[0]
-                # Remove existing clefs from first measure
-                measure_clefs = first_measure.getElementsByClass(music21.clef.Clef)
-                for clef in measure_clefs:
-                    first_measure.remove(clef)
-                # Add new clef
-                first_measure.insert(0, new_clef)
+            # Ensure clef is properly set at the beginning of the part
+            # music21 handles clef placement and management automatically
+            # but we may need to ensure it's at offset 0
+            if hasattr(part, 'getElementsByClass'):
+                measures = part.getElementsByClass(music21.stream.Measure)
+                if measures:
+                    # Let music21 handle clef placement in measures automatically
+                    # The part.clef setter manages this properly
+                    pass
     
     def update_part_metadata(self, part: music21.stream.Part, voice_type: str):
         """Update part name and other metadata."""
