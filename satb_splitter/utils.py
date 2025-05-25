@@ -182,22 +182,27 @@ def save_voice_scores(voice_scores: Dict[str, music21.stream.Score],
         filename = f"{base_name}-{voice_name}.musicxml"
         filepath = output_path / filename
         
-        # Set part title within the score
+        # Set part name within the score - should be just the voice name
         if voice_score.parts:
-            voice_score.parts[0].partName = f"{base_name} ({voice_name})"
+            voice_score.parts[0].partName = voice_name
         
-        # Update the score's title metadata
+        # Update metadata following proper MusicXML work/movement hierarchy
         if not voice_score.metadata:
             voice_score.metadata = music21.metadata.Metadata()
         
-        new_title = f"{base_name} ({voice_name})"
-        voice_score.metadata.title = new_title
+        # Preserve original work title, use movement for voice part with parentheses
+        original_title = voice_score.metadata.title
+        if original_title and not original_title.endswith('.musicxml'):
+            # Keep original as work title, use full title with voice as movement
+            voice_score.metadata.workTitle = original_title
+            voice_score.metadata.movementName = f"{base_name} ({voice_name})"
+        else:
+            # If no valid original title, use base_name as work title
+            voice_score.metadata.workTitle = base_name
+            voice_score.metadata.movementName = f"{base_name} ({voice_name})"
         
-        # Clear movementName if it contains filename with extension
-        if hasattr(voice_score.metadata, 'movementName') and voice_score.metadata.movementName:
-            movement_name = str(voice_score.metadata.movementName)
-            if movement_name.endswith('.musicxml'):
-                voice_score.metadata.movementName = None
+        # Set the title to be descriptive for display with parentheses format
+        voice_score.metadata.title = f"{base_name} ({voice_name})"
         
         # Write to file
         voice_score.write('musicxml', fp=str(filepath))
