@@ -403,7 +403,7 @@ class ContextualUnifier:
     def _find_matching_notes_without_lyrics(self, note_info: dict, measure_number: int,
                                           voice_scores: Dict[str, music21.stream.Score],
                                           source_voice: str) -> List[dict]:
-        """Find notes in other voices at same position/duration that don't have lyrics."""
+        """Find notes in other voices using deterministic time-window matching."""
         candidates = []
         
         for voice_name, score in voice_scores.items():
@@ -415,21 +415,20 @@ class ContextualUnifier:
             if not target_measure:
                 continue
             
-            # Look for notes at the same offset with same duration
-            for note in target_measure.getElementsByClass('Note'):
-                # Validate offset exists and use music21's proper comparison methods
-                # Use a reasonable precision for musical timing (1/1024 of a quarter note)
-                timing_precision = 1.0 / 1024.0
-                if (hasattr(note, 'offset') and note.offset is not None and
-                    hasattr(note, 'duration') and note.duration is not None and
-                    abs(float(note.offset) - float(note_info['offset'])) < timing_precision and
-                    abs(float(note.duration.quarterLength) - float(note_info['duration'])) < timing_precision and
-                    not note.lyrics):  # No existing lyrics
-                    
-                    candidates.append({
-                        'voice': voice_name,
-                        'note': note
-                    })
+            # Find candidates using time-window matching
+            voice_candidates = self._find_candidates_in_time_window(note_info, target_measure)
+            
+            # Filter out notes that are in the middle of slurs
+            voice_candidates = self._filter_slurred_notes(voice_candidates, target_measure)
+            
+            # Select the best candidate using deterministic rules
+            best_candidate = self._select_best_lyric_candidate(voice_candidates)
+            
+            if best_candidate:
+                candidates.append({
+                    'voice': voice_name,
+                    'note': best_candidate
+                })
         
         return candidates
     
@@ -446,6 +445,84 @@ class ContextualUnifier:
                     if len(measures) >= measure_number:
                         return measures[measure_number - 1]
         return None
+    
+    def _find_candidates_in_time_window(self, note_info: dict, target_measure) -> List[music21.note.Note]:
+        """Find all notes that start during the source note's duration."""
+        candidates = []
+        source_start = note_info['offset']
+        source_end = source_start + note_info['duration']
+        
+        for note in target_measure.getElementsByClass('Note'):
+            if (hasattr(note, 'offset') and note.offset is not None and
+                hasattr(note, 'duration') and note.duration is not None and
+                not note.lyrics):  # No existing lyrics
+                
+                # Check if note starts within the source note's time window
+                if source_start <= note.offset < source_end:
+                    candidates.append(note)
+        
+        return candidates
+    
+    def _filter_slurred_notes(self, candidates: List[music21.note.Note], measure) -> List[music21.note.Note]:
+        """Remove notes that are in the middle of slurs (keep slur starts)."""
+        filtered = []
+        
+        for note in candidates:
+            if not self._is_note_in_slur_middle(note, measure):
+                filtered.append(note)
+        
+        return filtered
+    
+    def _is_note_in_slur_middle(self, note: music21.note.Note, measure) -> bool:
+        """Check if a note is in the middle of a slur (not the first note)."""
+        try:
+            # Method 1: Check for slur objects in the measure
+            slurs = measure.getElementsByClass('Slur')
+            for slur in slurs:
+                if hasattr(slur, 'getSpannedElements'):
+                    spanned = slur.getSpannedElements()
+                    if note in spanned:
+                        # If this note is the first note of the slur, it's OK for lyrics
+                        if spanned and spanned[0] == note:
+                            return False
+                        else:
+                            # This note is in the middle or end of the slur
+                            return True
+            
+            # Method 2: Check note's tie/slur attributes
+            if hasattr(note, 'tie') and note.tie:
+                # If note has a tie that's not a start, it shouldn't get lyrics
+                if note.tie.type in ['continue', 'stop']:
+                    return True
+            
+            # Method 3: Check for slur start/stop in note's spanners
+            if hasattr(note, 'getSpannerSites'):
+                spanner_sites = note.getSpannerSites()
+                for spanner in spanner_sites:
+                    if 'Slur' in str(type(spanner)):
+                        # Check if this note is the start of the slur
+                        if hasattr(spanner, 'getFirst') and spanner.getFirst() == note:
+                            return False  # Start of slur is OK
+                        else:
+                            return True  # Middle or end of slur
+            
+        except Exception:
+            # If slur detection fails, err on the side of allowing lyrics
+            pass
+        
+        return False  # Not in any slur (or detection failed)
+    
+    def _select_best_lyric_candidate(self, candidates: List[music21.note.Note]) -> music21.note.Note:
+        """Select the best candidate using deterministic precedence rules."""
+        if not candidates:
+            return None
+        
+        # Sort by: duration (desc), then offset (asc), then object id for consistency
+        return sorted(candidates, key=lambda n: (
+            -n.duration.quarterLength,  # Longest duration first
+            n.offset,                   # Earliest start time first
+            id(n)                       # Consistent ordering for identical cases
+        ))[0]
     
     def _find_tempo_markings(self, voice_scores: Dict[str, music21.stream.Score]) -> List[dict]:
         """Find tempo markings in any voice."""

@@ -9,6 +9,15 @@ from satb_splitter import split_satb_voices
 from satb_splitter.score_processor import ScoreProcessor
 from satb_splitter.utils import load_score
 
+import warnings
+import pytest
+
+@pytest.hookimpl(tryfirst=True)
+def pytest_sessionfinish(session, exitstatus):
+    # Note: session.warnings is not available in newer pytest versions
+    # This hook is kept for potential future use
+    pass
+
 
 @pytest.fixture(scope="session")
 def test_data_dir():
