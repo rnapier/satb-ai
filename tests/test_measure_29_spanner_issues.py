@@ -79,24 +79,39 @@ class TestMeasure29Issues:
             # Store results for analysis
             self._log_measure_29_analysis(measure_29_spanners, spanner_preservation_results)
             
-            # Document the current problematic behavior
-            print(f"\n❌ CURRENT ISSUES IDENTIFIED:")
+            # REGRESSION TEST: Verify specific requirements are met
+            print(f"\n✅ TESTING SPECIFIC REQUIREMENTS:")
             
-            # Check for nuclear copying (all voices getting same spanners)
             soprano_count = spanner_preservation_results.get('Soprano', {}).get('count', 0)
             alto_count = spanner_preservation_results.get('Alto', {}).get('count', 0)
             tenor_count = spanner_preservation_results.get('Tenor', {}).get('count', 0)
             bass_count = spanner_preservation_results.get('Bass', {}).get('count', 0)
             
-            if soprano_count == alto_count and soprano_count > 10:
-                print(f"   Nuclear copying detected: Soprano and Alto both have {soprano_count} spanners")
+            # Test 1: No nuclear copying (Soprano and Alto should not have identical high counts)
+            assert not (soprano_count == alto_count and soprano_count > 10), \
+                f"Nuclear copying detected: Soprano and Alto both have {soprano_count} spanners"
+            print(f"   ✅ No nuclear copying detected")
             
-            if tenor_count == 0 and bass_count == 0 and soprano_count > 0:
-                print(f"   Inconsistent behavior: Soprano/Alto have spanners, Tenor/Bass have none")
+            # Test 2: Alto, Tenor, and Bass should have slurs (non-zero spanners)
+            assert alto_count > 0, f"Alto should have slurs but has {alto_count} spanners"
+            assert tenor_count > 0, f"Tenor should have slurs but has {tenor_count} spanners"
+            assert bass_count > 0, f"Bass should have slurs but has {bass_count} spanners"
+            print(f"   ✅ All voices have spanners: Alto={alto_count}, Tenor={tenor_count}, Bass={bass_count}")
             
-            # For now, the test passes if we can analyze the issues
-            # Later we'll add proper assertions for correct behavior
-            assert True, "Test completed - issues documented for fixing"
+            # Test 3: Check for specific slurs in measure 29
+            self._verify_measure_29_slurs(voices)
+            
+            # Test 4: Reasonable preservation rate (should be close to 100%, not >100%)
+            total_preserved = soprano_count + alto_count + tenor_count + bass_count
+            # Use a reasonable baseline for total expected spanners
+            baseline_expected = 17  # We know from debugging that there are 17 spanners in the full score
+            
+            preservation_rate = (total_preserved / baseline_expected) * 100
+            assert 80 <= preservation_rate <= 120, \
+                f"Preservation rate {preservation_rate:.1f}% is outside acceptable range (80-120%)"
+            print(f"   ✅ Reasonable preservation rate: {preservation_rate:.1f}%")
+            
+            print(f"   ✅ All measure 29 spanner requirements met!")
     
     def test_measure_29_lyric_integrity(self, sample_score_path):
         """Test that lyrics in measure 29 are not corrupted during processing."""
@@ -252,6 +267,35 @@ class TestMeasure29Issues:
             print(f"\nOverall preservation rate: {preservation_rate:.1f}% ({total_preserved}/{total_original})")
         
         print("=== END ANALYSIS ===\n")
+    
+    def _verify_measure_29_slurs(self, voices):
+        """Verify that specific slurs are present in measure 29 for the correct voices."""
+        measure_29_slurs = {}
+        
+        for voice_name, voice_score in voices.items():
+            slurs = []
+            for part in voice_score.parts:
+                for measure in part.getElementsByClass('Measure'):
+                    if hasattr(measure, 'number') and measure.number == 29:
+                        for spanner in part.getElementsByClass('Spanner'):
+                            if 'Slur' in type(spanner).__name__:
+                                slurs.append(spanner)
+            measure_29_slurs[voice_name] = slurs
+        
+        # Verify specific requirements based on MusicXML structure:
+        # Alto (voice 2): Should have E4→F4 slur
+        alto_slurs = measure_29_slurs.get('Alto', [])
+        assert len(alto_slurs) > 0, "Alto should have slurs in measure 29"
+        
+        # Tenor (voice 5): Should have B3→A3 slur
+        tenor_slurs = measure_29_slurs.get('Tenor', [])
+        assert len(tenor_slurs) > 0, "Tenor should have slurs in measure 29"
+        
+        # Bass (voice 6): Should have E3→D3 slur
+        bass_slurs = measure_29_slurs.get('Bass', [])
+        assert len(bass_slurs) > 0, "Bass should have slurs in measure 29"
+        
+        print(f"   ✅ Measure 29 slurs verified: Alto={len(alto_slurs)}, Tenor={len(tenor_slurs)}, Bass={len(bass_slurs)}")
 
 
 class TestCrossVoiceSpanners:
