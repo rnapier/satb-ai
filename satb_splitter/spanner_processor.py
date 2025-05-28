@@ -269,11 +269,27 @@ class SpannerReferenceRepairer:
             return False
     
     def _get_note_measure_number(self, note: Any) -> Optional[int]:
-        """Get the measure number for a note."""
+        """Get the measure number for a note using multiple strategies."""
         try:
+            # Strategy 1: Direct measureNumber attribute
+            if hasattr(note, 'measureNumber'):
+                return note.measureNumber
+            
+            # Strategy 2: activeSite number
             if hasattr(note, 'activeSite') and note.activeSite:
                 if hasattr(note.activeSite, 'number'):
                     return note.activeSite.number
+                # Sometimes measure number is in a parent site
+                if hasattr(note.activeSite, 'activeSite') and note.activeSite.activeSite:
+                    if hasattr(note.activeSite.activeSite, 'number'):
+                        return note.activeSite.activeSite.number
+            
+            # Strategy 3: Check all sites for measure containers
+            if hasattr(note, 'sites'):
+                for site in note.sites:
+                    if hasattr(site, 'number') and hasattr(site, 'getElementsByClass'):
+                        # This looks like a measure
+                        return site.number
         except Exception:
             pass
         return None
@@ -471,8 +487,8 @@ class SpannerProcessor:
             primary_voice_id = self._get_primary_voice_id(spanner_voice_ids)
             return primary_voice_id in voice_id_mapping
         else:
-            # Single-voice spanner, normal assignment
-            return True
+            # Single-voice spanner: assign only if voice IDs match exactly
+            return len(voice_matches) > 0 and spanner_voice_ids[0] in voice_id_mapping
     
     def _get_primary_voice_id(self, voice_ids: List[str]) -> str:
         """Get the primary voice ID for cross-voice spanners."""
@@ -645,18 +661,46 @@ class SpannerProcessor:
             if hasattr(spanner, 'getSpannedElements'):
                 spanned_elements = spanner.getSpannedElements()
                 for element in spanned_elements:
-                    # Check if element has voice information
-                    if hasattr(element, 'getOffsetBySite'):
-                        # Get the containing voice/measure
-                        for site in element.sites:
-                            if hasattr(site, 'id') and site.id:
-                                voice_ids.add(site.id)
+                    # Get the voice ID from the element's immediate container
+                    voice_id = self._get_element_voice_id(element)
+                    if voice_id:
+                        voice_ids.add(voice_id)
+            
+            # If no spanned elements, try to get voice from spanner's direct note references
+            elif hasattr(spanner, 'noteStart') and spanner.noteStart:
+                voice_id = self._get_element_voice_id(spanner.noteStart)
+                if voice_id:
+                    voice_ids.add(voice_id)
+            elif hasattr(spanner, 'note') and spanner.note:
+                voice_id = self._get_element_voice_id(spanner.note)
+                if voice_id:
+                    voice_ids.add(voice_id)
                     
-                    # Also check activeSite for voice information
-                    if hasattr(element, 'activeSite') and element.activeSite:
-                        if hasattr(element.activeSite, 'id') and element.activeSite.id:
-                            voice_ids.add(element.activeSite.id)
         except Exception:
             pass
         
         return list(voice_ids)
+    
+    def _get_element_voice_id(self, element: Any) -> Optional[str]:
+        """Get the voice ID that contains a specific element."""
+        try:
+            # Check if the element is directly in a voice
+            if hasattr(element, 'activeSite') and element.activeSite:
+                site = element.activeSite
+                if hasattr(site, 'id') and site.id and site.id not in ['Piano', '0']:
+                    # Filter out part names and measure numbers, keep voice IDs
+                    if str(site.id).isdigit() or str(site.id) in ['1', '2', '5', '6']:
+                        return str(site.id)
+            
+            # Check all sites to find the voice container
+            if hasattr(element, 'sites'):
+                for site in element.sites:
+                    if hasattr(site, 'id') and site.id:
+                        site_id = str(site.id)
+                        # Look for numeric voice IDs that match our expected voice structure
+                        if site_id in ['1', '2', '5', '6']:
+                            return site_id
+            
+            return None
+        except Exception:
+            return None

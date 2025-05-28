@@ -7,6 +7,7 @@ instead of heuristic analysis.
 
 import music21
 from .utils import VoiceMapping, VoiceLocation
+from .exceptions import InvalidScoreError
 
 
 class DeterministicVoiceIdentifier:
@@ -31,17 +32,74 @@ class DeterministicVoiceIdentifier:
     
     def analyze_score(self) -> VoiceMapping:
         """
-        Analyze score using deterministic positional rules.
+        Apply strict hard-coded voice mapping.
         
         Returns:
-            VoiceMapping with deterministic assignments
+            VoiceMapping with hard-coded assignments
         """
-        print("🎯 Using deterministic voice identification")
+        print("🎯 Using hard-coded voice identification")
         
         # Verify score structure matches expectations
         if len(self.score.parts) != 2:
-            raise ValueError(f"Expected 2 parts for SATB, found {len(self.score.parts)}")
+            raise InvalidScoreError(f"Expected 2 parts for SATB, found {len(self.score.parts)}")
         
+        # Apply hard-coded mapping rules
+        voice_mapping = self._apply_deterministic_rules()
+        
+        # Basic validation
+        self._validate_mapping(voice_mapping)
+        
+        return voice_mapping
+    
+    def _apply_deterministic_rules(self) -> VoiceMapping:
+        """Apply hard-coded voice mapping rules without fallback."""
+        
+        # Hard-coded voice structure for SATB
+        expected_mapping = {
+            'soprano': {'part_index': 0, 'voice_id': '1'},
+            'alto': {'part_index': 0, 'voice_id': '2'},
+            'tenor': {'part_index': 1, 'voice_id': '5'},
+            'bass': {'part_index': 1, 'voice_id': '6'}
+        }
+        
+        # Verify expected voices exist in score
+        self._verify_voice_structure(expected_mapping)
+        
+        # Create voice locations with hard-coded mapping
+        voice_locations = {}
+        
+        for voice_name, expected in expected_mapping.items():
+            part_idx = expected['part_index']
+            voice_id = expected['voice_id']
+            
+            # Determine clef type for this voice
+            clef_type = self._determine_clef_type(voice_name, part_idx)
+            
+            print(f"{voice_name.title()}: Part {part_idx}, Voice {voice_id}")
+            
+            voice_locations[voice_name] = VoiceLocation(
+                part_index=part_idx,
+                voice_id=voice_id,
+                clef_type=clef_type
+            )
+        
+        return VoiceMapping(
+            soprano=voice_locations['soprano'],
+            alto=voice_locations['alto'],
+            tenor=voice_locations['tenor'],
+            bass=voice_locations['bass']
+        )
+    
+    def _verify_voice_structure(self, expected_mapping: dict) -> None:
+        """
+        Verify that expected voice structure exists in score.
+        
+        Args:
+            expected_mapping: Dictionary of expected voice mappings
+            
+        Raises:
+            InvalidScoreError: If expected voices are not found
+        """
         # Extract actual voices present in each part
         part_voices = {}
         for part_idx, part in enumerate(self.score.parts):
@@ -57,117 +115,28 @@ class DeterministicVoiceIdentifier:
                     voices_found.add('1')
             
             part_voices[part_idx] = sorted(voices_found)
-            print(f"Part {part_idx}: voices {part_voices[part_idx]}")
         
-        # Apply deterministic mapping rules
-        voice_mapping = self._apply_deterministic_rules(part_voices)
-        
-        # Validate the mapping
-        self._validate_mapping(voice_mapping)
-        
-        return voice_mapping
-    
-    def _apply_deterministic_rules(self, part_voices: dict) -> VoiceMapping:
-        """Apply the deterministic voice mapping rules."""
-        
-        # Expected voice structure after MuseScore → MusicXML conversion
-        expected_mapping = {
-            'soprano': {'part_index': 0, 'voice_id': '1'},
-            'alto': {'part_index': 0, 'voice_id': '2'},
-            'tenor': {'part_index': 1, 'voice_id': '5'},
-            'bass': {'part_index': 1, 'voice_id': '6'}
-        }
-        
-        # Create voice locations
-        voice_locations = {}
-        
+        # Verify each expected voice exists
         for voice_name, expected in expected_mapping.items():
             part_idx = expected['part_index']
             voice_id = expected['voice_id']
             
-            # Check if expected voice exists
-            if part_idx in part_voices and voice_id in part_voices[part_idx]:
-                confidence = 1.0  # Deterministic = 100% confidence
-                status = "✅"
-            else:
-                # Try fallback strategies
-                confidence, voice_id = self._find_fallback_voice(
-                    voice_name, part_idx, voice_id, part_voices)
-                status = "🔄" if confidence > 0 else "❌"
+            if part_idx not in part_voices:
+                raise InvalidScoreError(
+                    f"Part {part_idx} not found in score. "
+                    f"Required SATB structure: Part 0 (voices 1,2), Part 1 (voices 5,6)"
+                )
             
-            # Determine clef type for this voice
-            clef_type = self._determine_clef_type(voice_name, part_idx)
-            
-            print(f"{voice_name.title()}: Part {part_idx}, Voice {voice_id} (confidence: {confidence:.1f}) {status}")
-            
-            voice_locations[voice_name] = VoiceLocation(
-                part_index=part_idx,
-                voice_id=voice_id,
-                clef_type=clef_type,
-                confidence=confidence
-            )
-        
-        return VoiceMapping(
-            soprano=voice_locations['soprano'],
-            alto=voice_locations['alto'],
-            tenor=voice_locations['tenor'],
-            bass=voice_locations['bass']
-        )
-    
-    def _find_fallback_voice(self, voice_name: str, part_idx: int, 
-                           expected_voice_id: str, part_voices: dict) -> tuple:
-        """
-        Find fallback voice when expected voice doesn't exist.
-        
-        Returns:
-            (confidence, voice_id) tuple
-        """
-        if part_idx not in part_voices:
-            return (0.0, expected_voice_id)
-        
-        available_voices = part_voices[part_idx]
-        
-        if not available_voices:
-            return (0.0, expected_voice_id)
-        
-        # Strategy 1: If only one voice available, use it
-        if len(available_voices) == 1:
-            print(f"  Fallback: {voice_name} using only available voice {available_voices[0]}")
-            return (0.8, available_voices[0])
-        
-        # Strategy 2: Use positional fallback within part
-        voice_position_map = {
-            'soprano': 0,  # First voice in part
-            'alto': 1,     # Second voice in part
-            'tenor': 0,    # First voice in part
-            'bass': 1      # Second voice in part
-        }
-        
-        if voice_name in voice_position_map:
-            position = voice_position_map[voice_name]
-            if position < len(available_voices):
-                fallback_voice = available_voices[position]
-                print(f"  Fallback: {voice_name} using positional voice {fallback_voice}")
-                return (0.6, fallback_voice)
-        
-        # Strategy 3: Use first available voice
-        fallback_voice = available_voices[0]
-        print(f"  Fallback: {voice_name} using first available voice {fallback_voice}")
-        return (0.4, fallback_voice)
+            if voice_id not in part_voices[part_idx]:
+                available_voices = ', '.join(part_voices[part_idx]) if part_voices[part_idx] else 'none'
+                raise InvalidScoreError(
+                    f"Expected voice '{voice_id}' not found in part {part_idx} for {voice_name}. "
+                    f"Available voices: {available_voices}. "
+                    f"Required SATB structure: Part 0 (voices 1,2), Part 1 (voices 5,6)"
+                )
     
     def _validate_mapping(self, voice_mapping: VoiceMapping) -> None:
-        """Validate that the voice mapping is reasonable."""
-        
-        # Check that all voices have reasonable confidence
-        min_confidence = min([
-            voice_mapping.soprano.confidence,
-            voice_mapping.alto.confidence,
-            voice_mapping.tenor.confidence,
-            voice_mapping.bass.confidence
-        ])
-        
-        if min_confidence < 0.4:
-            print("⚠️  Warning: Some voice assignments have low confidence")
+        """Validate that the voice mapping has no duplicate assignments."""
         
         # Check for duplicate assignments
         assignments = []
@@ -175,10 +144,10 @@ class DeterministicVoiceIdentifier:
             location = getattr(voice_mapping, voice_name)
             key = (location.part_index, location.voice_id)
             if key in assignments:
-                print(f"⚠️  Warning: Duplicate assignment detected for {key}")
+                raise InvalidScoreError(f"Duplicate assignment detected for part {key[0]}, voice {key[1]}")
             assignments.append(key)
         
-        print(f"Voice mapping validation complete")
+        print("Voice mapping validation complete")
     
     def _determine_clef_type(self, voice_name: str, part_index: int) -> str:
         """Determine the clef type for a voice based on standard SATB conventions."""

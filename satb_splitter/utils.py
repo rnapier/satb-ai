@@ -13,7 +13,6 @@ class VoiceLocation:
     part_index: int
     voice_id: str
     clef_type: str
-    confidence: float = 1.0
 
 
 @dataclass
@@ -23,7 +22,6 @@ class VoiceMapping:
     alto: VoiceLocation
     tenor: VoiceLocation
     bass: VoiceLocation
-    confidence: float = 1.0
     
     def validate(self) -> bool:
         """Validate that mapping is consistent."""

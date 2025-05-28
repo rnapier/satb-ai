@@ -209,8 +209,8 @@ class TestVoiceSeparation:
             assert hasattr(voice, 'voice_id'), "Voice should have voice_id"
             assert voice.part_index >= 0, "Part index should be non-negative"
 
-        # Check that confidence is reasonable
-        assert 0.0 <= voice_mapping.confidence <= 1.0, "Confidence should be between 0 and 1"
+        # Validate voice mapping structure
+        assert voice_mapping.validate(), "Voice mapping should be valid"
 
     def test_voice_separation_regression(self, sample_musicxml_file, temp_output_dir):
         """Regression test for voice separation."""

@@ -91,7 +91,23 @@ class ScoreProcessor:
                     errors.extend(simplification_result.errors)
                 warnings.extend(simplification_result.warnings)
             
-            # Step 6: Apply contextual unification
+            # Step 6: Process spanners with voice-aware filtering
+            processing_steps.append("Processing spanners with voice context")
+            from .spanner_processor import SpannerProcessor
+            spanner_processor = SpannerProcessor()
+            
+            # Extract spanners from original score with context
+            spanners_with_context = spanner_processor.extract_all_spanners_from_score(original_score)
+            
+            # Apply voice-aware spanner processing
+            spanner_result = spanner_processor.process_spanners_post_separation(
+                voice_scores, spanners_with_context)
+            
+            if not spanner_result.get('success', True):
+                errors.extend(spanner_result.get('errors', []))
+            warnings.extend(spanner_result.get('warnings', []))
+            
+            # Step 7: Apply contextual unification
             processing_steps.append("Applying unification rules")
             contextual_unifier = ContextualUnifier(context)
             unification_result = contextual_unifier.apply_unification_rules(voice_scores)
@@ -411,31 +427,10 @@ class ScoreProcessor:
         return new_score
     def _copy_part_spanners(self, original_part: music21.stream.Part, new_part: music21.stream.Part):
         """Copy spanners (crescendos, slurs, etc.) from original part to new part."""
-        try:
-            # Get all spanners from the original part
-            spanners = original_part.getElementsByClass('Spanner')
-            
-            if spanners:
-                # If spanners exist, use deepcopy for the entire part to preserve references
-                print(f"Found {len(spanners)} spanners, using deepcopy to preserve references")
-                import copy
-                
-                # Clear the new part and replace with deepcopy
-                new_part.clear()
-                copied_part = copy.deepcopy(original_part)
-                
-                # Copy all elements from the deepcopied part
-                for element in copied_part.elements:
-                    new_part.append(element)
-                    
-                # Copy spanners
-                for spanner in copied_part.getElementsByClass('Spanner'):
-                    if spanner not in new_part:
-                        new_part.append(spanner)
-                        
-        except Exception as e:
-            # If spanner copying fails entirely, log warning but continue
-            print(f"Warning: Could not copy spanners from part: {e}")
+        # NOTE: Spanners are now handled by voice-aware spanner processor
+        # This method is disabled to prevent copying ALL spanners to ALL voices
+        # The sophisticated spanner processing will handle voice-specific assignments
+        pass
     
     def _copy_measure_efficiently(self, original_measure: music21.stream.Measure) -> music21.stream.Measure:
         """Create an efficient copy of a measure without full deep copy."""

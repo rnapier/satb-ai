@@ -8,7 +8,7 @@ import music21
 from satb_splitter import split_satb_voices
 from satb_splitter.score_processor import ScoreProcessor
 from satb_splitter.exceptions import SATBSplitError, InvalidScoreError
-from satb_splitter.utils import load_score
+from satb_splitter.utils import load_score, VoiceLocation
 from satb_splitter.voice_identifier import VoiceIdentifier
 
 
@@ -278,8 +278,8 @@ class TestVoiceIdentifierEdgeCases:
             
             # Should handle minimal score gracefully
             assert voice_mapping is not None
-            # Confidence might be low
-            assert 0.0 <= voice_mapping.confidence <= 1.0
+            # Validate voice mapping structure
+            assert voice_mapping.validate()
         except Exception as e:
             # Also acceptable to fail with insufficient data
             assert ("insufficient" in str(e).lower() or
@@ -297,14 +297,17 @@ class TestVoiceIdentifierEdgeCases:
             # Also acceptable to raise these exceptions
             pass
 
-    def test_voice_identifier_confidence_bounds(self, sample_score):
-        """Test that VoiceIdentifier confidence is always in valid bounds."""
+    def test_voice_identifier_validation(self, sample_score):
+        """Test that VoiceIdentifier returns valid mappings."""
         identifier = VoiceIdentifier(sample_score)
         voice_mapping = identifier.analyze_score()
         
-        # Confidence should always be between 0 and 1
-        assert 0.0 <= voice_mapping.confidence <= 1.0
-        assert isinstance(voice_mapping.confidence, (int, float))
+        # Voice mapping should be valid
+        assert voice_mapping.validate()
+        assert isinstance(voice_mapping.soprano, VoiceLocation)
+        assert isinstance(voice_mapping.alto, VoiceLocation)
+        assert isinstance(voice_mapping.tenor, VoiceLocation)
+        assert isinstance(voice_mapping.bass, VoiceLocation)
 
 
 class TestScoreProcessorEdgeCases:
